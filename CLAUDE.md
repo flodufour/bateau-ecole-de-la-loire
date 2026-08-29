@@ -79,6 +79,24 @@ The developer working on this project is learning while building. Every non-triv
 └── CLAUDE.md
 ```
 
+## Documentation
+
+Both `backend/docs/` and `frontend/docs/` must stay in sync with the code.
+
+| File | Update when |
+|---|---|
+| `backend/docs/architecture.md` | A new layer, pattern, or cross-cutting concern is introduced |
+| `backend/docs/api.md` | An endpoint is added, changed, or removed |
+| `backend/docs/database.md` | A table or column is added, changed, or removed |
+| `frontend/docs/architecture.md` | The folder structure, routing, or a core pattern changes |
+| `frontend/docs/features.md` | A feature or shared component is added or significantly changed |
+
+Rules:
+- Keep it light — short paragraphs, bullet lists, small tables. No walls of text.
+- Explain *what* a thing does and *why* it exists, not how the code works line by line.
+- Every new concept introduced in the code gets a one-sentence explanation in the relevant doc.
+- Doc updates are part of the same commit as the code change — never a separate "fix docs" commit after the fact.
+
 ## Changelog rules
 - Every merged feature or fix gets one or two lines added to the relevant `CHANGELOG.md`.
 - Format: `YYYY-MM-DD HH:MM — [feat|fix|chore] Short description`
