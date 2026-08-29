@@ -85,10 +85,99 @@ The developer working on this project is learning while building. Every non-triv
 - Log in the file closest to what changed (backend or frontend). If both are affected, log in both.
 - No verbose prose — one sentence max per entry.
 
-## Git
-- Commits follow Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`.
-- One logical change per commit.
-- Never commit secrets, `.env` files, or build artifacts.
+## Git workflow
+
+### Branches
+Every piece of work lives on its own branch, created from `main`.
+
+Naming convention: `<type>/<scope>-<short-description>`
+
+| Type | When to use |
+|---|---|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `chore` | Tooling, config, dependencies |
+| `refactor` | Code restructure with no behavior change |
+| `docs` | Documentation only |
+| `release` | Version bump and release prep |
+
+Examples:
+- `feat/backend-booking-system`
+- `feat/frontend-session-calendar`
+- `fix/backend-booking-conflict`
+- `chore/docker-compose-setup`
+- `release/backend-v0.2.0`
+
+### Commit messages
+Follow Conventional Commits: `<type>(<scope>): <short description>`
+
+- `feat(booking): add session conflict detection`
+- `fix(auth): handle expired JWT on refresh`
+- `chore(deps): upgrade EF Core to 8.0.4`
+- `docs(readme): update local setup steps`
+
+One logical change per commit. Never mix refactor + feature in the same commit.
+
+### Merge process (rebase for clean history)
+1. Work on your branch with regular commits.
+2. Before merging, rebase on `main` to get a linear history:
+   ```bash
+   git fetch origin
+   git rebase origin/main
+   ```
+3. Resolve any conflicts, then merge into `main` with fast-forward:
+   ```bash
+   git checkout main
+   git merge --ff-only feat/your-branch
+   git push origin main
+   ```
+4. Delete the branch after merging:
+   ```bash
+   git branch -d feat/your-branch
+   git push origin --delete feat/your-branch
+   ```
+
+> **Why rebase instead of merge commits?** Merge commits create a tangled graph. Rebase replays your commits on top of `main` so the history stays a straight line — easy to read with `git log --oneline`.
+
+### Never commit
+- `.env` files or any file containing secrets
+- Build artifacts (`bin/`, `obj/`, `dist/`, `node_modules/`)
+- IDE-specific files not already in `.gitignore`
+
+## Versioning
+
+Both backend and frontend are versioned independently using **Semantic Versioning** (`MAJOR.MINOR.PATCH`):
+- `MAJOR` — breaking change (rare)
+- `MINOR` — new feature, backwards-compatible
+- `PATCH` — bug fix
+
+| Project | Version source |
+|---|---|
+| Backend | `<Version>` field in `backend/src/*.csproj` |
+| Frontend | `"version"` field in `frontend/package.json` |
+
+Both start at `0.1.0`. Version `1.0.0` marks the first production-ready release.
+
+### Releasing a version
+1. Create a `release/backend-vX.Y.Z` or `release/frontend-vX.Y.Z` branch.
+2. Bump the version in the relevant file.
+3. Update the corresponding `CHANGELOG.md` with a version header.
+4. Rebase and merge into `main`.
+5. Tag the commit:
+   ```bash
+   git tag backend-v0.2.0   # or frontend-v0.2.0
+   git push origin --tags
+   ```
+
+### Changelog version format
+When releasing, add a version header above the entries for that version:
+
+```
+## [0.2.0] — 2026-09-15
+
+2026-09-15 14:30 — [feat] Session booking endpoint with conflict detection
+2026-09-15 09:00 — [fix] Instructor availability query returning stale data
+```
 
 ## Running locally
 See `README.md` for setup instructions.
