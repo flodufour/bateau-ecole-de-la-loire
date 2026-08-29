@@ -55,7 +55,7 @@ All I/O operations (DB queries, email sending) are `async/await`. Blocking with 
 
 ## Authentication
 
-JWT (JSON Web Tokens). The client receives a token on login and sends it in the `Authorization: Bearer <token>` header on every protected request. The API validates the token on each request without hitting the database.
+ASP.NET Core Identity + JWT stored in `httpOnly` cookies. See [security.md](security.md) for the full security model.
 
 ---
 

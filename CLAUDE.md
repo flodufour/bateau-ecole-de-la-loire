@@ -79,6 +79,39 @@ The developer working on this project is learning while building. Every non-triv
 └── CLAUDE.md
 ```
 
+## Security
+
+### Authentication
+- Use **ASP.NET Core Identity** for user management (password hashing, roles, token generation).
+- Issue **JWT tokens** stored in **`httpOnly` cookies** — never in `localStorage`.
+  - `httpOnly` = JavaScript cannot read the token → immune to XSS theft.
+  - Use ASP.NET Core's built-in anti-forgery (CSRF) protection to cover the cookie approach.
+- JWT must have a short expiry (15–60 min). Use a refresh token (stored in a separate `httpOnly` cookie) to renew silently.
+- Never log tokens, passwords, or sensitive user data.
+
+### Authorization
+- Three roles: `student`, `instructor`, `admin`.
+- Protect endpoints with `[Authorize(Roles = "admin")]` etc. — never rely on frontend-only guards.
+- Default to deny: every endpoint is protected unless explicitly marked `[AllowAnonymous]`.
+
+### API protection
+- **Rate limiting** — use .NET 8 built-in rate limiting middleware. Apply strict limits on `/auth/login` and `/contact` to prevent brute force and spam.
+- **CORS** — whitelist only the frontend origin. Reject all other origins.
+- **HTTPS** — enforced by Caddy in production. In development, use `dotnet dev-certs`.
+- **Input validation** — validate all incoming DTOs with Data Annotations. Reject invalid requests at the controller boundary before they reach the service layer.
+- **No raw SQL** — EF Core parameterises all queries, preventing SQL injection. Raw SQL is forbidden unless there is a documented performance justification.
+
+### Data security
+- Passwords hashed by ASP.NET Core Identity (bcrypt). Never store or log plain-text passwords.
+- Use UUIDs (`Guid`) as primary keys — not auto-increment integers (harder to enumerate).
+- All secrets (DB connection string, JWT secret, SMTP credentials) live in `.env` or environment variables. Never hardcode or commit them.
+- The PostgreSQL port is never exposed publicly — only accessible inside the Docker network.
+
+### Frontend security
+- Angular's `HttpClient` sanitises values by default — do not bypass with `bypassSecurityTrust*` unless strictly necessary and reviewed.
+- Never store the JWT in `localStorage` or `sessionStorage`.
+- The CSRF token is handled automatically by the Angular `HttpClientXsrfModule` — keep it enabled.
+
 ## Documentation
 
 Both `backend/docs/` and `frontend/docs/` must stay in sync with the code.
