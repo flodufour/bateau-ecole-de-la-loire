@@ -1,6 +1,6 @@
 # Backend — API Reference
 
-Base URL (local): `http://localhost:5000/api`
+Base URL (local): `http://localhost:5258/api`
 Base URL (production): `https://api.bateauecoledelaloire.fr/api`
 
 All endpoints return JSON. Protected endpoints require `Authorization: Bearer <token>`.

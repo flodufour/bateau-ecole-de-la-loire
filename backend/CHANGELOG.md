@@ -12,3 +12,4 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-01 00:00 — [chore] Migrate target framework from net8.0 to net10.0
 2026-09-01 00:00 — [feat] Add PostgreSQL via Docker Compose, EF Core (Npgsql + snake_case naming convention), AppDbContext, and entities for users, instructors, permits, sessions, bookings, exam_dates
 2026-09-01 00:00 — [chore] Store local DB connection string in ASP.NET Core Secret Manager instead of appsettings; initial migration applied
+2026-09-01 00:00 — [feat] Add GET /api/permits and GET /api/permits/{id} endpoints
