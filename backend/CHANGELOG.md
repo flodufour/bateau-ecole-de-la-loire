@@ -14,3 +14,5 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-01 00:00 — [chore] Store local DB connection string in ASP.NET Core Secret Manager instead of appsettings; initial migration applied
 2026-09-01 00:00 — [feat] Add GET /api/permits and GET /api/permits/{id} endpoints
 2026-09-01 00:00 — [feat] Add GET /api/instructors and GET /api/instructors/{id} endpoints
+2026-09-01 00:00 — [feat] Add GET /api/exam-dates and GET /api/sessions (filterable by type, permitId, date) with GET /api/sessions/{id}
+2026-09-01 00:00 — [fix] Serialize enums as strings in JSON responses instead of integers
