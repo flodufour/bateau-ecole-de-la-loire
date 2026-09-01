@@ -17,6 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options
     .UseSnakeCaseNamingConvention());
 
 builder.Services.AddScoped<PermitService>();
+builder.Services.AddScoped<InstructorService>();
 
 var app = builder.Build();
 

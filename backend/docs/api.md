@@ -60,7 +60,7 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | GET | `/instructors` | No | List all instructors |
-| GET | `/instructors/{id}` | No | Get instructor profile and upcoming sessions |
+| GET | `/instructors/{id}` | No | Get instructor profile (upcoming sessions to be added once `/sessions` exists) |
 | PUT | `/instructors/{id}/availability` | Instructor | Update availability calendar |
 
 ---
