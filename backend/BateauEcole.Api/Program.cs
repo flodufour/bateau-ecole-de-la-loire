@@ -125,3 +125,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Top-level statements make Program implicitly internal — WebApplicationFactory<Program>
+// in the test project needs a public type to bootstrap the app, hence this marker.
+public partial class Program;

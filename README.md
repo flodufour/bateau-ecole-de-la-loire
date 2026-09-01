@@ -65,6 +65,15 @@ ng serve
 
 App runs at `http://localhost:4200`.
 
+## Running backend tests
+
+```bash
+cd backend/BateauEcole.Api.Tests
+dotnet test
+```
+
+Docker must be running — the tests spin up real, throwaway PostgreSQL containers (via Testcontainers) rather than mocking the database.
+
 ## Project structure
 
 ```

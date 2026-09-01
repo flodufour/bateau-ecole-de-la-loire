@@ -32,6 +32,7 @@ backend/
 │   │       ├── AppDbContext.cs      # EF Core entry point
 │   │       └── Migrations/          # Auto-generated DB migrations
 │   └── BateauEcole.Api.csproj
+├── BateauEcole.Api.Tests/   # xUnit test project — see Testing below
 ├── docs/                    # This documentation
 └── CHANGELOG.md
 ```
@@ -54,6 +55,20 @@ All I/O operations (DB queries, email sending) are `async/await`. Blocking with 
 ## Authentication
 
 ASP.NET Core Identity + JWT stored in `httpOnly` cookies. See [security.md](security.md) for the full security model.
+
+---
+
+## Testing
+
+`BateauEcole.Api.Tests` (xUnit) tests through real HTTP calls against the actual app — `WebApplicationFactory<Program>` boots the whole ASP.NET Core pipeline in-memory (routing, auth, rate limiting included), and **Testcontainers** spins up a real, throwaway PostgreSQL container per test class rather than using EF Core's InMemory provider. InMemory silently ignores things a real Postgres enforces — unique indexes, the enum-to-string conversions, array columns — so it would let through exactly the kind of bug these tests exist to catch.
+
+A few things that aren't obvious from the test code:
+
+- **Each test class gets its own `ApiTestFixture`** (`IClassFixture<ApiTestFixture>`, not a shared collection). The `/auth/login` and `/auth/forgot-password` rate limit (5/min) is shared app-wide state — sharing one fixture across unrelated test classes would make one class's login attempts able to trip the limit for another class's tests.
+- **Auth cookies are `Secure`**, so a test `HttpClient` must use `https://localhost` as its base address — `CookieContainer` silently drops `Secure` cookies sent back over a plain-`http` origin, which looks like "the request just isn't authenticated" with no other clue.
+- **The test client needs the same `JsonStringEnumConverter`** the API registers in `Program.cs` (`ApiJsonOptions.Default`) — without it, deserializing a DTO with an enum property (`UserDto.Role`, `SessionDto.Type`) throws, because the default `System.Text.Json` behavior expects enums as numbers.
+
+Run with `dotnet test` from `backend/BateauEcole.Api.Tests/` (Docker must be running).
 
 ---
 

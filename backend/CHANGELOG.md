@@ -18,3 +18,4 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-01 00:00 — [fix] Serialize enums as strings in JSON responses instead of integers
 2026-09-01 00:00 — [feat] Add authentication: ASP.NET Core Identity + JWT in httpOnly cookies, refresh token rotation, CSRF protection, rate-limited /auth/login, deny-by-default authorization with [AllowAnonymous] on public catalog endpoints
 2026-09-01 00:00 — [feat] Add password reset (forgot/reset-password, token logged to console pending real email sending) and soft delete for users (is_active flag, DELETE /api/users/{id} admin-only)
+2026-09-01 00:00 — [test] Add BateauEcole.Api.Tests: xUnit + WebApplicationFactory + Testcontainers integration tests covering auth (register/login/refresh rotation/logout/deactivation/password reset/rate limiting), the permits/instructors/exam-dates/sessions catalog endpoints, and users soft delete; plus unit tests for TokenService
