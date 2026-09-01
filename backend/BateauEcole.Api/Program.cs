@@ -1,7 +1,15 @@
+using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using BateauEcole.Api.Data;
+using BateauEcole.Api.Models;
 using BateauEcole.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +26,81 @@ builder.Services.AddDbContext<AppDbContext>(options => options
     .UseNpgsql(builder.Configuration.GetConnectionString("Default"))
     .UseSnakeCaseNamingConvention());
 
+builder.Services
+    .AddIdentityCore<User>(options =>
+    {
+        options.Password.RequiredLength = 8;
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+// The JWT normally travels in the Authorization header, but we keep it in an
+// httpOnly cookie instead (JS can never read it, unlike localStorage) — so we
+// tell the JWT handler to look for it there.
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)),
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue("access_token", out var token))
+                    context.Token = token;
+                return Task.CompletedTask;
+            },
+        };
+    });
+
+// Deny by default: every endpoint requires an authenticated user unless it
+// carries [AllowAnonymous]. Safer than opting endpoints into auth one by one.
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
+// Cookie-based auth needs CSRF protection (a JWT sent via Authorization header
+// wouldn't, since browsers don't attach custom headers automatically). Names
+// match Angular's HttpClientXsrfModule defaults so the frontend needs no config.
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = "XSRF-TOKEN";
+    options.HeaderName = "X-XSRF-TOKEN";
+});
+
+// AddFixedWindowLimiter alone would share ONE counter across every caller —
+// an attacker could lock out every legitimate user. Partition by IP instead,
+// so the 5-per-minute limit applies per client.
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("auth", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            Window = TimeSpan.FromMinutes(1),
+            PermitLimit = 5,
+            QueueLimit = 0,
+        }));
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PermitService>();
 builder.Services.AddScoped<InstructorService>();
 builder.Services.AddScoped<ExamDateService>();
@@ -34,6 +117,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRateLimiter();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

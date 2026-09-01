@@ -1,23 +1,45 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using BateauEcole.Api.Models;
 
 namespace BateauEcole.Api.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityUserContext<User, Guid>(options)
 {
-    public DbSet<User> Users => Set<User>();
     public DbSet<Instructor> Instructors => Set<Instructor>();
     public DbSet<Permit> Permits => Set<Permit>();
     public DbSet<Session> Sessions => Set<Session>();
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<ExamDate> ExamDates => Set<ExamDate>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasIndex(u => u.Email).IsUnique();
+            entity.ToTable("users");
+            entity.HasIndex(u => u.NormalizedEmail).IsUnique();
             entity.Property(u => u.Role).HasConversion<string>();
+            // EF Core migrations don't read C# property initializers — without
+            // this, the generated column default would be false, not true.
+            entity.Property(u => u.IsActive).HasDefaultValue(true);
+        });
+
+        modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("user_claims");
+        modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("user_logins");
+        modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("user_tokens");
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasIndex(r => r.TokenHash).IsUnique();
+
+            entity.HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Instructor>()

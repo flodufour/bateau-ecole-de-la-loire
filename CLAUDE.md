@@ -102,7 +102,7 @@ The developer working on this project is learning while building. Every non-triv
 - **No raw SQL** — EF Core parameterises all queries, preventing SQL injection. Raw SQL is forbidden unless there is a documented performance justification.
 
 ### Data security
-- Passwords hashed by ASP.NET Core Identity (bcrypt). Never store or log plain-text passwords.
+- Passwords hashed by ASP.NET Core Identity's default `PasswordHasher` (PBKDF2/HMAC-SHA256, not bcrypt). Never store or log plain-text passwords.
 - Use UUIDs (`Guid`) as primary keys — not auto-increment integers (harder to enumerate).
 - All secrets (DB connection string, JWT secret, SMTP credentials) live in `.env` or environment variables. Never hardcode or commit them.
 - The PostgreSQL port is never exposed publicly — only accessible inside the Docker network.

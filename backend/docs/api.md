@@ -3,7 +3,9 @@
 Base URL (local): `http://localhost:5258/api`
 Base URL (production): `https://api.bateauecoledelaloire.fr/api`
 
-All endpoints return JSON. Protected endpoints require `Authorization: Bearer <token>`.
+All endpoints return JSON. Every endpoint requires authentication by default (deny-by-default); endpoints marked "No" below are explicitly `[AllowAnonymous]`.
+
+Auth works via `httpOnly` cookies, not an `Authorization` header — the browser sends `access_token` automatically, JS never touches it. Any endpoint that isn't `[AllowAnonymous]` needs a valid `access_token` cookie, obtained via login/register and renewed via `/auth/refresh`.
 
 ---
 
@@ -11,9 +13,21 @@ All endpoints return JSON. Protected endpoints require `Authorization: Bearer <t
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/auth/register` | No | Register a new student account |
-| POST | `/auth/login` | No | Login, returns JWT token |
-| POST | `/auth/refresh` | No | Refresh an expired JWT |
+| GET | `/auth/csrf` | No | Issues the `XSRF-TOKEN` cookie; call once before any state-changing request |
+| POST | `/auth/register` | No | Register a new student account, sets auth cookies |
+| POST | `/auth/login` | No | Login, sets `access_token` + `refresh_token` cookies (rate-limited: 5/min/IP) |
+| POST | `/auth/refresh` | No | Rotates the refresh token, issues a new `access_token` |
+| POST | `/auth/logout` | No | Revokes the refresh token and clears both cookies |
+| POST | `/auth/forgot-password` | No | Logs a password reset token (rate-limited: 5/min/IP). No email sending yet — see `backend/docs/security.md` |
+| POST | `/auth/reset-password` | No | Consumes the token from `/forgot-password` to set a new password |
+
+---
+
+## Users
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| DELETE | `/users/{id}` | Admin | Soft delete — sets `is_active = false`, row is kept |
 
 ---
 

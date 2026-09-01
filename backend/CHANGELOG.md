@@ -16,3 +16,5 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-01 00:00 — [feat] Add GET /api/instructors and GET /api/instructors/{id} endpoints
 2026-09-01 00:00 — [feat] Add GET /api/exam-dates and GET /api/sessions (filterable by type, permitId, date) with GET /api/sessions/{id}
 2026-09-01 00:00 — [fix] Serialize enums as strings in JSON responses instead of integers
+2026-09-01 00:00 — [feat] Add authentication: ASP.NET Core Identity + JWT in httpOnly cookies, refresh token rotation, CSRF protection, rate-limited /auth/login, deny-by-default authorization with [AllowAnonymous] on public catalog endpoints
+2026-09-01 00:00 — [feat] Add password reset (forgot/reset-password, token logged to console pending real email sending) and soft delete for users (is_active flag, DELETE /api/users/{id} admin-only)

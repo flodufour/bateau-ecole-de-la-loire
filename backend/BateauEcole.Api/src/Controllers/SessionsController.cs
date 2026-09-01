@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BateauEcole.Api.Models;
 using BateauEcole.Api.Services;
@@ -9,6 +10,7 @@ namespace BateauEcole.Api.Controllers;
 public class SessionsController(SessionService sessionService) : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetUpcoming(
         [FromQuery] SessionType? type,
         [FromQuery] Guid? permitId,
@@ -18,6 +20,7 @@ public class SessionsController(SessionService sessionService) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id)
     {
         var session = await sessionService.GetByIdAsync(id);

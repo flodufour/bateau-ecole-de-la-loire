@@ -21,17 +21,35 @@ exam_dates  (standalone, no foreign keys)
 ## Tables
 
 ### `users`
-Registered students (and admins).
+Registered students, instructors, and admins. Backed by **ASP.NET Core Identity** (`IdentityUserContext<User, Guid>`), so it carries Identity's standard columns (`normalized_email`, `security_stamp`, `lockout_end`, etc.) alongside our own. We don't use Identity's role tables — a user has exactly one role, stored directly on this row.
 
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | Primary key |
-| `email` | varchar | Unique, used for login |
-| `password_hash` | varchar | Bcrypt hash, never plain text |
+| `email` / `normalized_email` | varchar | Unique index on `normalized_email`, used for login |
+| `password_hash` | varchar | Hashed by Identity's `PasswordHasher`, never plain text |
 | `first_name` | varchar | |
 | `last_name` | varchar | |
-| `role` | varchar | `student`, `instructor`, `admin` |
+| `role` | varchar | `Student`, `Instructor`, `Admin` |
 | `created_at` | timestamptz | |
+| `is_active` | boolean | Default `true`. Soft-delete flag — set `false` by `DELETE /api/users/{id}` instead of removing the row, so `bookings`/`instructors` keep a valid `user_id`. Login is rejected when `false`. |
+| *(+ Identity columns)* | — | `user_name`, `security_stamp`, `lockout_enabled`, `access_failed_count`, etc. — managed by Identity, not read directly by app code |
+
+Three related tables also come from Identity and stay empty unless those features are used: `user_claims`, `user_logins`, `user_tokens`.
+
+---
+
+### `refresh_tokens`
+One row per issued refresh token, so a token can be revoked (logout, rotation) without needing to blacklist JWTs.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `user_id` | uuid | FK → `users.id`, cascade delete |
+| `token_hash` | varchar | SHA-256 hash of the token — the raw value is never stored |
+| `expires_at` | timestamptz | |
+| `created_at` | timestamptz | |
+| `revoked_at` | timestamptz? | Set on logout or when rotated by `/auth/refresh` |
 
 ---
 
@@ -115,3 +133,5 @@ dotnet ef database update --project src
 ```
 
 Never edit a migration after it has been applied. Add a new migration instead.
+
+**Gotcha:** a C# property initializer (`public bool IsActive { get; set; } = true;`) is not read as a column default — EF Core generates `DEFAULT FALSE` for a plain `bool` unless you also add `.HasDefaultValue(true)` in `OnModelCreating`. Always check a generated migration's `defaultValue` before applying it.

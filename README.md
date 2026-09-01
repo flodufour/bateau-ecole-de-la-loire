@@ -42,6 +42,7 @@ The API reads its DB connection string from the ASP.NET Core Secret Manager in D
 ```bash
 cd backend/BateauEcole.Api
 dotnet user-secrets set "ConnectionStrings:Default" "Host=localhost;Port=5432;Database=bateau_ecole;Username=bateau_ecole;Password=<DB_PASSWORD from .env>"
+dotnet user-secrets set "Jwt:Secret" "<any random 64+ character string, dev only>"
 ```
 
 ### 4. Run the backend
