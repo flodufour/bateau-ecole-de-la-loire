@@ -7,37 +7,54 @@ Web platform for a boating school in Nantes. Students browse permits, book theor
 | Layer | Technology |
 |---|---|
 | Frontend | Angular (standalone components, signals) |
-| Backend | ASP.NET Core Web API (.NET 8) |
+| Backend | ASP.NET Core Web API (.NET 10) |
 | Database | PostgreSQL |
 | ORM | EF Core |
 | Local dev | Docker Compose |
 
 ## Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 20+](https://nodejs.org/) and npm
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Angular CLI](https://angular.io/cli): `npm install -g @angular/cli`
 
 ## Getting started
 
-### 1. Start the database
+### 1. Copy environment variables
 
 ```bash
-docker-compose up -d db
+cp .env.example .env
 ```
 
-### 2. Run the backend
+Used by Docker Compose to configure the PostgreSQL container.
+
+### 2. Start the database
 
 ```bash
-cd backend/src
+docker compose up -d db
+```
+
+### 3. Configure the backend connection string (first time only)
+
+The API reads its DB connection string from the ASP.NET Core Secret Manager in Development (never from a committed file). Use the same values as `.env`:
+
+```bash
+cd backend/BateauEcole.Api
+dotnet user-secrets set "ConnectionStrings:Default" "Host=localhost;Port=5432;Database=bateau_ecole;Username=bateau_ecole;Password=<DB_PASSWORD from .env>"
+```
+
+### 4. Run the backend
+
+```bash
+cd backend/BateauEcole.Api
 dotnet ef database update
 dotnet run
 ```
 
-API runs at `http://localhost:5000`. Swagger at `http://localhost:5000/swagger`.
+API runs at `http://localhost:5258`. Swagger at `http://localhost:5258/swagger`.
 
-### 3. Run the frontend
+### 5. Run the frontend
 
 ```bash
 cd frontend
@@ -52,7 +69,7 @@ App runs at `http://localhost:4200`.
 ```
 /
 ├── backend/
-│   ├── src/              # ASP.NET Core Web API source
+│   ├── BateauEcole.Api/  # ASP.NET Core Web API (csproj, src/)
 │   └── CHANGELOG.md
 ├── frontend/
 │   ├── src/              # Angular app source

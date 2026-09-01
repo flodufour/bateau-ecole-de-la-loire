@@ -38,7 +38,7 @@ Three roles, applied with `[Authorize]` attributes on controllers and endpoints.
 
 ## Rate limiting
 
-Applied via .NET 8 built-in rate limiting middleware. No extra library needed.
+Applied via .NET's built-in rate limiting middleware. No extra library needed.
 
 | Endpoint | Limit | Why |
 |---|---|---|

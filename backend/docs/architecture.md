@@ -2,21 +2,19 @@
 
 ## Overview
 
-The backend is an **ASP.NET Core Web API** (.NET 8). It follows a layered architecture: each layer has one responsibility and only talks to the layer directly below it.
+The backend is an **ASP.NET Core Web API** (.NET 10). It follows a layered architecture: each layer has one responsibility and only talks to the layer directly below it.
 
 ```
 HTTP Request
     ↓
 Controller       → validates input, calls service, returns HTTP response
     ↓
-Service          → business logic (rules, orchestration)
-    ↓
-Repository       → data access (EF Core queries)
+Service          → business logic (rules, orchestration) + EF Core queries
     ↓
 PostgreSQL
 ```
 
-This separation keeps the code easy to test and change. If you swap PostgreSQL for another database one day, only the Repository layer changes.
+There is no separate Repository layer: EF Core's `DbContext`/`DbSet<T>` already implements the Repository and Unit-of-Work patterns, so Services query `AppDbContext` directly. An extra `IRepository` abstraction wouldn't protect against anything here — nothing is swapping EF Core for another ORM — it would just be boilerplate. Controllers stay thin regardless: all business logic and data access live in Services.
 
 ---
 
@@ -24,18 +22,18 @@ This separation keeps the code easy to test and change. If you swap PostgreSQL f
 
 ```
 backend/
-├── src/
-│   ├── Controllers/     # HTTP endpoints — thin, no business logic
-│   ├── Services/        # Business rules and orchestration
-│   ├── Repositories/    # EF Core queries, one per entity
-│   ├── Models/          # EF Core entities (map to DB tables)
-│   ├── DTOs/            # What the API receives and returns (never raw entities)
-│   └── Data/
-│       ├── AppDbContext.cs      # EF Core entry point
-│       └── Migrations/          # Auto-generated DB migrations
-├── docs/                # This documentation
-├── CHANGELOG.md
-└── BateauEcole.Api.csproj
+├── BateauEcole.Api/         # csproj + solution root (Visual Studio project folder)
+│   ├── src/
+│   │   ├── Controllers/     # HTTP endpoints — thin, no business logic
+│   │   ├── Services/        # Business rules, orchestration, and EF Core queries
+│   │   ├── Models/          # EF Core entities (map to DB tables)
+│   │   ├── DTOs/            # What the API receives and returns (never raw entities)
+│   │   └── Data/
+│   │       ├── AppDbContext.cs      # EF Core entry point
+│   │       └── Migrations/          # Auto-generated DB migrations
+│   └── BateauEcole.Api.csproj
+├── docs/                    # This documentation
+└── CHANGELOG.md
 ```
 
 ---

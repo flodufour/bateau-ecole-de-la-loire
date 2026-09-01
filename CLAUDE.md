@@ -33,7 +33,7 @@ The developer working on this project is learning while building. Every non-triv
 ### C# / ASP.NET Core
 - Use `var` when the type is obvious from the right-hand side.
 - Controllers are thin: validation + service call + return result. No business logic in controllers.
-- Services hold business logic. Repositories handle data access.
+- Services hold business logic and query the database directly via `AppDbContext` (EF Core's `DbContext`/`DbSet<T>` already implements the Repository/Unit-of-Work pattern — a separate `Repositories/` interface layer adds indirection without benefit at this project's scale). No dedicated Repository layer.
 - Use async/await throughout. Never block with `.Result` or `.Wait()`.
 - Return `IActionResult` typed results (`Ok()`, `NotFound()`, `BadRequest()`).
 - Use EF Core for all DB access. No raw SQL unless there is a proven performance reason.
@@ -59,13 +59,13 @@ The developer working on this project is learning while building. Every non-triv
 ```
 /
 ├── backend/          # ASP.NET Core Web API
-│   ├── src/
-│   │   ├── Controllers/
-│   │   ├── Services/
-│   │   ├── Repositories/
-│   │   ├── Models/       # EF Core entities
-│   │   ├── DTOs/
-│   │   └── Data/         # DbContext, migrations
+│   ├── BateauEcole.Api/    # csproj + solution root (Visual Studio project folder)
+│   │   └── src/
+│   │       ├── Controllers/
+│   │       ├── Services/   # business logic, queries AppDbContext directly
+│   │       ├── Models/     # EF Core entities
+│   │       ├── DTOs/
+│   │       └── Data/       # DbContext, migrations
 │   └── CHANGELOG.md
 ├── frontend/         # Angular app
 │   ├── src/
@@ -95,7 +95,7 @@ The developer working on this project is learning while building. Every non-triv
 - Default to deny: every endpoint is protected unless explicitly marked `[AllowAnonymous]`.
 
 ### API protection
-- **Rate limiting** — use .NET 8 built-in rate limiting middleware. Apply strict limits on `/auth/login` and `/contact` to prevent brute force and spam.
+- **Rate limiting** — use .NET's built-in rate limiting middleware. Apply strict limits on `/auth/login` and `/contact` to prevent brute force and spam.
 - **CORS** — whitelist only the frontend origin. Reject all other origins.
 - **HTTPS** — enforced by Caddy in production. In development, use `dotnet dev-certs`.
 - **Input validation** — validate all incoming DTOs with Data Annotations. Reject invalid requests at the controller boundary before they reach the service layer.
