@@ -83,6 +83,14 @@ Example checks:
 
 ---
 
+## Payment
+
+There is no real payment integration yet. `POST /api/purchases` marks a permit as bought (`PurchasedAt`) the instant it's called — no checkout, no card details, no payment provider. This is a deliberate stand-in so the rest of the flow (owning a permit, seeing it in "Mon espace", transferring it to someone else) can be built and tested now.
+
+When a real payment provider is added, the gate goes in `PermitPurchaseService.PurchaseAsync` — create the purchase in a pending state, redirect to the provider's checkout, and only stamp `PurchasedAt` from that provider's webhook/confirmation. Nothing about the DTO shape, the transfer logic, or the frontend display should need to change; only how a purchase gets created.
+
+---
+
 ## CORS
 
 Only the frontend's own origin is allowed (`Cors:FrontendOrigins` in `appsettings.json` — `https://localhost:4200` in dev, **not** `http://` — see `frontend/docs/security.md`'s "Dev server must run on HTTPS"), with `AllowCredentials()` so the browser will attach our cookies to cross-origin requests. Never `AllowAnyOrigin()` combined with `AllowCredentials()` — that combination would let any website ride a logged-in user's cookies to call the API as them. The frontend origin must be an exact match (scheme + host + port); update `Cors:FrontendOrigins` when the production frontend domain is known.

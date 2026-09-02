@@ -139,6 +139,7 @@ builder.Services.AddScoped<ExamDateService>();
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<ContactService>();
+builder.Services.AddScoped<PermitPurchaseService>();
 
 var app = builder.Build();
 

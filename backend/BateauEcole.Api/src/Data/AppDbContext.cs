@@ -15,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityUser
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
     public DbSet<AvailabilitySlot> AvailabilitySlots => Set<AvailabilitySlot>();
+    public DbSet<PermitPurchase> PermitPurchases => Set<PermitPurchase>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +100,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityUser
             .WithMany()
             .HasForeignKey(a => a.InstructorId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PermitPurchase>(entity =>
+        {
+            entity.HasOne(p => p.Permit)
+                .WithMany()
+                .HasForeignKey(p => p.PermitId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
     }
 
     private static Permit[] SeedPermits() =>

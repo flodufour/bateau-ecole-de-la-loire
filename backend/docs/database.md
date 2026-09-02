@@ -8,10 +8,12 @@ PostgreSQL via EF Core. All table and column names are `snake_case`.
 
 ```
 users ──────────── bookings ──────────── sessions
-                                             │
-instructors ─────────────────────────────────┘
-     │                                      │
-     └────────── availability_slots   permits ──┘
+  │                                          │
+  └──────────── permit_purchases   instructors
+                       │                 │
+                    permits ─────────────┘
+                       │                 │
+                       │        availability_slots
 
 exam_dates  (standalone, no foreign keys)
 contact_messages  (standalone, no foreign keys)
@@ -113,6 +115,18 @@ Links a student to a session.
 | `booked_at` | timestamptz | |
 
 A student can hold at most one non-`Cancelled` booking per session, and a session accepts bookings up to its `max_capacity` — both enforced in `BookingService`, not by a DB constraint.
+
+---
+
+### `permit_purchases`
+A user "owning" a permit formula — separate from `bookings`, which is about reserving a session slot. No payment provider exists yet, so a row here means "created", not necessarily "actually paid for" in the real-world sense — see `backend/docs/security.md`'s "Payment".
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `permit_id` | uuid | FK → `permits.id`, restrict delete |
+| `user_id` | uuid | FK → `users.id`, restrict delete — the *current* owner. Changes on transfer (`POST /purchases/{id}/transfer`), it isn't who originally paid |
+| `purchased_at` | timestamptz | Set once, at creation — never updated by a transfer |
 
 ---
 

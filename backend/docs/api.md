@@ -70,6 +70,18 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 
 ---
 
+## Purchases
+
+Buying a permit formula itself (not a session — see Bookings above). **No real payment yet**: a purchase is created already paid, there's no checkout or payment provider integration. See "Payment" in `backend/docs/security.md` for the plan to actually gate this later.
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/purchases` | Student | Buy a permit — immediately recorded as paid |
+| GET | `/purchases/me` | Student | List the current user's purchases |
+| POST | `/purchases/{id}/transfer` | Student | Transfer one of the caller's own purchases to another registered account by email — lets one person buy for another (the school's real "carte cadeau" use case). `400` if the target email has no account or is the caller's own; `404` if the purchase isn't the caller's |
+
+---
+
 ## Instructors
 
 | Method | Endpoint | Auth | Description |
