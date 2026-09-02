@@ -11,36 +11,13 @@
   margin-bottom: var(--space-4);
 }
 
-.permit-types__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
-}
-
-.permit-types__grid article {
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-}
-
-.permit-types__grid h3 {
-  margin: 0 0 var(--space-2);
-  font-size: 1rem;
-}
-
-.permit-types__grid p {
+.permit-types p {
   margin: 0 0 var(--space-3);
   font-size: 0.9rem;
   color: var(--color-ink-muted);
-}
-
-.permit-types__badges {
-  display: flex;
-  gap: var(--space-2);
+  max-width: 65ch;
 }
 
 .permit-types__how {
-  font-size: 0.9rem;
-  color: var(--color-ink-muted);
+  margin-top: var(--space-4);
 }
