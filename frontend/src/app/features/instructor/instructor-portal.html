@@ -3,7 +3,38 @@
   <p>Vos séances à venir et vos créneaux de disponibilité.</p>
 </section>
 
-@if (loaded()) {
+@if (loaded() && needsProfile()) {
+  <section class="container instructor-portal__body">
+    <h2>Créer mon profil moniteur</h2>
+    <p>Vous gérez le back-office et donnez aussi des cours ? Créez votre profil moniteur pour être assignable à des séances et gérer vos disponibilités.</p>
+
+    <form [formGroup]="profileForm" (ngSubmit)="createProfile()" novalidate class="admin-form">
+      <label class="field">
+        <span>Présentation</span>
+        <input type="text" formControlName="bio" />
+      </label>
+
+      <label class="field">
+        <span>Spécialités (séparées par des virgules)</span>
+        <input type="text" formControlName="specialties" placeholder="cotier, hauturier…" />
+      </label>
+
+      <div class="admin-form__actions">
+        <button type="submit" class="submit-button" [disabled]="creatingProfile()">Créer mon profil</button>
+      </div>
+    </form>
+
+    @if (profileErrors().length) {
+      <ul class="form-errors">
+        @for (error of profileErrors(); track error) {
+          <li>{{ error }}</li>
+        }
+      </ul>
+    }
+  </section>
+}
+
+@if (loaded() && !needsProfile()) {
   <section class="container instructor-portal__body">
     <h2>Mes séances à venir</h2>
 

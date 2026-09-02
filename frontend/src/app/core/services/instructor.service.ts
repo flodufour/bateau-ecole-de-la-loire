@@ -19,6 +19,14 @@ export interface CreateAvailabilitySlotRequest {
   endsAt: string; // ISO 8601
 }
 
+// For an Admin linking an instructor profile to their own account (they
+// already have one, unlike CreateInstructorRequest which onboards someone
+// new) — see backend/docs/api.md for why this exists.
+export interface CreateMyInstructorProfileRequest {
+  bio: string;
+  specialties: string[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class InstructorService {
   private readonly http = inject(HttpClient);
@@ -30,6 +38,10 @@ export class InstructorService {
 
   getMe(): Observable<Instructor> {
     return this.http.get<Instructor>(`${this.baseUrl}/me`);
+  }
+
+  createMyProfile(request: CreateMyInstructorProfileRequest): Observable<Instructor> {
+    return this.http.post<Instructor>(`${this.baseUrl}/me`, request);
   }
 
   getById(id: string): Observable<Instructor> {

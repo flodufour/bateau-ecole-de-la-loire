@@ -54,6 +54,19 @@ describe('InstructorService', () => {
     expect(result).toEqual(instructor);
   });
 
+  it('createMyProfile posts the profile request to /instructors/me', () => {
+    const request = { bio: 'Moniteur et gérant', specialties: ['cotier'] };
+    let result: Instructor | undefined;
+    service.createMyProfile(request).subscribe((i) => (result = i));
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/instructors/me`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(request);
+    req.flush(instructor);
+
+    expect(result).toEqual(instructor);
+  });
+
   it('getById fetches a single instructor', () => {
     let result: Instructor | undefined;
     service.getById(instructor.id).subscribe((i) => (result = i));

@@ -53,10 +53,22 @@ describe('Header', () => {
     expect(text).toContain('Se déconnecter');
   });
 
-  it('shows the "Espace moniteur" link only for an Instructor', () => {
+  it('shows the "Espace moniteur" link for an Instructor', () => {
     const instructor: User = { ...user, role: 'Instructor' };
     auth.login({ email: instructor.email, password: 'Password123!' }).subscribe();
     httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush(instructor);
+
+    const fixture = TestBed.createComponent(Header);
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('Espace moniteur');
+  });
+
+  it('shows the "Espace moniteur" link for an Admin too — they may also teach', () => {
+    const admin: User = { ...user, role: 'Admin' };
+    auth.login({ email: admin.email, password: 'Password123!' }).subscribe();
+    httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush(admin);
 
     const fixture = TestBed.createComponent(Header);
     fixture.detectChanges();

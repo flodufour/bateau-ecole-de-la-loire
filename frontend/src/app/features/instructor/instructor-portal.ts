@@ -1,4 +1,5 @@
 import { DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AvailabilitySlot } from '../../core/models/availability-slot.model';
@@ -27,19 +28,50 @@ export class InstructorPortal {
   protected readonly errors = signal<string[]>([]);
   protected readonly submitting = signal(false);
 
+  // Only reachable by an Admin: an Instructor-role account always already
+  // has a profile (POST /instructors creates both atomically), so a 404
+  // here means an Admin who also teaches hasn't linked their own yet.
+  protected readonly needsProfile = signal(false);
+  protected readonly creatingProfile = signal(false);
+  protected readonly profileErrors = signal<string[]>([]);
+
   protected readonly form = this.fb.nonNullable.group({
     startsAt: ['', Validators.required],
     endsAt: ['', Validators.required],
   });
 
+  protected readonly profileForm = this.fb.nonNullable.group({
+    bio: ['', Validators.required],
+    specialties: [''],
+  });
+
   constructor() {
-    this.instructorService.getMe().subscribe({
-      next: (instructor) => {
-        this.instructorId = instructor.id;
-        this.loadSessions();
-        this.loadAvailability();
+    this.loadProfile();
+  }
+
+  protected createProfile(): void {
+    if (this.profileForm.invalid || this.creatingProfile()) {
+      this.profileForm.markAllAsTouched();
+      return;
+    }
+
+    this.profileErrors.set([]);
+    this.creatingProfile.set(true);
+    const raw = this.profileForm.getRawValue();
+    const specialties = raw.specialties
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    this.instructorService.createMyProfile({ bio: raw.bio, specialties }).subscribe({
+      next: () => {
+        this.creatingProfile.set(false);
+        this.loadProfile();
       },
-      error: () => this.loaded.set(true),
+      error: (error: unknown) => {
+        this.creatingProfile.set(false);
+        this.profileErrors.set(extractApiErrors(error));
+      },
     });
   }
 
@@ -78,6 +110,21 @@ export class InstructorPortal {
     this.instructorService.deleteAvailability(this.instructorId, slot.id).subscribe({
       next: () => this.loadAvailability(),
       error: (error: unknown) => this.errors.set(extractApiErrors(error)),
+    });
+  }
+
+  private loadProfile(): void {
+    this.instructorService.getMe().subscribe({
+      next: (instructor) => {
+        this.instructorId = instructor.id;
+        this.needsProfile.set(false);
+        this.loadSessions();
+        this.loadAvailability();
+      },
+      error: (error: unknown) => {
+        this.needsProfile.set(error instanceof HttpErrorResponse && error.status === 404);
+        this.loaded.set(true);
+      },
     });
   }
 

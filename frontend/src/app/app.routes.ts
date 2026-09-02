@@ -47,7 +47,7 @@ export const routes: Routes = [
   },
   {
     path: 'instructeur',
-    canActivate: [roleGuard('Instructor')],
+    canActivate: [roleGuard(['Instructor', 'Admin'])],
     loadComponent: () =>
       import('./features/instructor/instructor-portal').then((m) => m.InstructorPortal),
   },

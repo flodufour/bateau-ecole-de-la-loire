@@ -109,6 +109,44 @@ describe('InstructorPortal', () => {
     expect(element.textContent).toContain('Aucun créneau de disponibilité');
   });
 
+  it('shows a "create my profile" form when the caller has none yet (an Admin who also teaches)', () => {
+    fixture = TestBed.createComponent(InstructorPortal);
+    element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    httpMock
+      .expectOne(`${environment.apiUrl}/instructors/me`)
+      .flush(null, { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Créer mon profil moniteur');
+  });
+
+  it('creates the profile and then loads sessions and availability', () => {
+    fixture = TestBed.createComponent(InstructorPortal);
+    element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    httpMock
+      .expectOne(`${environment.apiUrl}/instructors/me`)
+      .flush(null, { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+
+    setInput('input[formcontrolname="bio"]', 'Moniteur et gérant');
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+
+    const createReq = httpMock.expectOne(`${environment.apiUrl}/instructors/me`);
+    expect(createReq.request.method).toBe('POST');
+    createReq.flush(instructor);
+
+    httpMock.expectOne(`${environment.apiUrl}/instructors/me`).flush(instructor);
+    httpMock.expectOne((r) => r.url === `${environment.apiUrl}/sessions`).flush([]);
+    httpMock.expectOne(`${environment.apiUrl}/instructors/${instructor.id}/availability`).flush([]);
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Mes séances à venir');
+  });
+
   function setInput(selector: string, value: string): void {
     const input = element.querySelector<HTMLInputElement>(selector)!;
     input.value = value;

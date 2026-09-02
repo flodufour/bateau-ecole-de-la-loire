@@ -58,4 +58,15 @@ describe('roleGuard', () => {
 
     expect(router.serializeUrl(result as UrlTree)).toBe('/connexion');
   });
+
+  it('allows navigation when the user has any of several allowed roles', () => {
+    auth.login({ email: admin.email, password: 'Password123!' }).subscribe();
+    httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush(admin);
+
+    const result = TestBed.runInInjectionContext(() =>
+      roleGuard(['Instructor', 'Admin'])({} as never, {} as never),
+    );
+
+    expect(result).toBeTrue();
+  });
 });
