@@ -21,10 +21,15 @@ export class Contact {
   private readonly contactService = inject(ContactService);
   private readonly sanitizer = inject(DomSanitizer);
 
+  // adapt_container_width is only meaningful for the JS-SDK (fb-page div)
+  // embed method, which resizes the resulting iframe itself. Here we embed
+  // plugins/page.php directly as a plain iframe with a fixed width/height —
+  // leaving that param on made Facebook render content wider than the fixed
+  // 340px box, clipping text. Without it, the plugin renders correctly at
+  // exactly the width asked for.
   protected readonly facebookUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
     `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(FACEBOOK_PAGE_URL)}` +
-      '&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true' +
-      '&hide_cover=false&show_facepile=true',
+      '&tabs=timeline&width=340&height=500&small_header=true&hide_cover=false&show_facepile=false',
   );
 
   protected readonly form = this.fb.nonNullable.group({

@@ -20,7 +20,22 @@
   border-radius: var(--radius-lg);
 }
 
+.contact__facebook-heading {
+  margin: var(--space-8) 0 var(--space-3);
+  font-size: 1rem;
+}
+
+.contact__facebook-card {
+  display: inline-block;
+  max-width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
 .contact__facebook {
+  display: block;
   max-width: 100%;
 }
 
