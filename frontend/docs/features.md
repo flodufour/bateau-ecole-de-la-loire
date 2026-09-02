@@ -10,12 +10,12 @@ Landing page for the school. Entirely static content (no API calls) — real inf
 
 - A full-bleed hero (`public/images/quai-nantes.jpg`, a real photo of the Loire waterfront in Nantes) with a tagline and two CTAs (`/formations`, `/reserver`), faded into the navy palette via a gradient overlay.
 - A photo of the actual training boat (`public/images/ecole-conviviale.jpg`) with a short blurb — boat model, departure point.
-- A short "who we are" paragraph — the verified facts the school's own site states (monitor is a merchant navy captain, flexible evening/weekend scheduling), not an invented founding story: the source site has no history/founding-date content to draw from.
+- A short "who we are" paragraph — the verified facts the school's own site states (monitor is a merchant navy captain, flexible evening/weekend scheduling), not an invented founding story: the source site has no history/founding-date content to draw from — next to it, the school's real Google rating and 3 testimonials (see below).
 - An embedded Google Map of the school's address, via the no-API-key `maps.google.com/maps?q=...&output=embed` iframe (no Maps API key exists in this project). The URL is a hardcoded constant, not user input, so `DomSanitizer.bypassSecurityTrustResourceUrl` is safe to use here — Angular sanitizes `iframe[src]` bindings by default.
 - A pre-footer CTA band reusing `ecole-conviviale.jpg` (same real photo as above, cropped tight on the moniteur instead of the whole boat) fading into the footer's navy.
 - Every section below the hero fades/slides into view the first time it scrolls into the viewport (`ScrollRevealDirective`, `shared/directives/scroll-reveal.directive.ts` — IntersectionObserver-backed, reveals once and stays visible). The hero itself is excluded since it's already visible on load.
 
-Not built yet: testimonials.
+Testimonials: 3 reviews (author + text) hardcoded in `Home`, copied verbatim from the school's real Google Maps listing (checked 2026-09-02: 5,0/5, 148 avis) — not invented. There's no Google Places API integration (would need an API key/billing this project doesn't have), so the rating/count are static values, not live-fetched; the "avis Google" link goes to the real listing so a visitor can verify and see the rest. Update by hand if the rating/reviews are worth refreshing later.
 
 API: none
 

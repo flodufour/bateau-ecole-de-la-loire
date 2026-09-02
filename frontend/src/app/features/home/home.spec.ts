@@ -39,4 +39,18 @@ describe('Home', () => {
     // visible on load and shouldn't start hidden.
     expect(revealed.length).toBe(4);
   });
+
+  it('shows the Google rating and links to the real Maps listing', () => {
+    const link = element.querySelector('.testimonials__header') as HTMLAnchorElement;
+    expect(link.textContent).toContain('5,0');
+    expect(link.textContent).toContain('148 avis Google');
+    expect(link.getAttribute('href')).toContain('google.com/maps/search');
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener');
+  });
+
+  it('shows real customer testimonials', () => {
+    const authors = Array.from(element.querySelectorAll('.testimonial footer')).map((el) => el.textContent);
+    expect(authors).toEqual(['Matthieu Paquito', 'Eloi R-A', 'Tom Boisard']);
+  });
 });
