@@ -71,11 +71,12 @@ API: `GET /api/sessions`, `POST /api/bookings`, `GET /api/permits` (to populate 
 
 Personal space for logged-in students. Requires login (`authGuard`).
 
+- **Mes informations** — nom, prénom, email, and role (translated: Étudiant/Moniteur/Administrateur), read from `AuthService.currentUser` — no API call of its own, this is the same profile already fetched at app startup (`GET /auth/me`) and after login/register.
 - Lists the caller's bookings (`GET /bookings/me` — the backend already scopes this to the authenticated user, no client-side filtering needed) with a `BookingStatusBadge` each.
 - "Annuler" is hidden once a booking is already `Cancelled`; cancelling updates that one booking's status in place (no full refetch) for a snappier UI.
 - Empty state links to `/reserver`.
 
-Not built yet: booking history as a separate view (cancelled bookings just stay in the same list, badge shows the state), account info section (name/email — already visible in the header when logged in).
+Not built yet: booking history as a separate view (cancelled bookings just stay in the same list, badge shows the state); editing name/email/password from this page (read-only today).
 
 API: `GET /api/bookings/me`, `DELETE /api/bookings/{id}`
 

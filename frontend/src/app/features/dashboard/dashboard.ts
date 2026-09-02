@@ -2,8 +2,16 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Booking } from '../../core/models/booking.model';
+import { UserRole } from '../../core/models/user.model';
+import { AuthService } from '../../core/services/auth.service';
 import { BookingService } from '../../core/services/booking.service';
 import { BookingStatusBadge } from '../../shared/components/booking-status-badge/booking-status-badge';
+
+const ROLE_LABELS: Record<UserRole, string> = {
+  Student: 'Étudiant',
+  Instructor: 'Moniteur',
+  Admin: 'Administrateur',
+};
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +21,11 @@ import { BookingStatusBadge } from '../../shared/components/booking-status-badge
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard {
+  private readonly auth = inject(AuthService);
   private readonly bookingService = inject(BookingService);
+
+  // authGuard already guarantees a session on this route.
+  protected readonly currentUser = this.auth.currentUser;
 
   protected readonly bookings = signal<Booking[]>([]);
   protected readonly loaded = signal(false);
@@ -21,6 +33,10 @@ export class Dashboard {
 
   constructor() {
     this.load();
+  }
+
+  protected roleLabel(role: UserRole): string {
+    return ROLE_LABELS[role];
   }
 
   protected cancel(id: string): void {

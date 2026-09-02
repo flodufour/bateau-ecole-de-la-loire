@@ -3,6 +3,16 @@
   <p>Vos réservations de séances.</p>
 </section>
 
+@if (currentUser(); as user) {
+  <section class="container dashboard__info">
+    <h2>Mes informations</h2>
+    <p>Nom : {{ user.lastName }}</p>
+    <p>Prénom : {{ user.firstName }}</p>
+    <p>Email : {{ user.email }}</p>
+    <p>Statut : {{ roleLabel(user.role) }}</p>
+  </section>
+}
+
 <section class="container dashboard__body">
   @if (loaded()) {
     @if (bookings().length === 0) {

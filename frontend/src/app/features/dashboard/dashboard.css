@@ -1,3 +1,17 @@
+.dashboard__info {
+  padding-block: var(--space-4) var(--space-8);
+}
+
+.dashboard__info h2 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-4);
+}
+
+.dashboard__info p {
+  margin: 0 0 var(--space-2);
+  color: var(--color-ink-muted);
+}
+
 .dashboard__body {
   padding-bottom: var(--space-16);
 }

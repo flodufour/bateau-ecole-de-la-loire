@@ -22,3 +22,4 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-02 18:30 — [feat] Build the real home page: boat photo, "who we are" blurb, and an embedded Google Map, using facts and assets pulled from the school's live site — with tests (122 specs total)
 2026-09-02 19:00 — [feat] Let an Admin also use the instructor portal (/instructeur now allows Instructor or Admin): a "Créer mon profil moniteur" form appears when the caller has no profile yet — with tests (127 specs total)
 2026-09-02 19:30 — [feat] Replace the flat "Mes séances à venir" list in the instructor portal with a Monday–Sunday week calendar, navigable by week — with tests (129 specs total)
+2026-09-02 20:00 — [feat] Add a "Mes informations" section (name, email, role) to the student dashboard, reusing the already-loaded AuthService profile — with tests (130 specs total)
