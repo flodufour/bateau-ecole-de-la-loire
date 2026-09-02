@@ -34,9 +34,17 @@ describe('Home', () => {
 
   it('fades in the below-the-fold sections as they scroll into view', () => {
     const revealed = element.querySelectorAll('.scroll-reveal');
-    // "Notre bateau", "Une école à taille humaine", "Nous trouver", and the
-    // pre-footer CTA band — everything except the hero, which is already
-    // visible on load and shouldn't start hidden.
-    expect(revealed.length).toBe(4);
+    // "Notre bateau", "Une école à taille humaine", "Candidat libre",
+    // "Nous trouver", and the pre-footer CTA band — everything except the
+    // hero, which is already visible on load and shouldn't start hidden.
+    expect(revealed.length).toBe(5);
+  });
+
+  it('mentions the candidat-libre option and links to contact', () => {
+    expect(element.textContent).toContain('candidat libre');
+    const link = Array.from(element.querySelectorAll('.home-section a')).find(
+      (a) => a.getAttribute('routerLink') === '/contact',
+    );
+    expect(link).toBeTruthy();
   });
 });
