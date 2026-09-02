@@ -26,11 +26,11 @@
   --space-16: 4rem;
   --space-24: 6rem;
 
-  --radius-md: 10px;
-  --radius-lg: 16px;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  /* Deliberately tight — square corners over the rounded-pill/big-radius look
+     most generated UIs default to. */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
 
   --transition-fast: 150ms ease;
   --max-content-width: 1080px;
@@ -198,7 +198,6 @@ button {
   padding: var(--space-8);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
 }
 
 .auth-card h1 {
@@ -212,16 +211,19 @@ button {
   text-align: center;
 }
 
-/* Badges — used on permit/session/booking cards. */
+/* Badges — used on permit/session/booking cards. Square-cornered tags, not
+   pills — pills read as generic "SaaS starter kit"; a tight radius reads as
+   deliberate. */
 .badge {
   display: inline-flex;
   align-items: center;
   padding: var(--space-1) var(--space-3);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--color-paper-tint);
   color: var(--color-ink-muted);
   font-size: 0.75rem;
   font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .badge--accent {

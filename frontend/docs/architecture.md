@@ -104,6 +104,7 @@ Design tokens (colors, spacing scale, radii, font stack) are CSS custom properti
 
 - **System font stack** (`-apple-system, BlinkMacSystemFont, "Segoe UI", …`), not a webfont. Renders as San Francisco on macOS, Segoe UI on Windows — matching what a real native-feeling site does, rather than the "Inter everywhere" look of most AI-generated pages.
 - **Generic form primitives** (`.field`, `.form-errors`, `.submit-button`, `.auth-card`) live in the global stylesheet because they're reused across every form (auth today; booking/contact later), not duplicated per component.
+- **Square over rounded, borders over shadows**: `--radius-*` tokens are deliberately tight (2–4px) and no component uses `box-shadow` — flat borders read as more deliberate/editorial than the soft-shadow, big-radius, pill-button look most generated UIs default to. The one exception is `Header`, which is `background: transparent` at the top of the page and only gains `var(--color-paper)` + a border once scrolled (`.header--scrolled`, toggled by a `window:scroll` listener) — a subtler cue than an always-on translucent/blurred bar.
 
 ---
 
