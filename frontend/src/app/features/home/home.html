@@ -1,4 +1,43 @@
 <section class="hero container">
   <h1>Apprenez à naviguer sur la Loire</h1>
   <p>Permis côtier, hauturier et fluvial. Cours théoriques et pratiques avec nos moniteurs.</p>
+  <div class="hero__actions">
+    <a class="hero__button hero__button--primary" routerLink="/formations">Voir les formations</a>
+    <a class="hero__button" routerLink="/reserver">Réserver une séance</a>
+  </div>
+</section>
+
+<section class="container home-section home-section--split">
+  <img
+    class="home-section__image"
+    src="/images/ecole-conviviale.jpg"
+    alt="Le bateau-école sur la Loire, à Nantes"
+  />
+  <div>
+    <h2>Notre bateau</h2>
+    <p>
+      Les cours pratiques se déroulent sur la Loire, au pied des Machines de l'île à Nantes, à bord de notre
+      Jeanneau Merry Fisher 695 (150 CV).
+    </p>
+  </div>
+</section>
+
+<section class="container home-section">
+  <h2>Une école à taille humaine</h2>
+  <p>
+    Une formation conviviale qui s'adapte à vos disponibilités (cours en salle le soir ou le week-end), assurée
+    par un moniteur agréé, capitaine de la marine marchande — disponible pour vous conseiller même après
+    l'obtention de votre permis.
+  </p>
+</section>
+
+<section class="container home-section">
+  <h2>Nous trouver</h2>
+  <p>58 boulevard de l'égalité, 44100 Nantes — ouvert du lundi au samedi de 10h à 20h, sur rendez-vous.</p>
+  <iframe
+    class="home-section__map"
+    [src]="mapUrl"
+    title="Localisation de Bateau École de la Loire"
+    loading="lazy"
+  ></iframe>
 </section>

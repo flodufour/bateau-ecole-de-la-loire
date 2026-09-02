@@ -6,16 +6,16 @@ Each feature is a lazy-loaded route group. This file describes what each feature
 
 ## Home (`/`)
 
-Currently a minimal placeholder (hero heading + tagline). The full version below is planned but not built yet.
+Landing page for the school. Entirely static content (no API calls) — real info gathered from the school's live site, not placeholder text.
 
-Landing page for the school.
+- Hero with a tagline and two CTAs (`/formations`, `/reserver`).
+- A photo of the actual training boat (`public/images/ecole-conviviale.jpg`) with a short blurb — boat model, departure point.
+- A short "who we are" paragraph — the verified facts the school's own site states (monitor is a merchant navy captain, flexible evening/weekend scheduling), not an invented founding story: the source site has no history/founding-date content to draw from.
+- An embedded Google Map of the school's address, via the no-API-key `maps.google.com/maps?q=...&output=embed` iframe (no Maps API key exists in this project). The URL is a hardcoded constant, not user input, so `DomSanitizer.bypassSecurityTrustResourceUrl` is safe to use here — Angular sanitizes `iframe[src]` bindings by default.
 
-- Hero section with a call-to-action
-- Quick overview of the permit types offered
-- Testimonials or key selling points
-- Link to the permits catalog and the booking flow
+Not built yet: testimonials.
 
-API: none (static content, or optionally fetches featured permits from `/api/permits`)
+API: none
 
 ---
 
