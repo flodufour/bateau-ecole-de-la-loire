@@ -31,11 +31,31 @@
     </p>
   </div>
 
-  <img
-    class="permit-types__photo"
-    src="/images/voilier-hauturier.webp"
-    alt="Voilier hauturier au large des côtes"
-  />
+  <svg
+    class="permit-types__wheel"
+    viewBox="0 0 200 200"
+    aria-hidden="true"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    @for (angle of wheelHandleAngles; track angle) {
+      <g [attr.transform]="'rotate(' + angle + ' 100 100)'">
+        <line x1="100" y1="80" x2="100" y2="18" stroke="var(--color-navy)" stroke-width="7" stroke-linecap="round" />
+        <line
+          x1="86"
+          y1="14"
+          x2="114"
+          y2="14"
+          stroke="var(--color-accent)"
+          stroke-width="9"
+          stroke-linecap="round"
+        />
+      </g>
+    }
+    <circle cx="100" cy="100" r="66" stroke="var(--color-navy)" stroke-width="10" />
+    <circle cx="100" cy="100" r="20" fill="var(--color-navy)" />
+    <circle cx="100" cy="100" r="9" fill="var(--color-accent)" />
+  </svg>
 </section>
 
 <section class="container">
