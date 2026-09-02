@@ -8,3 +8,4 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 ## [0.1.0] — 2026-08-29
 
 2026-08-29 22:00 — [chore] Initial project setup — Angular app scaffolded with standalone components and routing
+2026-09-02 00:00 — [chore] Scaffold the Angular 20 workspace for real (ng new, standalone, routing, no SSR, plain CSS)
