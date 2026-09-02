@@ -83,14 +83,14 @@ API: `GET /api/bookings/me`, `DELETE /api/bookings/{id}`
 
 ## Instructor portal (`/instructeur`)
 
-Not built. Blocked on the backend: `PUT /api/instructors/{id}/availability` doesn't exist yet (no availability concept in the DB at all today — `instructors` has no schedule table). Frontend-only work here would just be a page with nothing real to call.
+Only accessible to users with the `Instructor` role, enforced by `roleGuard('Instructor')`. `InstructorPortal` first calls `GET /api/instructors/me` to learn its own instructor id (the JWT only carries the user id), then loads both sections in parallel.
 
-Only accessible to users with the `instructor` role.
+- **Mes séances à venir** — read-only list, `GET /api/sessions?instructorId={id}` (the same public endpoint the booking page uses, just filtered). No cards/actions, just what's assigned.
+- **Mes disponibilités** — availability is modelled as explicit dated slots (start/end datetime), not a recurring weekly pattern. A form (two `datetime-local` inputs) adds a slot; a table below lists upcoming slots with a "Supprimer" action. Backend validation errors (end before start, a slot in the past, an overlap with an existing slot) are surfaced inline via `extractApiErrors`, same pattern as every other admin-style form.
 
-- View assigned upcoming sessions
-- Set availability (calendar picker)
+Not built yet: a calendar-style picker (the form is two plain datetime inputs); admins don't see or use this availability when creating sessions yet — it's informational only for now.
 
-API: `GET /api/sessions`, `PUT /api/instructors/{id}/availability` (not built)
+API: `GET /api/instructors/me`, `GET /api/sessions?instructorId=`, `GET/POST /api/instructors/{id}/availability`, `DELETE /api/instructors/{id}/availability/{slotId}`
 
 ---
 

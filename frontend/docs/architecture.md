@@ -24,7 +24,7 @@ frontend/src/app/
 │   ├── catalog/           # permit listing and detail pages
 │   ├── booking/           # session browser and booking flow
 │   ├── dashboard/         # student personal space (list/cancel own bookings)
-│   ├── instructor/        # not built yet — instructor availability management
+│   ├── instructor/        # instructor portal: assigned sessions + availability slots
 │   └── admin/             # back-office: permits, sessions, exam dates, instructors, bookings, messages
 │
 └── shared/                # Reusable across features
@@ -72,6 +72,7 @@ Top-level routes are defined in `app.routes.ts`. Each feature is a lazy-loaded c
 /mon-espace                    → Dashboard (lazy, authGuard)
 /admin                         → Admin layout (lazy, roleGuard('Admin')), with child routes
                                   /admin/permis, /seances, /dates-examen, /moniteurs, /reservations, /messages
+/instructeur                   → Instructor portal (lazy, roleGuard('Instructor'))
 ```
 
 ---

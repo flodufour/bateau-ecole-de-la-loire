@@ -54,6 +54,14 @@ describe('SessionService', () => {
     req.flush([]);
   });
 
+  it('getUpcoming forwards instructorId as a query param', () => {
+    service.getUpcoming({ instructorId: 'i1' }).subscribe();
+
+    const req = httpMock.expectOne((r) => r.url === `${environment.apiUrl}/sessions`);
+    expect(req.request.params.get('instructorId')).toBe('i1');
+    req.flush([]);
+  });
+
   it('getById fetches a single session', () => {
     let result: Session | undefined;
     service.getById(session.id).subscribe((s) => (result = s));

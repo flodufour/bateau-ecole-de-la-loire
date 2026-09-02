@@ -46,6 +46,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
   },
   {
+    path: 'instructeur',
+    canActivate: [roleGuard('Instructor')],
+    loadComponent: () =>
+      import('./features/instructor/instructor-portal').then((m) => m.InstructorPortal),
+  },
+  {
     path: 'admin',
     canActivate: [roleGuard('Admin')],
     loadComponent: () => import('./features/admin/admin-layout/admin-layout').then((m) => m.AdminLayout),

@@ -52,4 +52,27 @@ describe('Header', () => {
     expect(text).toContain('Jean');
     expect(text).toContain('Se déconnecter');
   });
+
+  it('shows the "Espace moniteur" link only for an Instructor', () => {
+    const instructor: User = { ...user, role: 'Instructor' };
+    auth.login({ email: instructor.email, password: 'Password123!' }).subscribe();
+    httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush(instructor);
+
+    const fixture = TestBed.createComponent(Header);
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('Espace moniteur');
+  });
+
+  it('does not show the "Espace moniteur" link for a Student', () => {
+    auth.login({ email: user.email, password: 'Password123!' }).subscribe();
+    httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush(user);
+
+    const fixture = TestBed.createComponent(Header);
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).not.toContain('Espace moniteur');
+  });
 });

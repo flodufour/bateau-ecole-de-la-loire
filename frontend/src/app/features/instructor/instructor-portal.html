@@ -1,0 +1,80 @@
+<section class="page-header container">
+  <h1>Espace moniteur</h1>
+  <p>Vos séances à venir et vos créneaux de disponibilité.</p>
+</section>
+
+@if (loaded()) {
+  <section class="container instructor-portal__body">
+    <h2>Mes séances à venir</h2>
+
+    @if (sessions().length === 0) {
+      <p class="empty-state">Aucune séance à venir ne vous est assignée.</p>
+    } @else {
+      <ul class="instructor-portal__list">
+        @for (session of sessions(); track session.id) {
+          <li class="instructor-portal__item">
+            <div>
+              <h3>{{ session.permitName }} — {{ session.type === 'Theory' ? 'Théorie' : 'Pratique' }}</h3>
+              <p class="instructor-portal__meta">
+                {{ session.startsAt | date: 'EEEE d MMMM à HH:mm' }} · {{ session.location }}
+              </p>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="container instructor-portal__body">
+    <h2>Mes disponibilités</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="admin-form">
+      <label class="field">
+        <span>Début</span>
+        <input type="datetime-local" formControlName="startsAt" />
+      </label>
+
+      <label class="field">
+        <span>Fin</span>
+        <input type="datetime-local" formControlName="endsAt" />
+      </label>
+
+      <div class="admin-form__actions">
+        <button type="submit" class="submit-button" [disabled]="submitting()">Ajouter</button>
+      </div>
+    </form>
+
+    @if (errors().length) {
+      <ul class="form-errors">
+        @for (error of errors(); track error) {
+          <li>{{ error }}</li>
+        }
+      </ul>
+    }
+
+    @if (availability().length === 0) {
+      <p class="empty-state">Aucun créneau de disponibilité à venir.</p>
+    } @else {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Début</th>
+            <th>Fin</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (slot of availability(); track slot.id) {
+            <tr>
+              <td>{{ slot.startsAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ slot.endsAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="admin-table__actions">
+                <button type="button" class="link-button" (click)="deleteSlot(slot)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+}

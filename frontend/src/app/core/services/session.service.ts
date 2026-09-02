@@ -8,6 +8,7 @@ export interface SessionFilters {
   type?: SessionType;
   permitId?: string;
   date?: string; // yyyy-MM-dd
+  instructorId?: string;
 }
 
 export interface SessionInput {
@@ -30,6 +31,7 @@ export class SessionService {
     if (filters.type) params = params.set('type', filters.type);
     if (filters.permitId) params = params.set('permitId', filters.permitId);
     if (filters.date) params = params.set('date', filters.date);
+    if (filters.instructorId) params = params.set('instructorId', filters.instructorId);
 
     return this.http.get<Session[]>(this.baseUrl, { params });
   }

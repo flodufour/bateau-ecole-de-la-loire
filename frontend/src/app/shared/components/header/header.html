@@ -8,6 +8,9 @@
       @if (currentUser(); as user) {
         <a routerLink="/reserver" routerLinkActive="header__nav-link--active">Réserver</a>
         <a routerLink="/mon-espace" routerLinkActive="header__nav-link--active">Mon espace</a>
+        @if (user.role === 'Instructor') {
+          <a routerLink="/instructeur" routerLinkActive="header__nav-link--active">Espace moniteur</a>
+        }
         @if (user.role === 'Admin') {
           <a routerLink="/admin" routerLinkActive="header__nav-link--active">Admin</a>
         }
