@@ -14,14 +14,9 @@ public class UsersTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixture>
         var targetClient = fixture.CreateAuthClient();
         var targetEmail = ApiTestFixtureExtensions.UniqueEmail("target");
         await targetClient.RegisterAsync(targetEmail, "Password123!");
-
         var targetId = await GetUserIdAsync(targetEmail);
 
-        var adminClient = fixture.CreateAuthClient();
-        var adminEmail = ApiTestFixtureExtensions.UniqueEmail("admin");
-        await adminClient.RegisterAsync(adminEmail, "Password123!");
-        await fixture.PromoteToAdminAsync(adminEmail);
-        await adminClient.LoginAsync(adminEmail, "Password123!"); // fresh JWT carrying the Admin role
+        var adminClient = await fixture.CreateAdminClientAsync();
 
         var deleteResponse = await adminClient.DeleteAsync($"/api/users/{targetId}");
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
@@ -38,7 +33,6 @@ public class UsersTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixture>
         var studentClient = fixture.CreateAuthClient();
         var studentEmail = ApiTestFixtureExtensions.UniqueEmail("student");
         await studentClient.RegisterAsync(studentEmail, "Password123!");
-        await studentClient.LoginAsync(studentEmail, "Password123!");
 
         var response = await studentClient.DeleteAsync($"/api/users/{Guid.NewGuid()}");
 
@@ -58,11 +52,7 @@ public class UsersTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixture>
     [Fact]
     public async Task Deactivate_UnknownId_ReturnsNotFound()
     {
-        var adminClient = fixture.CreateAuthClient();
-        var adminEmail = ApiTestFixtureExtensions.UniqueEmail("admin-404");
-        await adminClient.RegisterAsync(adminEmail, "Password123!");
-        await fixture.PromoteToAdminAsync(adminEmail);
-        await adminClient.LoginAsync(adminEmail, "Password123!");
+        var adminClient = await fixture.CreateAdminClientAsync();
 
         var response = await adminClient.DeleteAsync($"/api/users/{Guid.NewGuid()}");
 

@@ -40,7 +40,7 @@ Auth works via `httpOnly` cookies, not an `Authorization` header — the browser
 | GET | `/permits/{id}` | No | Get a single permit with details and pricing |
 | POST | `/permits` | Admin | Create a permit |
 | PUT | `/permits/{id}` | Admin | Update a permit |
-| DELETE | `/permits/{id}` | Admin | Delete a permit |
+| DELETE | `/permits/{id}` | Admin | Delete a permit — rejected with `400` if any session still references it |
 
 ---
 
@@ -52,9 +52,9 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 |---|---|---|---|
 | GET | `/sessions` | No | List upcoming sessions (filterable by type, permit, date) |
 | GET | `/sessions/{id}` | No | Get session details |
-| POST | `/sessions` | Admin | Create a session |
-| PUT | `/sessions/{id}` | Admin | Update a session |
-| DELETE | `/sessions/{id}` | Admin | Delete a session |
+| POST | `/sessions` | Admin | Create a session — `400` if `permitId`/`instructorId` don't match a real row |
+| PUT | `/sessions/{id}` | Admin | Update a session — same reference validation as create |
+| DELETE | `/sessions/{id}` | Admin | Delete a session — rejected with `400` if any booking still references it |
 
 ---
 
@@ -76,7 +76,8 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 |---|---|---|---|
 | GET | `/instructors` | No | List all instructors |
 | GET | `/instructors/{id}` | No | Get instructor profile (upcoming sessions to be added once `/sessions` exists) |
-| PUT | `/instructors/{id}/availability` | Instructor | Update availability calendar |
+| POST | `/instructors` | Admin | Create an instructor account **and** profile in one call (email/password/name + bio/specialties) — there was no other way to onboard one; not in the original plan for this file but needed for the admin back-office to be usable at all |
+| PUT | `/instructors/{id}/availability` | Instructor | Update availability calendar (not built — no availability concept in the DB yet) |
 
 ---
 
@@ -86,7 +87,7 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 |---|---|---|---|
 | GET | `/exam-dates` | No | List upcoming exam dates |
 | POST | `/exam-dates` | Admin | Add an exam date |
-| DELETE | `/exam-dates/{id}` | Admin | Remove an exam date |
+| DELETE | `/exam-dates/{id}` | Admin | Remove an exam date — hard delete, no references to protect (exam dates aren't linked to bookings/sessions) |
 
 ---
 

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using BateauEcole.Api.DTOs;
 using BateauEcole.Api.Services;
 
 namespace BateauEcole.Api.Controllers;
@@ -21,5 +22,13 @@ public class InstructorsController(InstructorService instructorService) : Contro
     {
         var instructor = await instructorService.GetByIdAsync(id);
         return instructor is null ? NotFound() : Ok(instructor);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Create(CreateInstructorDto dto)
+    {
+        var (result, errors) = await instructorService.CreateAsync(dto);
+        return result is null ? BadRequest(new { errors }) : Ok(result);
     }
 }

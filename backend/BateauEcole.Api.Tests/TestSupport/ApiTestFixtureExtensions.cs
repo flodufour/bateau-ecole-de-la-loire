@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using BateauEcole.Api.Data;
 using BateauEcole.Api.DTOs;
 using BateauEcole.Api.Models;
+using BateauEcole.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -47,4 +48,29 @@ public static class ApiTestFixtureExtensions
     }
 
     public static string UniqueEmail(string label) => $"{label}.{Guid.NewGuid():N}@example.com";
+
+    // Builds a client authenticated as a fresh Admin user, without ever
+    // calling /auth/login — CRUD admin tests need many of these, and each
+    // login call would eat into the shared "auth" rate-limit budget for no
+    // reason (see RateLimitTests / AuthLoginTests for why that's isolated).
+    public static async Task<HttpClient> CreateAdminClientAsync(this ApiTestFixture fixture, string label = "admin")
+    {
+        var email = UniqueEmail(label);
+
+        using (var registerClient = fixture.CreateClient())
+        {
+            await registerClient.RegisterAsync(email);
+        }
+
+        using var scope = fixture.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var user = await db.Users.SingleAsync(u => u.Email == email);
+        user.Role = UserRole.Admin;
+        await db.SaveChangesAsync();
+
+        var tokenService = scope.ServiceProvider.GetRequiredService<TokenService>();
+        var accessToken = tokenService.CreateAccessToken(user);
+
+        return fixture.CreateDefaultClient(BaseUri, new FixedCookieHandler($"access_token={accessToken}"));
+    }
 }

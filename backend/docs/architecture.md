@@ -67,6 +67,7 @@ A few things that aren't obvious from the test code:
 - **Each test class gets its own `ApiTestFixture`** (`IClassFixture<ApiTestFixture>`, not a shared collection). The `/auth/login` and `/auth/forgot-password` rate limit (5/min) is shared app-wide state — sharing one fixture across unrelated test classes would make one class's login attempts able to trip the limit for another class's tests.
 - **Auth cookies are `Secure`**, so a test `HttpClient` must use `https://localhost` as its base address — `CookieContainer` silently drops `Secure` cookies sent back over a plain-`http` origin, which looks like "the request just isn't authenticated" with no other clue.
 - **The test client needs the same `JsonStringEnumConverter`** the API registers in `Program.cs` (`ApiJsonOptions.Default`) — without it, deserializing a DTO with an enum property (`UserDto.Role`, `SessionDto.Type`) throws, because the default `System.Text.Json` behavior expects enums as numbers.
+- **Admin-scoped tests use `fixture.CreateAdminClientAsync()`**, which builds a JWT directly via `TokenService` (registering a user, promoting it to Admin in the DB, signing a token) instead of calling `/auth/login`. Admin CRUD test classes need many authenticated clients; routing them all through `/auth/login` would burn through that endpoint's 5/min rate limit within a single test run for no reason.
 
 Run with `dotnet test` from `backend/BateauEcole.Api.Tests/` (Docker must be running).
 

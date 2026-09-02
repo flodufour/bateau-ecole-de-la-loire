@@ -9,10 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BateauEcole.Api.Tests;
 
-// Registering already authenticates as Student, so most tests here never call
-// /auth/login at all — only the Admin-scoped tests do (promoting a role
-// requires a fresh login to get it into the JWT), which keeps this class
-// comfortably under the shared rate-limit budget without needing its own split.
+// Registering already authenticates as Student, and admin clients are built
+// directly from a signed token (CreateAdminClientAsync) — so nothing here
+// ever calls /auth/login, meaning the shared "auth" rate-limit budget is
+// never a concern for this class.
 public class BookingsTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixture>
 {
     [Fact]
@@ -158,7 +158,7 @@ public class BookingsTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
         await student.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("book-admin-view"));
         await student.PostAsJsonAsync("/api/bookings", new CreateBookingDto(session.Id));
 
-        var admin = await CreateAdminClientAsync();
+        var admin = await fixture.CreateAdminClientAsync("book-admin");
         var response = await admin.GetAsync("/api/bookings");
         var bookings = await response.Content.ReadFromJsonAsync<List<BookingDto>>(ApiJsonOptions.Default);
 
@@ -186,7 +186,7 @@ public class BookingsTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
         var created = await client.PostAsJsonAsync("/api/bookings", new CreateBookingDto(session.Id));
         var booking = await created.Content.ReadFromJsonAsync<BookingDto>(ApiJsonOptions.Default);
 
-        var admin = await CreateAdminClientAsync();
+        var admin = await fixture.CreateAdminClientAsync("book-admin");
         var response = await admin.PatchAsync($"/api/bookings/{booking!.Id}/confirm", null);
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -206,21 +206,11 @@ public class BookingsTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
         var created = await client.PostAsJsonAsync("/api/bookings", new CreateBookingDto(session.Id));
         var booking = await created.Content.ReadFromJsonAsync<BookingDto>(ApiJsonOptions.Default);
 
-        var admin = await CreateAdminClientAsync();
+        var admin = await fixture.CreateAdminClientAsync("book-admin");
         await admin.PatchAsync($"/api/bookings/{booking!.Id}/confirm", null);
         var response = await admin.PatchAsync($"/api/bookings/{booking.Id}/confirm", null);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    private async Task<HttpClient> CreateAdminClientAsync()
-    {
-        var client = fixture.CreateAuthClient();
-        var email = ApiTestFixtureExtensions.UniqueEmail("book-admin");
-        await client.RegisterAsync(email);
-        await fixture.PromoteToAdminAsync(email);
-        await client.LoginAsync(email, "Password123!"); // fresh JWT carrying the Admin role
-        return client;
     }
 
     private async Task<Session> SeedSessionAsync(DateTimeOffset startsAt, int maxCapacity)
