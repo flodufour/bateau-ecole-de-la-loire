@@ -29,6 +29,16 @@ API: `POST /api/auth/login`, `POST /api/auth/register`, `POST /api/auth/forgot-p
 
 ---
 
+## Contact (`/contact`)
+
+Public page: the school's address/hours/email/phone (static text) next to a contact form (name, email, phone optional, message — `Validators.minLength(10)` on the message client-side, real validation happens on the backend regardless). On success, the form is replaced by a confirmation message (same "swap the form for a message" pattern as `/mot-de-passe-oublie`, except this one only shows on actual success — the backend endpoint can genuinely fail, e.g. rate-limited, so failures are shown inline via `extractApiErrors` and the form stays up to retry).
+
+No email is sent anywhere yet — the message is just persisted; an admin reads it in the back-office (`/admin/messages`).
+
+API: `POST /api/contact`
+
+---
+
 ## Catalog (`/formations`)
 
 Browse all available permit types. Built: list page (card grid) and detail page.
@@ -88,17 +98,16 @@ API: `GET /api/sessions`, `PUT /api/instructors/{id}/availability` (not built)
 
 Only accessible to users with the `Admin` role, enforced by `roleGuard('Admin')` (see `frontend/docs/security.md`). The `Header` only shows the "Admin" link for that role, but the guard is what actually blocks direct navigation — never rely on the link being hidden.
 
-`AdminLayout` is a lazy-loaded shell with a tab-style nav and a `<router-outlet>` for five child routes, each its own lazy-loaded standalone component. Every section follows the same pattern: a create/edit form (`ReactiveFormsModule`) above a table, backend validation errors surfaced inline via `extractApiErrors`.
+`AdminLayout` is a lazy-loaded shell with a tab-style nav and a `<router-outlet>` for six child routes, each its own lazy-loaded standalone component. Most sections follow the same pattern: a create/edit form (`ReactiveFormsModule`) above a table, backend validation errors surfaced inline via `extractApiErrors`.
 
 - **Permits** (`/admin/permis`) — full CRUD. Editing populates the form (`editingId` signal toggles create vs. update); delete is rejected by the backend (shown inline) if the permit still has sessions.
 - **Sessions** (`/admin/seances`) — full CRUD. Form has `<select>`s for permit and instructor (fetched on init alongside the sessions list); `startsAt` uses a `datetime-local` input, converted to/from ISO 8601 at the form boundary. Delete is rejected if the session has bookings.
 - **Exam dates** (`/admin/dates-examen`) — create and delete only; the backend has no update endpoint for exam dates.
 - **Instructors** (`/admin/moniteurs`) — create only; the backend has no update or delete endpoint for instructors. Creating one calls `POST /api/instructors`, which creates both the `User` (role `Instructor`) and the `Instructor` row — this is also the only way to onboard an instructor account today, there's no separate "invite instructor" flow. The `specialties` field is a single comma-separated text input, split/trimmed client-side into a `string[]` before the request.
 - **Bookings** (`/admin/reservations`) — lists every booking across all students (reuses `BookingStatusBadge`); a "Confirmer" button appears only on `Pending` rows and updates that row's status in place, matching the Dashboard's cancel-in-place pattern.
+- **Messages** (`/admin/messages`) — list and delete only, no form (admins don't create messages). Shows every submission from the public `/contact` form, newest first; deleting removes it in place client-side without a full refetch.
 
-Not built: a "Messages" section for contact-form submissions — no `/contact` endpoint exists yet.
-
-API: `POST/PUT/DELETE /api/permits`, `POST/PUT/DELETE /api/sessions`, `POST/DELETE /api/exam-dates`, `POST /api/instructors`, `GET /api/bookings`, `PATCH /api/bookings/{id}/confirm`
+API: `POST/PUT/DELETE /api/permits`, `POST/PUT/DELETE /api/sessions`, `POST/DELETE /api/exam-dates`, `POST /api/instructors`, `GET /api/bookings`, `PATCH /api/bookings/{id}/confirm`, `GET/DELETE /api/contact`
 
 ---
 

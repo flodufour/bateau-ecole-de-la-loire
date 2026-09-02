@@ -24,6 +24,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/reset-password/reset-password').then((m) => m.ResetPassword),
   },
   {
+    path: 'contact',
+    loadComponent: () => import('./features/contact/contact').then((m) => m.Contact),
+  },
+  {
     path: 'formations',
     loadComponent: () => import('./features/catalog/catalog-list/catalog-list').then((m) => m.CatalogList),
   },
@@ -68,6 +72,10 @@ export const routes: Routes = [
       {
         path: 'reservations',
         loadComponent: () => import('./features/admin/bookings-admin/bookings-admin').then((m) => m.BookingsAdmin),
+      },
+      {
+        path: 'messages',
+        loadComponent: () => import('./features/admin/messages-admin/messages-admin').then((m) => m.MessagesAdmin),
       },
     ],
   },

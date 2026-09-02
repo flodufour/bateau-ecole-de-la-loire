@@ -18,16 +18,17 @@ frontend/src/app/
 │   └── utils/             # e.g. extractApiErrors — parses the { errors: string[] } shape
 │
 ├── features/              # One folder per feature, lazy-loaded
-│   ├── home/
-│   ├── auth/              # login/, register/
-│   ├── catalog/           # not built yet — permit listing and detail pages
-│   ├── booking/           # not built yet — session browser and booking flow
-│   ├── dashboard/         # not built yet — student personal dashboard
+│   ├── home/              # placeholder landing page — see frontend/docs/features.md
+│   ├── auth/              # login/, register/, forgot-password/, reset-password/
+│   ├── contact/           # public contact page (info + form)
+│   ├── catalog/           # permit listing and detail pages
+│   ├── booking/           # session browser and booking flow
+│   ├── dashboard/         # student personal space (list/cancel own bookings)
 │   ├── instructor/        # not built yet — instructor availability management
-│   └── admin/             # not built yet — back-office (sessions, bookings, exam dates)
+│   └── admin/             # back-office: permits, sessions, exam dates, instructors, bookings, messages
 │
 └── shared/                # Reusable across features
-    └── components/        # Header, Footer, LoadingBar today
+    └── components/        # Header, Footer, LoadingBar, PermitCard, SessionCard, BookingStatusBadge
 ```
 
 ---
@@ -59,14 +60,18 @@ All API calls live in services (`core/services/` or `features/*/services/`). Com
 Top-level routes are defined in `app.routes.ts`. Each feature is a lazy-loaded child:
 
 ```
-/                   → Home
-/connexion          → Login (lazy)
-/inscription        → Register (lazy)
-/formations         → not built yet — Catalog (lazy)
-/formations/:slug   → not built yet — permit detail (lazy)
-/reserver           → not built yet — Booking (lazy, auth required)
-/mon-espace         → not built yet — Dashboard (lazy, auth required)
-/admin              → not built yet — Admin (lazy, admin role required)
+/                              → Home
+/connexion                     → Login (lazy)
+/inscription                   → Register (lazy)
+/mot-de-passe-oublie           → ForgotPassword (lazy)
+/reinitialiser-mot-de-passe    → ResetPassword (lazy)
+/contact                       → Contact (lazy)
+/formations                    → Catalog list (lazy)
+/formations/:id                → Permit detail (lazy) — by id (guid), not slug
+/reserver                      → Booking (lazy, authGuard)
+/mon-espace                    → Dashboard (lazy, authGuard)
+/admin                         → Admin layout (lazy, roleGuard('Admin')), with child routes
+                                  /admin/permis, /seances, /dates-examen, /moniteurs, /reservations, /messages
 ```
 
 ---

@@ -1,0 +1,27 @@
+.contact__body {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--space-12);
+  padding-bottom: var(--space-16);
+}
+
+.contact__info p {
+  margin: 0 0 var(--space-4);
+  color: var(--color-ink-muted);
+}
+
+.contact__info a {
+  color: inherit;
+}
+
+.contact__success {
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 720px) {
+  .contact__body {
+    grid-template-columns: 1fr;
+  }
+}

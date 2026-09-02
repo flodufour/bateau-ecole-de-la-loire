@@ -1,0 +1,39 @@
+<section class="admin-section">
+  <h2>Messages reçus</h2>
+
+  @if (loaded()) {
+    @if (messages().length === 0) {
+      <p class="empty-state">Aucun message.</p>
+    } @else {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Nom</th>
+            <th>Contact</th>
+            <th>Message</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (message of messages(); track message.id) {
+            <tr>
+              <td>{{ message.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ message.name }}</td>
+              <td>
+                {{ message.email }}
+                @if (message.phone) {
+                  <br />{{ message.phone }}
+                }
+              </td>
+              <td>{{ message.message }}</td>
+              <td class="admin-table__actions">
+                <button type="button" class="link-button" (click)="delete(message)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</section>

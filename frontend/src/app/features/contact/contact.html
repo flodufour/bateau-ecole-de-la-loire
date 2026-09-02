@@ -1,0 +1,62 @@
+<section class="page-header container">
+  <h1>Contact</h1>
+  <p>Une question sur les formations ou les inscriptions ? Écrivez-nous.</p>
+</section>
+
+<section class="container contact__body">
+  <div class="contact__info">
+    <h2>Bateau École de la Loire</h2>
+    <p>58 boulevard de l'égalité<br />44100 Nantes</p>
+    <p>Ouvert du lundi au samedi de 10h00 à 20h00.<br />Accueil uniquement sur rendez-vous.</p>
+    <p>
+      <a href="mailto:bateauecoledelaloire@gmail.com">bateauecoledelaloire&#64;gmail.com</a><br />
+      <a href="tel:+33762463741">07 62 46 37 41</a>
+    </p>
+  </div>
+
+  <div class="contact__form-wrapper">
+    @if (submitted()) {
+      <p class="contact__success">Votre message a bien été envoyé, nous vous répondrons rapidement.</p>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <label class="field">
+          <span>Nom</span>
+          <input type="text" formControlName="name" autocomplete="name" />
+        </label>
+
+        <label class="field">
+          <span>Email</span>
+          <input type="email" formControlName="email" autocomplete="email" />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <small class="field__error">Adresse email invalide.</small>
+          }
+        </label>
+
+        <label class="field">
+          <span>Téléphone (optionnel)</span>
+          <input type="tel" formControlName="phone" autocomplete="tel" />
+        </label>
+
+        <label class="field">
+          <span>Message</span>
+          <textarea formControlName="message" rows="5"></textarea>
+          @if (form.controls.message.touched && form.controls.message.invalid) {
+            <small class="field__error">10 caractères minimum.</small>
+          }
+        </label>
+
+        @if (errors().length) {
+          <ul class="form-errors">
+            @for (error of errors(); track error) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        }
+
+        <button type="submit" class="submit-button" [disabled]="submitting()">
+          {{ submitting() ? 'Envoi…' : 'Envoyer' }}
+        </button>
+      </form>
+    }
+  </div>
+</section>
