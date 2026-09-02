@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AvailabilitySlot } from '../../core/models/availability-slot.model';
 import { Session } from '../../core/models/session.model';
@@ -43,6 +43,16 @@ export class InstructorPortal {
   protected readonly profileForm = this.fb.nonNullable.group({
     bio: ['', Validators.required],
     specialties: [''],
+  });
+
+  private readonly currentWeekStart = startOfWeek(new Date());
+  protected readonly weekStart = signal(this.currentWeekStart);
+  protected readonly weekEnd = computed(() => addDays(this.weekStart(), 6));
+  protected readonly canGoToPreviousWeek = computed(() => this.weekStart() > this.currentWeekStart);
+
+  protected readonly weekDays = computed(() => {
+    const start = this.weekStart();
+    return Array.from({ length: 7 }, (_, i) => addDays(start, i));
   });
 
   constructor() {
@@ -103,6 +113,19 @@ export class InstructorPortal {
       });
   }
 
+  protected previousWeek(): void {
+    if (!this.canGoToPreviousWeek()) return;
+    this.weekStart.update((start) => addDays(start, -7));
+  }
+
+  protected nextWeek(): void {
+    this.weekStart.update((start) => addDays(start, 7));
+  }
+
+  protected sessionsForDay(day: Date): Session[] {
+    return this.sessions().filter((session) => isSameDay(new Date(session.startsAt), day));
+  }
+
   protected deleteSlot(slot: AvailabilitySlot): void {
     if (!this.instructorId) return;
 
@@ -141,4 +164,24 @@ export class InstructorPortal {
   private loadAvailability(): void {
     this.instructorService.getAvailability(this.instructorId!).subscribe((slots) => this.availability.set(slots));
   }
+}
+
+// Monday as the first day of the week, matching how the school schedules sessions.
+function startOfWeek(date: Date): Date {
+  const start = new Date(date);
+  const day = start.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + diffToMonday);
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }

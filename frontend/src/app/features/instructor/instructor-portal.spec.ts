@@ -21,6 +21,16 @@ describe('InstructorPortal', () => {
     specialties: [],
   };
 
+  // Dated relative to "now" (not a fixed string) so it always falls inside
+  // the calendar's default (Monday-start) week, whatever day the suite runs on.
+  function startOfWeek(date: Date): Date {
+    const start = new Date(date);
+    const day = start.getDay();
+    start.setDate(start.getDate() + (day === 0 ? -6 : 1 - day));
+    start.setHours(10, 0, 0, 0);
+    return start;
+  }
+
   const session: Session = {
     id: 's1',
     permitId: 'p1',
@@ -28,10 +38,21 @@ describe('InstructorPortal', () => {
     instructorId: instructor.id,
     instructorName: 'Jean Dupont',
     type: 'Theory',
-    startsAt: '2026-09-10T10:00:00Z',
+    startsAt: new Date().toISOString(),
     durationMinutes: 90,
     maxCapacity: 8,
     location: 'Nantes centre',
+  };
+
+  // Tuesday of next week — always outside the current week, regardless of
+  // what "today" is when the suite runs.
+  const nextWeekTuesday = startOfWeek(new Date());
+  nextWeekTuesday.setDate(nextWeekTuesday.getDate() + 8);
+  const nextWeekSession: Session = {
+    ...session,
+    id: 's2',
+    permitName: 'Permis Hauturier',
+    startsAt: nextWeekTuesday.toISOString(),
   };
 
   const slot: AvailabilitySlot = {
@@ -68,6 +89,40 @@ describe('InstructorPortal', () => {
 
     expect(element.textContent).toContain('Permis Côtier');
     expect(element.textContent).toContain('11/09/2026');
+  });
+
+  it('disables "Semaine précédente" on the current week, and does not show next week\'s sessions', () => {
+    fixture = TestBed.createComponent(InstructorPortal);
+    element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    httpMock.expectOne(`${environment.apiUrl}/instructors/me`).flush(instructor);
+    httpMock.expectOne((r) => r.url === `${environment.apiUrl}/sessions`).flush([session, nextWeekSession]);
+    httpMock.expectOne(`${environment.apiUrl}/instructors/${instructor.id}/availability`).flush([]);
+    fixture.detectChanges();
+
+    const buttons = Array.from(element.querySelectorAll('.instructor-portal__calendar-nav button'));
+    expect((buttons[0] as HTMLButtonElement).disabled).toBeTrue();
+    expect(element.textContent).toContain('Permis Côtier');
+    expect(element.textContent).not.toContain('Permis Hauturier');
+  });
+
+  it('shows next week\'s sessions after clicking "Semaine suivante"', () => {
+    fixture = TestBed.createComponent(InstructorPortal);
+    element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    httpMock.expectOne(`${environment.apiUrl}/instructors/me`).flush(instructor);
+    httpMock.expectOne((r) => r.url === `${environment.apiUrl}/sessions`).flush([session, nextWeekSession]);
+    httpMock.expectOne(`${environment.apiUrl}/instructors/${instructor.id}/availability`).flush([]);
+    fixture.detectChanges();
+
+    const buttons = Array.from(element.querySelectorAll('.instructor-portal__calendar-nav button'));
+    (buttons[1] as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Permis Hauturier');
+    expect(element.textContent).not.toContain('Permis Côtier');
   });
 
   it('filters the session request by the current instructor id', () => {

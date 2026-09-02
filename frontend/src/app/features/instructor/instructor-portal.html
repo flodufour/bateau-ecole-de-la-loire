@@ -38,22 +38,33 @@
   <section class="container instructor-portal__body">
     <h2>Mes séances à venir</h2>
 
-    @if (sessions().length === 0) {
-      <p class="empty-state">Aucune séance à venir ne vous est assignée.</p>
-    } @else {
-      <ul class="instructor-portal__list">
-        @for (session of sessions(); track session.id) {
-          <li class="instructor-portal__item">
-            <div>
-              <h3>{{ session.permitName }} — {{ session.type === 'Theory' ? 'Théorie' : 'Pratique' }}</h3>
-              <p class="instructor-portal__meta">
-                {{ session.startsAt | date: 'EEEE d MMMM à HH:mm' }} · {{ session.location }}
-              </p>
-            </div>
-          </li>
-        }
-      </ul>
-    }
+    <div class="instructor-portal__calendar-nav">
+      <button type="button" class="link-button" [disabled]="!canGoToPreviousWeek()" (click)="previousWeek()">
+        ◀ Semaine précédente
+      </button>
+      <span>{{ weekStart() | date: 'd MMM' }} – {{ weekEnd() | date: 'd MMM yyyy' }}</span>
+      <button type="button" class="link-button" (click)="nextWeek()">Semaine suivante ▶</button>
+    </div>
+
+    <div class="instructor-portal__calendar">
+      @for (day of weekDays(); track day.getTime()) {
+        <div class="instructor-portal__day">
+          <h3>{{ day | date: 'EEEE d MMM' }}</h3>
+
+          @if (sessionsForDay(day).length === 0) {
+            <p class="instructor-portal__day-empty">—</p>
+          } @else {
+            @for (session of sessionsForDay(day); track session.id) {
+              <div class="instructor-portal__session">
+                <strong>{{ session.startsAt | date: 'HH:mm' }}</strong>
+                {{ session.permitName }} — {{ session.type === 'Theory' ? 'Théorie' : 'Pratique' }}
+                <div class="instructor-portal__meta">{{ session.location }}</div>
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
   </section>
 
   <section class="container instructor-portal__body">
