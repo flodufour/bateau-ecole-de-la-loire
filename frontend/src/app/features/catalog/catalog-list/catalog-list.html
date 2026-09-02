@@ -1,0 +1,20 @@
+<section class="page-header container">
+  <h1>Nos formations</h1>
+  <p>Permis côtier, hauturier et fluvial — théorie et pratique.</p>
+</section>
+
+<section class="container">
+  @if (loaded()) {
+    @if (failed()) {
+      <p class="empty-state">Impossible de charger les formations pour le moment. Merci de réessayer plus tard.</p>
+    } @else if (permits().length === 0) {
+      <p class="empty-state">Aucune formation disponible pour le moment.</p>
+    } @else {
+      <div class="card-grid">
+        @for (permit of permits(); track permit.id) {
+          <app-permit-card [permit]="permit" />
+        }
+      </div>
+    }
+  }
+</section>

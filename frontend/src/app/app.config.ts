@@ -1,6 +1,9 @@
+import { registerLocaleData } from '@angular/common';
 import { HttpClient, provideHttpClient, withFetch, withInterceptors, withXsrfConfiguration } from '@angular/common/http';
+import localeFr from '@angular/common/locales/fr';
 import {
   ApplicationConfig,
+  LOCALE_ID,
   inject,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
@@ -16,10 +19,13 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { AuthService } from './core/services/auth.service';
 import { environment } from '../environments/environment';
 
+registerLocaleData(localeFr);
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
+    { provide: LOCALE_ID, useValue: 'fr-FR' },
     provideRouter(routes),
     provideHttpClient(
       withFetch(),

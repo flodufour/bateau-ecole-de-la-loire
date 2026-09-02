@@ -25,6 +25,22 @@
   text-decoration: none;
 }
 
+.header__nav {
+  display: flex;
+  gap: var(--space-6);
+  font-size: 0.9rem;
+}
+
+.header__nav a {
+  color: var(--color-ink-muted);
+}
+
+.header__nav a:hover,
+.header__nav-link--active {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
 .header__actions {
   display: flex;
   align-items: center;

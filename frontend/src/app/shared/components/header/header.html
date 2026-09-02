@@ -2,6 +2,10 @@
   <div class="header__inner container">
     <a class="header__brand" routerLink="/">École de bateau de la Loire</a>
 
+    <nav class="header__nav" aria-label="Navigation principale">
+      <a routerLink="/formations" routerLinkActive="header__nav-link--active">Formations</a>
+    </nav>
+
     <nav class="header__actions" aria-label="Compte">
       @if (currentUser(); as user) {
         <span class="header__user">{{ user.firstName }}</span>

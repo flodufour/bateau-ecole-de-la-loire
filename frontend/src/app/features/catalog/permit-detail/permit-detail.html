@@ -1,0 +1,27 @@
+@if (permit(); as permit) {
+  <section class="page-header container">
+    <h1>{{ permit.name }}</h1>
+    <span class="permit-detail__price">{{ permit.price | currency: 'EUR' }}</span>
+  </section>
+
+  <section class="container permit-detail__body">
+    <p>{{ permit.description }}</p>
+
+    <div class="permit-detail__badges">
+      @if (permit.isBundle) {
+        <span class="badge badge--accent">Pack</span>
+      }
+      @if (permit.includesTheory) {
+        <span class="badge">Théorie</span>
+      }
+      @if (permit.includesPractical) {
+        <span class="badge">Pratique</span>
+      }
+    </div>
+  </section>
+} @else if (notFound()) {
+  <section class="container empty-state">
+    <p>Cette formation n'existe pas ou n'est plus disponible.</p>
+    <a routerLink="/formations">Retour au catalogue</a>
+  </section>
+}

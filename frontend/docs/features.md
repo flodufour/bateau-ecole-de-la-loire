@@ -31,11 +31,12 @@ API: `POST /api/auth/login`, `POST /api/auth/register`
 
 ## Catalog (`/formations`)
 
-Browse all available permit types.
+Browse all available permit types. Built: list page (card grid) and detail page.
 
-- Card grid showing each permit (name, short description, price, type: theory/practical)
-- Filter by permit category (coastal, offshore, inland)
-- Detail page (`/formations/:slug`) with full description, what's included, and pricing
+- List: card grid, one `PermitCard` per permit (name, truncated description, price, Théorie/Pratique/Pack badges). Empty and error states are handled explicitly, not just a blank page.
+- Detail (`/formations/:id`) — full description, price, badges. Route uses the permit's `id` (a GUID), not its `slug` — the backend only exposes `GET /api/permits/{id}` today, no slug-based lookup. Nicer URLs (`/formations/permis-cotier`) would need a `GET /api/permits/by-slug/{slug}`-style endpoint added first.
+
+Not built yet: filtering by permit category.
 
 API: `GET /api/permits`, `GET /api/permits/{id}`
 
@@ -97,19 +98,20 @@ Built:
 
 | Component | Description |
 |---|---|
-| `Header` | Sticky site header — brand, and login/register links or the current user's name + logout, depending on auth state |
+| `Header` | Sticky site header — brand, nav, and login/register links or the current user's name + logout, depending on auth state |
 | `Footer` | Minimal — site name and location |
 | `LoadingBar` | Slim animated bar at the top of the page while any HTTP request is in flight |
+| `PermitCard` | Displays a permit summary (name, price, type badges), links to its detail page |
 
 Planned, not built yet:
 
 | Component | Description |
 |---|---|
 | `SessionCard` | Displays a single session (date, instructor, type, spots left) |
-| `PermitCard` | Displays a permit summary (name, price, type badges) |
 | `BookingStatusBadge` | Color-coded badge: pending / confirmed / cancelled |
 | `ConfirmDialog` | Generic modal for confirm/cancel actions |
-| `EmptyState` | Shown when a list is empty |
+
+`EmptyState` — not a separate component; each list page (`CatalogList` today) handles its own empty/error states inline via signals, since there's only one so far and it isn't complex enough to justify extracting one yet.
 
 ---
 

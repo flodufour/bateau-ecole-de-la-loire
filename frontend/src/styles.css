@@ -192,3 +192,38 @@ button {
   font-size: 0.9rem;
   text-align: center;
 }
+
+/* Badges — used on permit/session/booking cards. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  background: var(--color-paper-tint);
+  color: var(--color-ink-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge--accent {
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-paper));
+  color: var(--color-accent);
+}
+
+/* Card grid — used by the catalog list today, sessions/bookings later. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-6);
+}
+
+.page-header {
+  padding-block: var(--space-16) var(--space-8);
+  text-align: center;
+}
+
+.empty-state {
+  padding-block: var(--space-16);
+  text-align: center;
+  color: var(--color-ink-muted);
+}

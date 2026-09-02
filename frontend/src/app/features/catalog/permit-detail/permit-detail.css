@@ -1,0 +1,17 @@
+.permit-detail__price {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.permit-detail__body {
+  max-width: 640px;
+  padding-bottom: var(--space-16);
+}
+
+.permit-detail__badges {
+  display: flex;
+  gap: var(--space-2);
+}

@@ -1,0 +1,18 @@
+<a class="permit-card" [routerLink]="['/formations', permit().id]">
+  <h3>{{ permit().name }}</h3>
+  <p class="permit-card__description">{{ permit().description }}</p>
+
+  <div class="permit-card__badges">
+    @if (permit().isBundle) {
+      <span class="badge badge--accent">Pack</span>
+    }
+    @if (permit().includesTheory) {
+      <span class="badge">Théorie</span>
+    }
+    @if (permit().includesPractical) {
+      <span class="badge">Pratique</span>
+    }
+  </div>
+
+  <span class="permit-card__price">{{ permit().price | currency: 'EUR' }}</span>
+</a>
