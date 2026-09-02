@@ -4,28 +4,53 @@
 </section>
 
 <section class="container permit-types">
-  <h2>Les 3 permis, en bref</h2>
+  <div>
+    <h2>Les 3 permis, en bref</h2>
 
-  <p>
-    <strong>Côtier</strong> — le permis de base : navigation de jour comme de nuit, jusqu'à 6 milles d'un abri
-    (11 km). Théorie (code) et pratique (navigation) obligatoires.
-  </p>
+    <p>
+      <strong>Côtier</strong> — le permis de base : navigation de jour comme de nuit, jusqu'à 6 milles d'un abri
+      (11 km). Théorie (code) et pratique (navigation) obligatoires.
+    </p>
 
-  <p>
-    <strong>Hauturier</strong> — extension du côtier : navigation sans limite de distance. Réservé aux titulaires
-    du côtier, théorie seule.
-  </p>
+    <p>
+      <strong>Hauturier</strong> — extension du côtier : navigation sans limite de distance. Réservé aux titulaires
+      du côtier, théorie seule.
+    </p>
 
-  <p>
-    <strong>Fluvial (Eaux Intérieures)</strong> — rivières, canaux et lacs, pour les bateaux de moins de 20 m.
-    Théorie seule ; dispense de pratique si vous avez déjà le côtier.
-  </p>
+    <p>
+      <strong>Fluvial (Eaux Intérieures)</strong> — rivières, canaux et lacs, pour les bateaux de moins de 20 m.
+      Théorie seule ; dispense de pratique si vous avez déjà le côtier.
+    </p>
 
-  <p class="permit-types__how">
-    Dans tous les cas : inscription, révision du code (en salle le soir/week-end ou en ligne à votre rythme), examen
-    théorique, puis pratique en navigation si le permis choisi l'exige. Valables à vie, en France comme à
-    l'international.
-  </p>
+    <p class="permit-types__how">
+      Dans tous les cas : inscription, révision du code (en salle le soir/week-end ou en ligne à votre rythme),
+      examen théorique, puis pratique en navigation si le permis choisi l'exige. Valables à vie, en France comme à
+      l'international.
+    </p>
+  </div>
+
+  <svg
+    class="permit-types__wheel"
+    viewBox="0 0 200 200"
+    aria-hidden="true"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    @for (angle of wheelHandleAngles; track angle) {
+      <line
+        [attr.transform]="'rotate(' + angle + ' 100 100)'"
+        x1="100"
+        y1="82"
+        x2="100"
+        y2="15"
+        stroke="var(--color-navy)"
+        stroke-width="7"
+        stroke-linecap="round"
+      />
+    }
+    <circle cx="100" cy="100" r="70" stroke="var(--color-navy)" stroke-width="9" />
+    <circle cx="100" cy="100" r="18" fill="var(--color-accent)" stroke="var(--color-navy)" stroke-width="4" />
+  </svg>
 </section>
 
 <section class="container">

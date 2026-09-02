@@ -9,9 +9,24 @@
   --color-paper: #ffffff;
   --color-paper-tint: #f5f5f7;
   --color-border: #d2d2d7;
-  --color-accent: #0a6e94;
-  --color-accent-hover: #085576;
   --color-danger: #c0392b;
+
+  /* Nautical palette: a deep, slightly muted "bleu roi" (softer than a pure
+     electric royal blue) paired with a softened "orange France" accent. */
+  --color-navy: #2d3f76;
+  --color-navy-deep: #1b2547;
+  --color-navy-soft: #4a5da0;
+  --color-on-navy: #ffffff;
+  --color-on-navy-muted: rgba(255, 255, 255, 0.75);
+
+  /* Two shades of the same orange: --color-accent is the (softened) fill used
+     on buttons/badges (paired with dark ink text, not white — white-on-vivid-
+     orange fails contrast), --color-accent-text is a deeper shade for inline
+     text/links on the white/paper background, where the fill alone would be
+     too light to read. */
+  --color-accent: #f48f34;
+  --color-accent-hover: #e17a16;
+  --color-accent-text: #b85d0a;
 
   --font-sans:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -47,6 +62,30 @@ body {
   height: 100%;
 }
 
+/* A slim, palette-colored scrollbar instead of the bulky OS default. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-navy-soft) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-navy-soft);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-navy);
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans);
@@ -67,6 +106,11 @@ h4 {
   line-height: 1.15;
 }
 
+h1,
+h2 {
+  color: var(--color-navy);
+}
+
 h1 {
   font-size: clamp(2rem, 4vw, 3rem);
 }
@@ -81,7 +125,7 @@ p {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   text-decoration: none;
 }
 
@@ -151,9 +195,9 @@ button {
   border: none;
   border-radius: var(--radius-md);
   background: var(--color-accent);
-  color: var(--color-paper);
+  color: var(--color-ink);
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background var(--transition-fast);
 }
@@ -171,7 +215,7 @@ button {
   background: none;
   border: none;
   padding: 0;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-size: inherit;
   font-family: inherit;
   cursor: pointer;
@@ -227,8 +271,9 @@ button {
 }
 
 .badge--accent {
-  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-paper));
-  color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-ink);
+  font-weight: 600;
 }
 
 .badge--success {
@@ -352,4 +397,23 @@ button {
 
 .legal-page a {
   color: var(--color-accent);
+}
+
+/* Full-bleed navy band — used for the hero and the pre-footer CTA on the
+   home page. Photos fade into the navy via a gradient rather than sitting
+   in a hard-edged box, so they read as part of the palette, not a stock-photo
+   pasted on top of it. */
+.on-navy {
+  color: var(--color-on-navy-muted);
+  background: var(--color-navy);
+}
+
+.on-navy h1,
+.on-navy h2,
+.on-navy h3 {
+  color: var(--color-on-navy);
+}
+
+.on-navy p {
+  color: var(--color-on-navy-muted);
 }

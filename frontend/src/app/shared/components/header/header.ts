@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -17,15 +17,6 @@ export class Header {
 
   protected readonly currentUser = this.auth.currentUser;
   protected readonly cartItemCount = this.cart.itemCount;
-
-  // Transparent at the top of the page, gains a solid background and border
-  // only once there's actual content scrolled underneath it.
-  protected readonly scrolled = signal(false);
-
-  @HostListener('window:scroll')
-  protected onWindowScroll(): void {
-    this.scrolled.set(window.scrollY > 8);
-  }
 
   protected logout(): void {
     this.auth.logout().subscribe(() => this.router.navigateByUrl('/'));

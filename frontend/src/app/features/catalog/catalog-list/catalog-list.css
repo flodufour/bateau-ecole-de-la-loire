@@ -3,7 +3,27 @@
 }
 
 .permit-types {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-8);
+  align-items: center;
   padding-bottom: var(--space-12);
+}
+
+.permit-types__wheel {
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .permit-types {
+    grid-template-columns: 1fr;
+  }
+
+  .permit-types__wheel {
+    display: none;
+  }
 }
 
 .permit-types h2 {

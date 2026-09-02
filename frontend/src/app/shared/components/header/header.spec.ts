@@ -48,7 +48,6 @@ describe('Header', () => {
   afterEach(() => {
     httpMock.verify();
     localStorage.clear();
-    Object.defineProperty(window, 'scrollY', { value: 0, configurable: true });
   });
 
   it('links to the cart and shows no badge when it is empty', () => {
@@ -123,25 +122,5 @@ describe('Header', () => {
 
     const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(text).not.toContain('Espace moniteur');
-  });
-
-  it('is transparent (no "header--scrolled" class) at the top of the page', () => {
-    const fixture = TestBed.createComponent(Header);
-    fixture.detectChanges();
-
-    expect((fixture.nativeElement as HTMLElement).querySelector('header')!.classList).not.toContain(
-      'header--scrolled',
-    );
-  });
-
-  it('gains the "header--scrolled" class once the page is scrolled', () => {
-    const fixture = TestBed.createComponent(Header);
-    fixture.detectChanges();
-
-    Object.defineProperty(window, 'scrollY', { value: 40, configurable: true });
-    window.dispatchEvent(new Event('scroll'));
-    fixture.detectChanges();
-
-    expect((fixture.nativeElement as HTMLElement).querySelector('header')!.classList).toContain('header--scrolled');
   });
 });

@@ -1,0 +1,13 @@
+/* Sticky footer: the footer must never ride up above the bottom of a short
+   page (e.g. an empty cart) — it stays pinned to the viewport bottom on
+   short pages, and scrolls normally once content is taller than the
+   viewport. */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+main {
+  flex: 1;
+}
