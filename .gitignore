@@ -427,3 +427,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Playwright MCP screenshots/logs from manual UI verification
+.playwright-mcp/
