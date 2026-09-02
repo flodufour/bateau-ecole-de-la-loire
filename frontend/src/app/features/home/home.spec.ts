@@ -34,10 +34,10 @@ describe('Home', () => {
 
   it('fades in the below-the-fold sections as they scroll into view', () => {
     const revealed = element.querySelectorAll('.scroll-reveal');
-    // "Notre bateau", "Une école à taille humaine", "Candidat libre",
-    // "Nous trouver", and the pre-footer CTA band — everything except the
-    // hero, which is already visible on load and shouldn't start hidden.
-    expect(revealed.length).toBe(5);
+    // "Notre bateau", "Une école à taille humaine" (+ candidat libre +
+    // testimonials, all in one section), "Nous trouver", and the pre-footer
+    // CTA band — everything except the hero, already visible on load.
+    expect(revealed.length).toBe(4);
   });
 
   it('mentions the candidat-libre option and links to contact', () => {
@@ -46,5 +46,19 @@ describe('Home', () => {
       (a) => a.getAttribute('routerLink') === '/contact',
     );
     expect(link).toBeTruthy();
+  });
+
+  it('shows the Google rating and links to the real Maps listing', () => {
+    const link = element.querySelector('.testimonials__header') as HTMLAnchorElement;
+    expect(link.textContent).toContain('5,0');
+    expect(link.textContent).toContain('148 avis Google');
+    expect(link.getAttribute('href')).toContain('google.com/maps/search');
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener');
+  });
+
+  it('shows real customer testimonials', () => {
+    const authors = Array.from(element.querySelectorAll('.testimonial footer')).map((el) => el.textContent);
+    expect(authors).toEqual(['Matthieu Paquito', 'Eloi R-A', 'Tom Boisard']);
   });
 });

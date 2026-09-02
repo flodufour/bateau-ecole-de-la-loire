@@ -12,11 +12,14 @@ Landing page for the school. Entirely static content (no API calls) — real inf
 - A photo of the actual training boat (`public/images/ecole-conviviale.jpg`) with a short blurb — boat model, departure point.
 - A short "who we are" paragraph — the verified facts the school's own site states (monitor is a merchant navy captain, flexible evening/weekend scheduling), not an invented founding story: the source site has no history/founding-date content to draw from.
 - A short "candidat libre" blurb: someone who already holds one permit (côtier, hauturier, or fluvial) can sit an extra option in autonomy, in about 15 days, in many cities nationwide — not just Nantes — with a link to `/contact`. Condensed from the school's real live-site content (a much longer dedicated page there); no `/candidat-libre` route exists in this app yet.
+- Both blurbs above share one `.home-section--split` with a discreet testimonials aside on the right: the school's real Google rating and 3 reviews (see below) — deliberately understated (small italic type, no card borders, 1-line clamp) so it reads as a quiet aside, not a competing feature next to the actual content.
 - An embedded Google Map of the school's address, via the no-API-key `maps.google.com/maps?q=...&output=embed` iframe (no Maps API key exists in this project). The URL is a hardcoded constant, not user input, so `DomSanitizer.bypassSecurityTrustResourceUrl` is safe to use here — Angular sanitizes `iframe[src]` bindings by default.
 - A pre-footer CTA band reusing `ecole-conviviale.jpg` (same real photo as above, cropped tight on the moniteur instead of the whole boat) fading into the footer's navy.
 - Every section below the hero fades/slides into view the first time it scrolls into the viewport (`ScrollRevealDirective`, `shared/directives/scroll-reveal.directive.ts` — IntersectionObserver-backed, reveals once and stays visible). The hero itself is excluded since it's already visible on load.
 
-Not built yet: testimonials, a dedicated `/candidat-libre` page.
+Testimonials: 3 reviews (author + text) hardcoded in `Home`, copied verbatim from the school's real Google Maps listing (checked 2026-09-02: 5,0/5, 148 avis) — not invented. There's no Google Places API integration (would need an API key/billing this project doesn't have), so the rating/count are static values, not live-fetched; the "avis Google" link goes to the real listing so a visitor can verify and see the rest. Update by hand if the rating/reviews are worth refreshing later.
+
+Not built yet: a dedicated `/candidat-libre` page.
 
 API: none
 
