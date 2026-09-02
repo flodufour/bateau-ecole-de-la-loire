@@ -18,6 +18,30 @@
         <span class="badge">Pratique</span>
       }
     </div>
+
+    <div class="permit-detail__purchase">
+      @if (purchased()) {
+        <p class="permit-detail__success">
+          Vous avez acheté ce permis ! Retrouvez-le dans <a routerLink="/mon-espace">Mon espace</a>.
+        </p>
+      } @else if (currentUser(); as user) {
+        @if (user.role === 'Student') {
+          <button type="button" class="submit-button" [disabled]="purchasing()" (click)="buy(permit.id)">
+            {{ purchasing() ? 'Achat en cours…' : 'Acheter ce permis' }}
+          </button>
+
+          @if (purchaseErrors().length) {
+            <ul class="form-errors">
+              @for (error of purchaseErrors(); track error) {
+                <li>{{ error }}</li>
+              }
+            </ul>
+          }
+        }
+      } @else {
+        <a class="submit-button" routerLink="/connexion">Se connecter pour acheter</a>
+      }
+    </div>
   </section>
 } @else if (notFound()) {
   <section class="container empty-state">

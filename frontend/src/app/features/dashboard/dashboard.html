@@ -13,7 +13,59 @@
   </section>
 }
 
+<section class="container dashboard__purchases">
+  <h2>Mes permis achetés</h2>
+
+  @if (purchasesLoaded()) {
+    @if (purchases().length === 0) {
+      <p class="empty-state">
+        Vous n'avez acheté aucun permis. <a routerLink="/formations">Voir les formations</a>
+      </p>
+    } @else {
+      <ul class="dashboard__list">
+        @for (purchase of purchases(); track purchase.id) {
+          <li class="dashboard__item">
+            <div>
+              <h3>{{ purchase.permitName }}</h3>
+              <p class="dashboard__meta">
+                {{ purchase.price | currency: 'EUR' }} · Acheté le {{ purchase.purchasedAt | date: 'dd/MM/yyyy' }}
+              </p>
+            </div>
+
+            <div class="dashboard__item-actions">
+              @if (transferringId() === purchase.id) {
+                <form
+                  [formGroup]="transferForm"
+                  (ngSubmit)="submitTransfer(purchase.id)"
+                  novalidate
+                  class="dashboard__transfer-form"
+                >
+                  <input type="email" formControlName="email" placeholder="email@exemple.com" />
+                  <button type="submit" class="submit-button" [disabled]="transferSubmitting()">Envoyer</button>
+                  <button type="button" class="link-button" (click)="cancelTransfer()">Annuler</button>
+                </form>
+              } @else {
+                <button type="button" class="link-button" (click)="startTransfer(purchase)">Transférer</button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+
+      @if (transferErrors().length) {
+        <ul class="form-errors">
+          @for (error of transferErrors(); track error) {
+            <li>{{ error }}</li>
+          }
+        </ul>
+      }
+    }
+  }
+</section>
+
 <section class="container dashboard__body">
+  <h2>Mes réservations</h2>
+
   @if (loaded()) {
     @if (bookings().length === 0) {
       <p class="empty-state">

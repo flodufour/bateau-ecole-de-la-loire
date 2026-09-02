@@ -47,10 +47,11 @@ Browse all available permit types. Built: list page (card grid) and detail page.
 
 - List: a short static explainer ("Les 3 permis, en bref" — Côtier, Hauturier, Fluvial, what each requires and how the théorie/pratique process works) above the card grid, then one `PermitCard` per permit (name, truncated description, price, Théorie/Pratique/Pack badges). The explainer is static content, not derived from the API — it describes the 3 base permit *types*, while the grid below lists the school's actual sellable *offers* (base permits, code-seul variants, bundles). Empty and error states are handled explicitly, not just a blank page.
 - Detail (`/formations/:id`) — full description, price, badges. Route uses the permit's `id` (a GUID), not its `slug` — the backend only exposes `GET /api/permits/{id}` today, no slug-based lookup. Nicer URLs (`/formations/permis-cotier`) would need a `GET /api/permits/by-slug/{slug}`-style endpoint added first.
+- The detail page's "Acheter ce permis" button is where a purchase happens — see `backend/docs/security.md`'s "Payment": there's no real checkout, it's paid the instant you click it. Only shown to a logged-in `Student`; a logged-out visitor sees "Se connecter pour acheter" instead, and other roles see nothing (matches the backend's `[Authorize(Roles = "Student")]` on `POST /purchases`). On success the button is replaced by a confirmation linking to `/mon-espace`.
 
 Not built yet: filtering by permit category.
 
-API: `GET /api/permits`, `GET /api/permits/{id}`
+API: `GET /api/permits`, `GET /api/permits/{id}`, `POST /api/purchases`
 
 ---
 
@@ -74,13 +75,14 @@ API: `GET /api/sessions`, `POST /api/bookings`, `GET /api/permits` (to populate 
 Personal space for logged-in students. Requires login (`authGuard`).
 
 - **Mes informations** — nom, prénom, email, and role (translated: Étudiant/Moniteur/Administrateur), read from `AuthService.currentUser` — no API call of its own, this is the same profile already fetched at app startup (`GET /auth/me`) and after login/register.
+- **Mes permis achetés** — lists the caller's purchases (`GET /purchases/me`), each with a "Transférer" action. Clicking it swaps that row's button for a small inline form (email only) — only one row can be transferring at a time (`transferringId` signal), matching the `editingId`-toggle pattern used in the admin CRUD sections. On success the transferred purchase is removed from the local list in place (it now belongs to someone else) rather than refetching; on failure (unknown email, transferring to yourself) the error is shown via `extractApiErrors` and the form stays open to retry.
 - Lists the caller's bookings (`GET /bookings/me` — the backend already scopes this to the authenticated user, no client-side filtering needed) with a `BookingStatusBadge` each.
 - "Annuler" is hidden once a booking is already `Cancelled`; cancelling updates that one booking's status in place (no full refetch) for a snappier UI.
-- Empty state links to `/reserver`.
+- Empty state links to `/reserver` (bookings) and `/formations` (purchases).
 
 Not built yet: booking history as a separate view (cancelled bookings just stay in the same list, badge shows the state); editing name/email/password from this page (read-only today).
 
-API: `GET /api/bookings/me`, `DELETE /api/bookings/{id}`
+API: `GET /api/bookings/me`, `DELETE /api/bookings/{id}`, `GET /api/purchases/me`, `POST /api/purchases/{id}/transfer`
 
 ---
 

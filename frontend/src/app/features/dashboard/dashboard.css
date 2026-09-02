@@ -12,8 +12,35 @@
   color: var(--color-ink-muted);
 }
 
+.dashboard__purchases {
+  padding-bottom: var(--space-8);
+}
+
+.dashboard__purchases h2,
+.dashboard__body h2 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-4);
+}
+
 .dashboard__body {
   padding-bottom: var(--space-16);
+}
+
+.dashboard__transfer-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.dashboard__transfer-form input {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.dashboard__transfer-form .submit-button {
+  width: auto;
+  padding: var(--space-2) var(--space-4);
 }
 
 .dashboard__list {

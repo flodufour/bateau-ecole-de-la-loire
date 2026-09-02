@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { Booking } from '../../core/models/booking.model';
+import { PermitPurchase } from '../../core/models/permit-purchase.model';
 import { User } from '../../core/models/user.model';
 import { AuthService } from '../../core/services/auth.service';
 import { Dashboard } from './dashboard';
@@ -34,6 +35,24 @@ describe('Dashboard', () => {
     bookedAt: '2026-09-02T08:00:00Z',
   };
 
+  const purchase: PermitPurchase = {
+    id: 'pp1',
+    permitId: 'p1',
+    permitName: 'Permis Hauturier',
+    price: 273,
+    purchasedAt: '2026-09-01T10:00:00Z',
+  };
+
+  function createAndFlush(bookings: Booking[] = [], purchases: PermitPurchase[] = []): void {
+    fixture = TestBed.createComponent(Dashboard);
+    element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    httpMock.expectOne(`${environment.apiUrl}/bookings/me`).flush(bookings);
+    httpMock.expectOne(`${environment.apiUrl}/purchases/me`).flush(purchases);
+    fixture.detectChanges();
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Dashboard],
@@ -50,12 +69,7 @@ describe('Dashboard', () => {
     auth.login({ email: user.email, password: 'Password123!' }).subscribe();
     httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush(user);
 
-    fixture = TestBed.createComponent(Dashboard);
-    element = fixture.nativeElement;
-    fixture.detectChanges();
-
-    httpMock.expectOne(`${environment.apiUrl}/bookings/me`).flush([]);
-    fixture.detectChanges();
+    createAndFlush();
 
     expect(element.textContent).toContain('Dupont');
     expect(element.textContent).toContain('Jean');
@@ -64,35 +78,20 @@ describe('Dashboard', () => {
   });
 
   it('shows an empty-state message with a link to book when there are no bookings', () => {
-    fixture = TestBed.createComponent(Dashboard);
-    element = fixture.nativeElement;
-    fixture.detectChanges();
-
-    httpMock.expectOne(`${environment.apiUrl}/bookings/me`).flush([]);
-    fixture.detectChanges();
+    createAndFlush();
 
     expect(element.textContent).toContain("Vous n'avez aucune réservation");
   });
 
   it('renders each booking with its status badge', () => {
-    fixture = TestBed.createComponent(Dashboard);
-    element = fixture.nativeElement;
-    fixture.detectChanges();
-
-    httpMock.expectOne(`${environment.apiUrl}/bookings/me`).flush([booking]);
-    fixture.detectChanges();
+    createAndFlush([booking]);
 
     expect(element.textContent).toContain('Permis Côtier');
     expect(element.textContent).toContain('En attente');
   });
 
   it('cancels a booking and updates its badge without refetching the whole list', () => {
-    fixture = TestBed.createComponent(Dashboard);
-    element = fixture.nativeElement;
-    fixture.detectChanges();
-
-    httpMock.expectOne(`${environment.apiUrl}/bookings/me`).flush([booking]);
-    fixture.detectChanges();
+    createAndFlush([booking]);
 
     element.querySelector<HTMLButtonElement>('.dashboard__item-actions button')!.click();
 
@@ -101,5 +100,56 @@ describe('Dashboard', () => {
 
     expect(element.textContent).toContain('Annulée');
     expect(element.querySelector('.dashboard__item-actions button')).toBeNull();
+  });
+
+  it('shows an empty-state message with a link to the catalog when there are no purchases', () => {
+    createAndFlush();
+
+    expect(element.textContent).toContain("Vous n'avez acheté aucun permis");
+  });
+
+  it('renders each purchased permit', () => {
+    createAndFlush([], [purchase]);
+
+    expect(element.textContent).toContain('Permis Hauturier');
+    expect(element.textContent).toContain('273');
+  });
+
+  it('transfers a purchase to another email and removes it from the list', () => {
+    createAndFlush([], [purchase]);
+
+    element.querySelector<HTMLButtonElement>('.dashboard__purchases button')!.click();
+    fixture.detectChanges();
+
+    const input = element.querySelector<HTMLInputElement>('.dashboard__transfer-form input')!;
+    input.value = 'marie.martin@example.com';
+    input.dispatchEvent(new Event('input'));
+    element.querySelector('.dashboard__transfer-form')!.dispatchEvent(new Event('submit'));
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/purchases/${purchase.id}/transfer`);
+    expect(req.request.body).toEqual({ email: 'marie.martin@example.com' });
+    req.flush({ ...purchase });
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain("Vous n'avez acheté aucun permis");
+  });
+
+  it('shows backend errors when a transfer fails', () => {
+    createAndFlush([], [purchase]);
+
+    element.querySelector<HTMLButtonElement>('.dashboard__purchases button')!.click();
+    fixture.detectChanges();
+
+    const input = element.querySelector<HTMLInputElement>('.dashboard__transfer-form input')!;
+    input.value = 'nobody@example.com';
+    input.dispatchEvent(new Event('input'));
+    element.querySelector('.dashboard__transfer-form')!.dispatchEvent(new Event('submit'));
+
+    httpMock
+      .expectOne(`${environment.apiUrl}/purchases/${purchase.id}/transfer`)
+      .flush({ errors: ["Aucun compte n'existe avec cette adresse email."] }, { status: 400, statusText: 'Bad Request' });
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain("Aucun compte n'existe avec cette adresse email.");
   });
 });
