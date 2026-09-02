@@ -14,6 +14,10 @@ public class TokenService(IConfiguration configuration)
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            // Also as ClaimTypes.NameIdentifier: whether "sub" arrives under that
+            // name or under JwtRegisteredClaimNames.Sub depends on JwtBearer's
+            // inbound claim mapping, which isn't worth relying on either way.
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email!),
             new(ClaimTypes.Role, user.Role.ToString()),
         };

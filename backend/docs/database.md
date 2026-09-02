@@ -90,7 +90,7 @@ A bookable slot — theory or practical, tied to a permit type and an instructor
 | `id` | uuid | Primary key |
 | `permit_id` | uuid | FK → `permits.id` |
 | `instructor_id` | uuid | FK → `instructors.id` |
-| `type` | varchar | `theory` or `practical` |
+| `type` | varchar | `Theory` or `Practical` |
 | `starts_at` | timestamptz | |
 | `duration_minutes` | int | |
 | `max_capacity` | int | |
@@ -106,8 +106,10 @@ Links a student to a session.
 | `id` | uuid | Primary key |
 | `user_id` | uuid | FK → `users.id` |
 | `session_id` | uuid | FK → `sessions.id` |
-| `status` | varchar | `pending`, `confirmed`, `cancelled` |
+| `status` | varchar | `Pending`, `Confirmed`, `Cancelled` |
 | `booked_at` | timestamptz | |
+
+A student can hold at most one non-`Cancelled` booking per session, and a session accepts bookings up to its `max_capacity` — both enforced in `BookingService`, not by a DB constraint.
 
 ---
 

@@ -105,6 +105,7 @@ builder.Services.AddScoped<PermitService>();
 builder.Services.AddScoped<InstructorService>();
 builder.Services.AddScoped<ExamDateService>();
 builder.Services.AddScoped<SessionService>();
+builder.Services.AddScoped<BookingService>();
 
 var app = builder.Build();
 

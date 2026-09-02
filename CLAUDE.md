@@ -54,6 +54,13 @@ The developer working on this project is learning while building. Every non-triv
 - Never edit a migration after it has been applied. Add a new one instead.
 - Use data annotations or Fluent API consistently — pick one and stick to it (prefer Fluent API).
 
+## Testing
+
+- **Every new piece of code ships with the tests that cover it, in the same commit.** Not a follow-up, not "add tests later" — if a controller, service, or endpoint is added or changed, its tests are added or changed alongside it.
+- Backend: `backend/BateauEcole.Api.Tests` (xUnit + `WebApplicationFactory<Program>` + Testcontainers.PostgreSql). Prefer testing through real HTTP calls against the full pipeline over mocking — this project doesn't use a Repository layer or heavy mocking, so integration-style tests catch far more (routing, auth, serialization, real Postgres constraints) than a unit test with everything stubbed out. See `backend/docs/architecture.md` for the testing setup and its non-obvious gotchas (rate-limit isolation, `Secure` cookies needing an `https` test client, enum JSON serialization).
+- A test class gets its own `IClassFixture<ApiTestFixture>` unless there's a specific reason to share one — rate-limited endpoints in particular must not share a fixture with unrelated tests.
+- Frontend: no test setup yet — establish the pattern (likely Angular's built-in Jasmine/Karma or a Vitest migration) when the first frontend feature needs one, and document the choice here.
+
 ## File structure
 
 ```
