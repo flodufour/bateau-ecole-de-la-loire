@@ -1,0 +1,84 @@
+<section class="admin-section">
+  <h2>{{ editingId() ? 'Modifier le permis' : 'Nouveau permis' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="admin-form">
+    <label class="field">
+      <span>Nom</span>
+      <input type="text" formControlName="name" />
+    </label>
+
+    <label class="field">
+      <span>Slug</span>
+      <input type="text" formControlName="slug" />
+    </label>
+
+    <label class="field">
+      <span>Description</span>
+      <input type="text" formControlName="description" />
+    </label>
+
+    <label class="field">
+      <span>Prix (€)</span>
+      <input type="number" min="0" step="0.01" formControlName="price" />
+    </label>
+
+    <label class="field">
+      <span><input type="checkbox" formControlName="includesTheory" /> Théorie incluse</span>
+    </label>
+
+    <label class="field">
+      <span><input type="checkbox" formControlName="includesPractical" /> Pratique incluse</span>
+    </label>
+
+    <label class="field">
+      <span><input type="checkbox" formControlName="isBundle" /> Pack</span>
+    </label>
+
+    <div class="admin-form__actions">
+      <button type="submit" class="submit-button" [disabled]="submitting()">
+        {{ editingId() ? 'Enregistrer' : 'Créer' }}
+      </button>
+      @if (editingId()) {
+        <button type="button" class="link-button" (click)="cancelEdit()">Annuler</button>
+      }
+    </div>
+  </form>
+
+  @if (errors().length) {
+    <ul class="form-errors">
+      @for (error of errors(); track error) {
+        <li>{{ error }}</li>
+      }
+    </ul>
+  }
+
+  @if (loaded()) {
+    @if (permits().length === 0) {
+      <p class="empty-state">Aucun permis pour le moment.</p>
+    } @else {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Slug</th>
+            <th>Prix</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (permit of permits(); track permit.id) {
+            <tr>
+              <td>{{ permit.name }}</td>
+              <td>{{ permit.slug }}</td>
+              <td>{{ permit.price | currency: 'EUR' }}</td>
+              <td class="admin-table__actions">
+                <button type="button" class="link-button" (click)="edit(permit)">Modifier</button>
+                <button type="button" class="link-button" (click)="delete(permit)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</section>

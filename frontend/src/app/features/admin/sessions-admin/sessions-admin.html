@@ -1,0 +1,102 @@
+<section class="admin-section">
+  <h2>{{ editingId() ? 'Modifier la séance' : 'Nouvelle séance' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="admin-form">
+    <label class="field">
+      <span>Permis</span>
+      <select formControlName="permitId">
+        <option value="" disabled>Choisir…</option>
+        @for (permit of permits(); track permit.id) {
+          <option [value]="permit.id">{{ permit.name }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Moniteur</span>
+      <select formControlName="instructorId">
+        <option value="" disabled>Choisir…</option>
+        @for (instructor of instructors(); track instructor.id) {
+          <option [value]="instructor.id">{{ instructor.firstName }} {{ instructor.lastName }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Type</span>
+      <select formControlName="type">
+        <option value="Theory">Théorie</option>
+        <option value="Practical">Pratique</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Date et heure</span>
+      <input type="datetime-local" formControlName="startsAt" />
+    </label>
+
+    <label class="field">
+      <span>Durée (min)</span>
+      <input type="number" min="1" formControlName="durationMinutes" />
+    </label>
+
+    <label class="field">
+      <span>Capacité</span>
+      <input type="number" min="1" formControlName="maxCapacity" />
+    </label>
+
+    <label class="field">
+      <span>Lieu</span>
+      <input type="text" formControlName="location" />
+    </label>
+
+    <div class="admin-form__actions">
+      <button type="submit" class="submit-button" [disabled]="submitting()">
+        {{ editingId() ? 'Enregistrer' : 'Créer' }}
+      </button>
+      @if (editingId()) {
+        <button type="button" class="link-button" (click)="cancelEdit()">Annuler</button>
+      }
+    </div>
+  </form>
+
+  @if (errors().length) {
+    <ul class="form-errors">
+      @for (error of errors(); track error) {
+        <li>{{ error }}</li>
+      }
+    </ul>
+  }
+
+  @if (loaded()) {
+    @if (sessions().length === 0) {
+      <p class="empty-state">Aucune séance à venir.</p>
+    } @else {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Permis</th>
+            <th>Moniteur</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (session of sessions(); track session.id) {
+            <tr>
+              <td>{{ session.permitName }}</td>
+              <td>{{ session.instructorName }}</td>
+              <td>{{ session.type === 'Theory' ? 'Théorie' : 'Pratique' }}</td>
+              <td>{{ session.startsAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="admin-table__actions">
+                <button type="button" class="link-button" (click)="edit(session)">Modifier</button>
+                <button type="button" class="link-button" (click)="delete(session)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</section>

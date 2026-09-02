@@ -256,3 +256,67 @@ button {
   text-align: center;
   color: var(--color-ink-muted);
 }
+
+/* Admin CRUD primitives — the same list/form shape repeats across every
+   back-office section (permits, sessions, exam dates, instructors). */
+.admin-section {
+  margin-bottom: var(--space-16);
+}
+
+.admin-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-4);
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  align-items: end;
+  padding: var(--space-6);
+  margin-bottom: var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-paper-tint);
+}
+
+.admin-form .field {
+  margin-bottom: 0;
+}
+
+.admin-form__actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.admin-form .submit-button {
+  width: auto;
+  padding-inline: var(--space-6);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-table th {
+  color: var(--color-ink-muted);
+  font-weight: 500;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin-table__actions {
+  display: flex;
+  gap: var(--space-3);
+  white-space: nowrap;
+}

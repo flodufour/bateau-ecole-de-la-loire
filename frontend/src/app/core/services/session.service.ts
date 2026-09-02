@@ -10,6 +10,16 @@ export interface SessionFilters {
   date?: string; // yyyy-MM-dd
 }
 
+export interface SessionInput {
+  permitId: string;
+  instructorId: string;
+  type: SessionType;
+  startsAt: string; // ISO 8601
+  durationMinutes: number;
+  maxCapacity: number;
+  location: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SessionService {
   private readonly http = inject(HttpClient);
@@ -26,5 +36,17 @@ export class SessionService {
 
   getById(id: string): Observable<Session> {
     return this.http.get<Session>(`${this.baseUrl}/${id}`);
+  }
+
+  create(input: SessionInput): Observable<Session> {
+    return this.http.post<Session>(this.baseUrl, input);
+  }
+
+  update(id: string, input: SessionInput): Observable<Session> {
+    return this.http.put<Session>(`${this.baseUrl}/${id}`, input);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

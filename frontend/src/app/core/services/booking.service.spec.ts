@@ -59,4 +59,26 @@ describe('BookingService', () => {
 
     expect(completed).toBeTrue();
   });
+
+  it('getAll fetches every booking (admin)', () => {
+    let result: Booking[] | undefined;
+    service.getAll().subscribe((bookings) => (result = bookings));
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/bookings`);
+    expect(req.request.method).toBe('GET');
+    req.flush([booking]);
+
+    expect(result).toEqual([booking]);
+  });
+
+  it('confirm patches the booking to Confirmed', () => {
+    let completed = false;
+    service.confirm(booking.id).subscribe(() => (completed = true));
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/bookings/${booking.id}/confirm`);
+    expect(req.request.method).toBe('PATCH');
+    req.flush(null);
+
+    expect(completed).toBeTrue();
+  });
 });

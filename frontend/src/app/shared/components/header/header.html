@@ -4,9 +4,12 @@
 
     <nav class="header__nav" aria-label="Navigation principale">
       <a routerLink="/formations" routerLinkActive="header__nav-link--active">Formations</a>
-      @if (currentUser()) {
+      @if (currentUser(); as user) {
         <a routerLink="/reserver" routerLinkActive="header__nav-link--active">Réserver</a>
         <a routerLink="/mon-espace" routerLinkActive="header__nav-link--active">Mon espace</a>
+        @if (user.role === 'Admin') {
+          <a routerLink="/admin" routerLinkActive="header__nav-link--active">Admin</a>
+        }
       }
     </nav>
 

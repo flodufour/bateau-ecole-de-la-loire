@@ -1,0 +1,66 @@
+<section class="admin-section">
+  <h2>Nouvelle date d'examen</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="admin-form">
+    <label class="field">
+      <span>Type de permis</span>
+      <input type="text" formControlName="permitType" placeholder="cotier, hauturier…" />
+    </label>
+
+    <label class="field">
+      <span>Date</span>
+      <input type="date" formControlName="date" />
+    </label>
+
+    <label class="field">
+      <span>Lieu</span>
+      <input type="text" formControlName="location" />
+    </label>
+
+    <label class="field">
+      <span>Notes (optionnel)</span>
+      <input type="text" formControlName="notes" />
+    </label>
+
+    <div class="admin-form__actions">
+      <button type="submit" class="submit-button" [disabled]="submitting()">Ajouter</button>
+    </div>
+  </form>
+
+  @if (errors().length) {
+    <ul class="form-errors">
+      @for (error of errors(); track error) {
+        <li>{{ error }}</li>
+      }
+    </ul>
+  }
+
+  @if (loaded()) {
+    @if (examDates().length === 0) {
+      <p class="empty-state">Aucune date d'examen à venir.</p>
+    } @else {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Lieu</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (examDate of examDates(); track examDate.id) {
+            <tr>
+              <td>{{ examDate.permitType }}</td>
+              <td>{{ examDate.date | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ examDate.location }}</td>
+              <td class="admin-table__actions">
+                <button type="button" class="link-button" (click)="delete(examDate)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</section>

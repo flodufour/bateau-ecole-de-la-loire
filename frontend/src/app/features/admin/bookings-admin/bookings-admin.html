@@ -1,0 +1,43 @@
+<section class="admin-section">
+  <h2>Toutes les réservations</h2>
+
+  @if (loaded()) {
+    @if (bookings().length === 0) {
+      <p class="empty-state">Aucune réservation.</p>
+    } @else {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Étudiant</th>
+            <th>Permis</th>
+            <th>Séance</th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (booking of bookings(); track booking.id) {
+            <tr>
+              <td>{{ booking.studentName }}</td>
+              <td>{{ booking.permitName }} — {{ booking.sessionType === 'Theory' ? 'Théorie' : 'Pratique' }}</td>
+              <td>{{ booking.sessionStartsAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td><app-booking-status-badge [status]="booking.status" /></td>
+              <td class="admin-table__actions">
+                @if (booking.status === 'Pending') {
+                  <button
+                    type="button"
+                    class="link-button"
+                    [disabled]="confirmingId() === booking.id"
+                    (click)="confirm(booking)"
+                  >
+                    Confirmer
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</section>

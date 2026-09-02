@@ -1,0 +1,15 @@
+<section class="admin container">
+  <h1>Back-office</h1>
+
+  <nav class="admin__nav" aria-label="Sections d'administration">
+    <a routerLink="permis" routerLinkActive="admin__nav-link--active">Permis</a>
+    <a routerLink="seances" routerLinkActive="admin__nav-link--active">Séances</a>
+    <a routerLink="dates-examen" routerLinkActive="admin__nav-link--active">Dates d'examen</a>
+    <a routerLink="moniteurs" routerLinkActive="admin__nav-link--active">Moniteurs</a>
+    <a routerLink="reservations" routerLinkActive="admin__nav-link--active">Réservations</a>
+  </nav>
+
+  <div class="admin__content">
+    <router-outlet />
+  </div>
+</section>

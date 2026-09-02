@@ -47,4 +47,54 @@ describe('PermitService', () => {
 
     expect(result).toEqual(permit);
   });
+
+  it('create posts the permit input', () => {
+    const input = {
+      name: permit.name,
+      slug: permit.slug,
+      description: permit.description,
+      price: permit.price,
+      includesTheory: permit.includesTheory,
+      includesPractical: permit.includesPractical,
+      isBundle: permit.isBundle,
+    };
+    let result: Permit | undefined;
+    service.create(input).subscribe((p) => (result = p));
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/permits`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(input);
+    req.flush(permit);
+
+    expect(result).toEqual(permit);
+  });
+
+  it('update puts the permit input to the given id', () => {
+    const input = {
+      name: 'Nouveau nom',
+      slug: permit.slug,
+      description: permit.description,
+      price: permit.price,
+      includesTheory: permit.includesTheory,
+      includesPractical: permit.includesPractical,
+      isBundle: permit.isBundle,
+    };
+    service.update(permit.id, input).subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/permits/${permit.id}`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(input);
+    req.flush(permit);
+  });
+
+  it('delete removes the permit by id', () => {
+    let completed = false;
+    service.delete(permit.id).subscribe(() => (completed = true));
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/permits/${permit.id}`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+
+    expect(completed).toBeTrue();
+  });
 });

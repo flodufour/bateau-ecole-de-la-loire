@@ -1,0 +1,35 @@
+.admin {
+  padding-block: var(--space-12) var(--space-16);
+}
+
+.admin h1 {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-6);
+}
+
+.admin__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin__nav a {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.admin__nav a:hover {
+  text-decoration: none;
+  color: var(--color-ink);
+}
+
+.admin__nav-link--active {
+  color: var(--color-ink) !important;
+  border-bottom-color: var(--color-accent);
+  font-weight: 500;
+}

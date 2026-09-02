@@ -35,7 +35,7 @@ Angular escapes all values bound in templates by default. This means user-provid
 Protected pages (dashboard, booking, admin) are guarded at the router level:
 
 - `authGuard` — redirects to `/connexion` if the user has no valid session. Applied to `/reserver` and `/mon-espace`.
-- A role-checking guard (redirecting away when the user's role doesn't match, e.g. a student hitting `/admin`) isn't built yet — no role-restricted route exists in the frontend so far. `/reserver` uses `authGuard` (any authenticated user), not a Student-only guard — an instructor/admin who navigates there would see the page render but get a `403` from the backend on `POST /bookings` (which is `[Authorize(Roles = "Student")]`). Add a role guard once a role-restricted page actually ships (the admin back-office).
+- `roleGuard(role)` — a guard factory: redirects to `/connexion` if unauthenticated, or to `/` if authenticated with the wrong role. Applied as `roleGuard('Admin')` on `/admin` and its child routes. `/reserver` still uses plain `authGuard` (any authenticated user), not a Student-only guard — an instructor/admin who navigates there would see the page render but get a `403` from the backend on `POST /bookings` (which is `[Authorize(Roles = "Student")]`).
 
 **These guards are a UX convenience, not a security measure.** The real enforcement is on the backend. A user who bypasses a frontend guard will still get a `401` or `403` from the API.
 

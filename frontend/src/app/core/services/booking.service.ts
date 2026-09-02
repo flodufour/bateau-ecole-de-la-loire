@@ -20,4 +20,12 @@ export class BookingService {
   cancel(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  getAll(): Observable<Booking[]> {
+    return this.http.get<Booking[]>(this.baseUrl);
+  }
+
+  confirm(id: string): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${id}/confirm`, null);
+  }
 }

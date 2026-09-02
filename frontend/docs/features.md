@@ -86,17 +86,19 @@ API: `GET /api/sessions`, `PUT /api/instructors/{id}/availability` (not built)
 
 ## Admin back-office (`/admin`)
 
-Not built. Blocked on the backend: there's no write endpoint for permits, instructors, sessions, or exam dates (only the public `GET`s from the Catalog section above) — `GET /api/bookings` and `PATCH /api/bookings/{id}/confirm` are the only admin-scoped endpoints that actually exist. A real back-office needs those write endpoints added first; a role guard (see `frontend/docs/security.md`) would come with it.
+Only accessible to users with the `Admin` role, enforced by `roleGuard('Admin')` (see `frontend/docs/security.md`). The `Header` only shows the "Admin" link for that role, but the guard is what actually blocks direct navigation — never rely on the link being hidden.
 
-Only accessible to users with the `admin` role.
+`AdminLayout` is a lazy-loaded shell with a tab-style nav and a `<router-outlet>` for five child routes, each its own lazy-loaded standalone component. Every section follows the same pattern: a create/edit form (`ReactiveFormsModule`) above a table, backend validation errors surfaced inline via `extractApiErrors`.
 
-- **Sessions** — create, edit, delete sessions; assign instructor
-- **Bookings** — view all bookings, confirm pending ones (backend ready: `GET /api/bookings`, `PATCH /api/bookings/{id}/confirm`)
-- **Exam dates** — add / remove upcoming exam dates
-- **Permits** — manage the permit catalog (name, description, price)
-- **Messages** — view contact form submissions (no `/contact` endpoint exists yet either)
+- **Permits** (`/admin/permis`) — full CRUD. Editing populates the form (`editingId` signal toggles create vs. update); delete is rejected by the backend (shown inline) if the permit still has sessions.
+- **Sessions** (`/admin/seances`) — full CRUD. Form has `<select>`s for permit and instructor (fetched on init alongside the sessions list); `startsAt` uses a `datetime-local` input, converted to/from ISO 8601 at the form boundary. Delete is rejected if the session has bookings.
+- **Exam dates** (`/admin/dates-examen`) — create and delete only; the backend has no update endpoint for exam dates.
+- **Instructors** (`/admin/moniteurs`) — create only; the backend has no update or delete endpoint for instructors. Creating one calls `POST /api/instructors`, which creates both the `User` (role `Instructor`) and the `Instructor` row — this is also the only way to onboard an instructor account today, there's no separate "invite instructor" flow. The `specialties` field is a single comma-separated text input, split/trimmed client-side into a `string[]` before the request.
+- **Bookings** (`/admin/reservations`) — lists every booking across all students (reuses `BookingStatusBadge`); a "Confirmer" button appears only on `Pending` rows and updates that row's status in place, matching the Dashboard's cancel-in-place pattern.
 
-API: all admin-scoped endpoints in `/api/*`
+Not built: a "Messages" section for contact-form submissions — no `/contact` endpoint exists yet.
+
+API: `POST/PUT/DELETE /api/permits`, `POST/PUT/DELETE /api/sessions`, `POST/DELETE /api/exam-dates`, `POST /api/instructors`, `GET /api/bookings`, `PATCH /api/bookings/{id}/confirm`
 
 ---
 
@@ -106,7 +108,7 @@ Built:
 
 | Component | Description |
 |---|---|
-| `Header` | Sticky site header — brand, nav, and login/register links or the current user's name + logout, depending on auth state |
+| `Header` | Sticky site header — brand, nav, and login/register links or the current user's name + logout, depending on auth state. Shows an "Admin" nav link only when `currentUser().role === 'Admin'` |
 | `Footer` | Minimal — site name and location |
 | `LoadingBar` | Slim animated bar at the top of the page while any HTTP request is in flight |
 | `PermitCard` | Displays a permit summary (name, price, type badges), links to its detail page |

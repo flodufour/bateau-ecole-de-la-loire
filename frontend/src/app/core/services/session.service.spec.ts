@@ -62,4 +62,39 @@ describe('SessionService', () => {
 
     expect(result).toEqual(session);
   });
+
+  const input = {
+    permitId: session.permitId,
+    instructorId: session.instructorId,
+    type: session.type,
+    startsAt: session.startsAt,
+    durationMinutes: session.durationMinutes,
+    maxCapacity: session.maxCapacity,
+    location: session.location,
+  };
+
+  it('create posts the session input', () => {
+    service.create(input).subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/sessions`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(input);
+    req.flush(session);
+  });
+
+  it('update puts the session input to the given id', () => {
+    service.update(session.id, input).subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/sessions/${session.id}`);
+    expect(req.request.method).toBe('PUT');
+    req.flush(session);
+  });
+
+  it('delete removes the session by id', () => {
+    service.delete(session.id).subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/sessions/${session.id}`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+  });
 });

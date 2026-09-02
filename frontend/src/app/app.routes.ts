@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -39,6 +40,36 @@ export const routes: Routes = [
     path: 'mon-espace',
     canActivate: [authGuard],
     loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+  },
+  {
+    path: 'admin',
+    canActivate: [roleGuard('Admin')],
+    loadComponent: () => import('./features/admin/admin-layout/admin-layout').then((m) => m.AdminLayout),
+    children: [
+      { path: '', redirectTo: 'permis', pathMatch: 'full' },
+      {
+        path: 'permis',
+        loadComponent: () => import('./features/admin/permits-admin/permits-admin').then((m) => m.PermitsAdmin),
+      },
+      {
+        path: 'seances',
+        loadComponent: () => import('./features/admin/sessions-admin/sessions-admin').then((m) => m.SessionsAdmin),
+      },
+      {
+        path: 'dates-examen',
+        loadComponent: () =>
+          import('./features/admin/exam-dates-admin/exam-dates-admin').then((m) => m.ExamDatesAdmin),
+      },
+      {
+        path: 'moniteurs',
+        loadComponent: () =>
+          import('./features/admin/instructors-admin/instructors-admin').then((m) => m.InstructorsAdmin),
+      },
+      {
+        path: 'reservations',
+        loadComponent: () => import('./features/admin/bookings-admin/bookings-admin').then((m) => m.BookingsAdmin),
+      },
+    ],
   },
   { path: '**', redirectTo: '' },
 ];
