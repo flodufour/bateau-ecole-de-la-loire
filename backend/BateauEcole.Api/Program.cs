@@ -117,6 +117,16 @@ builder.Services.AddRateLimiter(options =>
             PermitLimit = 5,
             QueueLimit = 0,
         }));
+    // Separate policy (and so a separate per-IP counter) from "auth" — a burst
+    // of contact spam shouldn't affect the login rate limit's budget or tests.
+    options.AddPolicy("contact", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            Window = TimeSpan.FromMinutes(1),
+            PermitLimit = 5,
+            QueueLimit = 0,
+        }));
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
@@ -128,6 +138,7 @@ builder.Services.AddScoped<InstructorService>();
 builder.Services.AddScoped<ExamDateService>();
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<BookingService>();
+builder.Services.AddScoped<ContactService>();
 
 var app = builder.Build();
 

@@ -95,7 +95,9 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/contact` | No | Send a contact message (triggers email to school) |
+| POST | `/contact` | No | Submit a contact message (rate-limited: 5/min/IP). No email sending yet — persisted for an admin to read, see `backend/docs/security.md` |
+| GET | `/contact` | Admin | List all submitted messages, newest first |
+| DELETE | `/contact/{id}` | Admin | Remove a message |
 
 ---
 

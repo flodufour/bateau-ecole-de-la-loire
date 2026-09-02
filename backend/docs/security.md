@@ -53,10 +53,11 @@ Applied via .NET's built-in rate limiting middleware. No extra library needed.
 | Endpoint | Limit | Why |
 |---|---|---|
 | `POST /auth/login` | 5 requests / minute / IP | Prevent brute force |
+| `POST /contact` | 5 requests / minute / IP | Prevent spam |
 
-Partitioned per client IP (`AddPolicy` + `RateLimitPartition.GetFixedWindowLimiter`) — a plain `AddFixedWindowLimiter` would share one counter across every caller, letting one attacker lock out everyone else.
+Partitioned per client IP (`AddPolicy` + `RateLimitPartition.GetFixedWindowLimiter`) — a plain `AddFixedWindowLimiter` would share one counter across every caller, letting one attacker lock out everyone else. `contact` is its own policy (own counter) rather than reusing `auth`, so a burst of contact spam can't also lock a legitimate user out of logging in.
 
-`/auth/register` and `/contact` aren't rate-limited yet — `/contact` doesn't exist yet, and register will get a limit when abuse patterns (or lack thereof) are better understood.
+`/auth/register` isn't rate-limited yet — it'll get a limit when abuse patterns (or lack thereof) are better understood.
 
 ---
 

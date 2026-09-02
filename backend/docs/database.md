@@ -14,6 +14,7 @@ instructors ──────────────────────�
 permits ──────────────────────────────────── ┘
 
 exam_dates  (standalone, no foreign keys)
+contact_messages  (standalone, no foreign keys)
 ```
 
 ---
@@ -125,6 +126,20 @@ Upcoming official exam dates, managed by admin.
 | `date` | date | |
 | `location` | varchar | |
 | `notes` | text | Optional extra info |
+
+---
+
+### `contact_messages`
+Submissions from the public contact form. No email sending yet (see `backend/docs/security.md`), so a message is only ever readable by an admin through `GET /api/contact` — there's no other notification.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `name` | varchar | |
+| `email` | varchar | |
+| `phone` | varchar? | Optional |
+| `message` | text | |
+| `created_at` | timestamptz | |
 
 ---
 
