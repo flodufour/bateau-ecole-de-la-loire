@@ -74,12 +74,22 @@ dotnet test
 
 Docker must be running — the tests spin up real, throwaway PostgreSQL containers (via Testcontainers) rather than mocking the database.
 
+## Running frontend tests
+
+```bash
+cd frontend
+ng test --watch=false --browsers=ChromeHeadless
+```
+
+Drop the flags for the interactive Karma runner (`ng test` alone), which reruns on file changes and opens Chrome.
+
 ## Project structure
 
 ```
 /
 ├── backend/
-│   ├── BateauEcole.Api/  # ASP.NET Core Web API (csproj, src/)
+│   ├── BateauEcole.Api/       # ASP.NET Core Web API (csproj, src/)
+│   ├── BateauEcole.Api.Tests/ # xUnit integration tests
 │   └── CHANGELOG.md
 ├── frontend/
 │   ├── src/              # Angular app source

@@ -10,12 +10,12 @@ Never store tokens in `localStorage` or `sessionStorage`.
 
 Because the token lives in a cookie, we need protection against Cross-Site Request Forgery (CSRF) — an attack where another site tricks the browser into sending a request with your cookie.
 
-Angular's `HttpClientXsrfModule` handles this automatically:
-- The backend sets a readable cookie named `XSRF-TOKEN`.
+Angular's built-in XSRF handling (`withXsrfConfiguration`, configured in `app.config.ts`'s `provideHttpClient`) handles this automatically:
+- The backend sets a readable cookie named `XSRF-TOKEN` (explicitly **not** `httpOnly` — that's the one cookie that must stay JS-readable, unlike `access_token`/`refresh_token`).
 - Angular reads it and adds an `X-XSRF-TOKEN` header to every mutating request (POST, PUT, PATCH, DELETE).
 - The backend validates this header. A forged request from another site cannot read the cookie, so it cannot set the header.
 
-Keep `HttpClientXsrfModule` enabled in the app config — never disable it.
+Keep the XSRF configuration in `provideHttpClient(...)` — never remove it.
 
 ## XSS protection
 
@@ -28,16 +28,19 @@ Angular escapes all values bound in templates by default. This means user-provid
 
 Protected pages (dashboard, booking, admin) are guarded at the router level:
 
-- `AuthGuard` — redirects to login if the user has no valid session.
-- `RoleGuard` — redirects to home if the user's role does not match (e.g. a student trying to access `/admin`).
+- `authGuard` — redirects to `/connexion` if the user has no valid session. Built.
+- A role-checking guard (redirecting away when the user's role doesn't match, e.g. a student hitting `/admin`) isn't built yet — no role-restricted route exists in the frontend so far.
 
 **These guards are a UX convenience, not a security measure.** The real enforcement is on the backend. A user who bypasses a frontend guard will still get a `401` or `403` from the API.
 
-## HTTP interceptor
+## HTTP interceptors
 
-A single interceptor handles two things:
-1. Attaches any required headers to outgoing requests (CSRF token is handled by `HttpClientXsrfModule`, not here).
-2. Catches `401 Unauthorized` responses and triggers a silent token refresh before retrying the original request. If the refresh fails, the user is redirected to login.
+Three, each with one job (`core/interceptors/`):
+1. `credentialsInterceptor` — sets `withCredentials: true` so the browser attaches the auth cookies to cross-origin requests (the XSRF header itself is handled by Angular's built-in XSRF support, not here).
+2. `loadingInterceptor` — increments/decrements `LoadingService`'s counter around each request, driving the top-of-page loading bar.
+3. `authErrorInterceptor` — on any `401`, clears the local session (`AuthService.clearSession()`) so the header/guards reflect it immediately, and re-throws the error.
+
+**Not built yet:** silently calling `/auth/refresh` and retrying the original request when a `401` hits an expired-but-refreshable session, instead of just clearing the session. Doing this correctly needs a guard against concurrent requests each triggering their own refresh call — the backend rotates (revokes) the refresh token on every use, so two simultaneous refresh attempts would have the second one fail. Today, an expired access token just logs the user out; they log back in with their still-valid refresh token cookie via `/connexion` if needed. Revisit this once it's a real friction point.
 
 ## Content Security Policy
 

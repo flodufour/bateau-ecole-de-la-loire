@@ -59,7 +59,7 @@ The developer working on this project is learning while building. Every non-triv
 - **Every new piece of code ships with the tests that cover it, in the same commit.** Not a follow-up, not "add tests later" — if a controller, service, or endpoint is added or changed, its tests are added or changed alongside it.
 - Backend: `backend/BateauEcole.Api.Tests` (xUnit + `WebApplicationFactory<Program>` + Testcontainers.PostgreSql). Prefer testing through real HTTP calls against the full pipeline over mocking — this project doesn't use a Repository layer or heavy mocking, so integration-style tests catch far more (routing, auth, serialization, real Postgres constraints) than a unit test with everything stubbed out. See `backend/docs/architecture.md` for the testing setup and its non-obvious gotchas (rate-limit isolation, `Secure` cookies needing an `https` test client, enum JSON serialization).
 - A test class gets its own `IClassFixture<ApiTestFixture>` unless there's a specific reason to share one — rate-limited endpoints in particular must not share a fixture with unrelated tests.
-- Frontend: no test setup yet — establish the pattern (likely Angular's built-in Jasmine/Karma or a Vitest migration) when the first frontend feature needs one, and document the choice here.
+- Frontend: Jasmine/Karma (Angular's `ng new` default — no reason to migrate to Vitest yet). Services/interceptors/guards use `provideHttpClient() + provideHttpClientTesting()` and `HttpTestingController`; components are driven through the rendered DOM (query inputs, dispatch `input`/`submit` events), not by reaching into `protected` fields. Run with `ng test --watch=false --browsers=ChromeHeadless` (or the interactive Karma/Chrome runner via plain `ng test`).
 
 ## File structure
 

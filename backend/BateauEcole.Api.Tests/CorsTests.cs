@@ -49,4 +49,19 @@ public class CorsTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixture>
 
         Assert.Equal(AllowedOrigin, response.Headers.GetValues("Access-Control-Allow-Origin").Single());
     }
+
+    [Fact]
+    public async Task CsrfCookie_IsNotHttpOnly()
+    {
+        // The whole point of this cookie is that frontend JS reads it
+        // (document.cookie) and echoes it back in a header — ASP.NET Core
+        // defaults cookie options to HttpOnly=true, which would silently make
+        // that impossible. Caught for real once already; this pins it down.
+        var client = fixture.CreateClient();
+
+        var response = await client.GetAsync("/api/auth/csrf");
+
+        var setCookie = response.Headers.GetValues("Set-Cookie").Single(c => c.StartsWith("XSRF-TOKEN=", StringComparison.Ordinal));
+        Assert.DoesNotContain("httponly", setCookie, StringComparison.OrdinalIgnoreCase);
+    }
 }

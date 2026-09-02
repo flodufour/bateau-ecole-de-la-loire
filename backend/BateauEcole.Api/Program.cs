@@ -94,6 +94,11 @@ builder.Services.AddAntiforgery(options =>
 {
     options.Cookie.Name = "XSRF-TOKEN";
     options.HeaderName = "X-XSRF-TOKEN";
+    // The whole point of this cookie is that JS reads it and echoes it back
+    // in a header — ASP.NET Core defaults cookie options to HttpOnly=true,
+    // which would silently make that impossible and break CSRF validation
+    // on every state-changing request.
+    options.Cookie.HttpOnly = false;
 });
 
 // AddFixedWindowLimiter alone would share ONE counter across every caller —

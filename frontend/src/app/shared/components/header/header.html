@@ -1,0 +1,15 @@
+<header class="header">
+  <div class="header__inner container">
+    <a class="header__brand" routerLink="/">École de bateau de la Loire</a>
+
+    <nav class="header__actions" aria-label="Compte">
+      @if (currentUser(); as user) {
+        <span class="header__user">{{ user.firstName }}</span>
+        <button type="button" class="header__link-button" (click)="logout()">Se déconnecter</button>
+      } @else {
+        <a routerLink="/connexion">Se connecter</a>
+        <a class="header__cta" routerLink="/inscription">S'inscrire</a>
+      }
+    </nav>
+  </div>
+</header>
