@@ -75,10 +75,12 @@ The permit types the school offers (Côtier, Hauturier, Fluvial, bundles…).
 | `name` | varchar | e.g. `Permis Côtier` |
 | `slug` | varchar | URL-friendly, unique |
 | `description` | text | |
-| `price` | numeric(8,2) | |
+| `price` | numeric(8,2) | All-inclusive price (base + exam + tax stamps combined) — the breakdown lives in `description`, there's no separate fee columns |
 | `includes_theory` | boolean | |
 | `includes_practical` | boolean | |
 | `is_bundle` | boolean | True for combination packages |
+
+Seeded with the school's real 8-offer catalog via the `SeedPermits` migration (`AppDbContext.SeedPermits()`), so every environment starts with real data instead of an empty table. Admins can freely edit or delete these afterwards through the normal `/api/permits` CRUD — the seed is just a starting point, not a fixed reference table. Not seeded: the "Carte Cadeau" (gift card) product, since it isn't a permit and doesn't fit this table's shape (no theory/practical/pricing-by-navigation-rights) — it would need its own concept if ever built.
 
 ---
 
