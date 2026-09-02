@@ -47,11 +47,26 @@ Browse all available permit types. Built: list page (card grid) and detail page.
 
 - List: a short static explainer ("Les 3 permis, en bref" — Côtier, Hauturier, Fluvial, what each requires and how the théorie/pratique process works) above the card grid, then one `PermitCard` per permit (name, truncated description, price, Théorie/Pratique/Pack badges). The explainer is static content, not derived from the API — it describes the 3 base permit *types*, while the grid below lists the school's actual sellable *offers* (base permits, code-seul variants, bundles). Empty and error states are handled explicitly, not just a blank page.
 - Detail (`/formations/:id`) — full description, price, badges. Route uses the permit's `id` (a GUID), not its `slug` — the backend only exposes `GET /api/permits/{id}` today, no slug-based lookup. Nicer URLs (`/formations/permis-cotier`) would need a `GET /api/permits/by-slug/{slug}`-style endpoint added first.
-- The detail page's "Acheter ce permis" button is where a purchase happens — see `backend/docs/security.md`'s "Payment": there's no real checkout, it's paid the instant you click it. Only shown to a logged-in `Student`; a logged-out visitor sees "Se connecter pour acheter" instead, and other roles see nothing (matches the backend's `[Authorize(Roles = "Student")]` on `POST /purchases`). On success the button is replaced by a confirmation linking to `/mon-espace`.
+- The detail page has a quantity input + "Ajouter au panier" — this only touches the client-side cart (`CartService`), so it's available to anyone, logged in or not; no backend call happens until checkout on `/panier`.
 
 Not built yet: filtering by permit category.
 
-API: `GET /api/permits`, `GET /api/permits/{id}`, `POST /api/purchases`
+API: `GET /api/permits`, `GET /api/permits/{id}`
+
+---
+
+## Cart (`/panier`)
+
+The cart itself is entirely client-side — `CartService` holds `{ permitId, permitName, price, quantity }` lines in a signal, persisted to `localStorage` (key `bateau-ecole:cart`) so it survives a reload. There is no backend "cart" concept; the only server call is the final checkout.
+
+- Table of lines: name, unit price, an editable quantity input, line total, "Retirer". Quantity changes and removals update the total live.
+- Checkout ("Valider la commande") is where auth is actually enforced: logged out sees "Se connecter pour valider la commande" instead of a button; logged in as non-`Student` sees a message instead ("Seul un compte étudiant peut valider une commande"), matching the backend's `[Authorize(Roles = "Student")]` on `POST /purchases/checkout`. Only a `Student` sees the real checkout button.
+- On success: `PurchaseService.checkout()` returns one `PermitPurchase` per unit (a quantity of 3 comes back as 3 rows) — the cart is cleared and a confirmation links to `/mon-espace`, where they show up via the dashboard's "Mes permis achetés" (see Dashboard below). See `backend/docs/security.md`'s "Payment": there's no real payment provider, checkout marks everything paid immediately.
+- `Header` shows a "Mon panier" link with an item-count badge whenever the cart isn't empty, visible regardless of auth state.
+
+Not built yet: quick "add to cart" from the catalog grid (only from the detail page today).
+
+API: `POST /api/purchases/checkout`
 
 ---
 

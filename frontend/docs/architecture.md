@@ -22,6 +22,7 @@ frontend/src/app/
 │   ├── auth/              # login/, register/, forgot-password/, reset-password/
 │   ├── contact/           # public contact page (info + form)
 │   ├── catalog/           # permit listing and detail pages
+│   ├── cart/              # client-side cart (CartService) + checkout
 │   ├── booking/           # session browser and booking flow
 │   ├── dashboard/         # student personal space (list/cancel own bookings)
 │   ├── instructor/        # instructor portal: assigned sessions + availability slots
@@ -68,6 +69,7 @@ Top-level routes are defined in `app.routes.ts`. Each feature is a lazy-loaded c
 /contact                       → Contact (lazy)
 /formations                    → Catalog list (lazy)
 /formations/:id                → Permit detail (lazy) — by id (guid), not slug
+/panier                        → Cart (lazy) — no guard, works logged out; checkout itself requires Student
 /reserver                      → Booking (lazy, authGuard)
 /mon-espace                    → Dashboard (lazy, authGuard)
 /admin                         → Admin layout (lazy, roleGuard('Admin')), with child routes

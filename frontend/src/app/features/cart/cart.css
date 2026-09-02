@@ -1,0 +1,29 @@
+.cart__body {
+  padding-bottom: var(--space-16);
+}
+
+.cart__quantity {
+  width: 70px;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.cart__total {
+  margin: var(--space-6) 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.cart__checkout {
+  width: auto;
+  float: right;
+  padding-inline: var(--space-8);
+}
+
+.cart__success {
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}

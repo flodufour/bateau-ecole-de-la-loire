@@ -4,13 +4,20 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PermitPurchase } from '../models/permit-purchase.model';
 
+export interface CheckoutItem {
+  permitId: string;
+  quantity: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PurchaseService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/purchases`;
 
-  purchase(permitId: string): Observable<PermitPurchase> {
-    return this.http.post<PermitPurchase>(this.baseUrl, { permitId });
+  // One purchase per unit comes back — a quantity of 3 for one permit
+  // returns 3 PermitPurchase rows, each individually transferable later.
+  checkout(items: CheckoutItem[]): Observable<PermitPurchase[]> {
+    return this.http.post<PermitPurchase[]>(`${this.baseUrl}/checkout`, { items });
   }
 
   getMine(): Observable<PermitPurchase[]> {

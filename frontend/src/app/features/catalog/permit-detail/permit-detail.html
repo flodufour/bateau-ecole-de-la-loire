@@ -20,26 +20,17 @@
     </div>
 
     <div class="permit-detail__purchase">
-      @if (purchased()) {
-        <p class="permit-detail__success">
-          Vous avez acheté ce permis ! Retrouvez-le dans <a routerLink="/mon-espace">Mon espace</a>.
-        </p>
-      } @else if (currentUser(); as user) {
-        @if (user.role === 'Student') {
-          <button type="button" class="submit-button" [disabled]="purchasing()" (click)="buy(permit.id)">
-            {{ purchasing() ? 'Achat en cours…' : 'Acheter ce permis' }}
-          </button>
+      <label class="field permit-detail__quantity">
+        <span>Quantité</span>
+        <input type="number" min="1" [value]="quantity()" (input)="setQuantity($event)" />
+      </label>
 
-          @if (purchaseErrors().length) {
-            <ul class="form-errors">
-              @for (error of purchaseErrors(); track error) {
-                <li>{{ error }}</li>
-              }
-            </ul>
-          }
-        }
-      } @else {
-        <a class="submit-button" routerLink="/connexion">Se connecter pour acheter</a>
+      <button type="button" class="submit-button" (click)="addToCart(permit)">Ajouter au panier</button>
+
+      @if (added()) {
+        <p class="permit-detail__success">
+          Ajouté au panier. <a routerLink="/panier">Voir mon panier</a>
+        </p>
       }
     </div>
   </section>

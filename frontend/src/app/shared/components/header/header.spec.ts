@@ -3,12 +3,15 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { environment } from '../../../../environments/environment';
+import { Permit } from '../../../core/models/permit.model';
 import { User } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
 import { Header } from './header';
 
 describe('Header', () => {
   let auth: AuthService;
+  let cart: CartService;
   let httpMock: HttpTestingController;
 
   const user: User = {
@@ -19,17 +22,50 @@ describe('Header', () => {
     role: 'Student',
   };
 
+  const permit: Permit = {
+    id: 'p1',
+    name: 'Permis Côtier',
+    slug: 'cotier',
+    description: 'desc',
+    price: 358,
+    includesTheory: true,
+    includesPractical: true,
+    isBundle: false,
+  };
+
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [Header],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     auth = TestBed.inject(AuthService);
+    cart = TestBed.inject(CartService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => httpMock.verify());
+  afterEach(() => {
+    httpMock.verify();
+    localStorage.clear();
+  });
+
+  it('links to the cart and shows no badge when it is empty', () => {
+    const fixture = TestBed.createComponent(Header);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.textContent).toContain('Mon panier');
+    expect(element.querySelector('.header__cart-badge')).toBeNull();
+  });
+
+  it('shows the number of items in the cart badge', () => {
+    cart.add(permit, 3);
+    const fixture = TestBed.createComponent(Header);
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('.header__cart-badge')?.textContent?.trim()).toBe('3');
+  });
 
   it('shows "se connecter" / "s\'inscrire" links when logged out', () => {
     const fixture = TestBed.createComponent(Header);

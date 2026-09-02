@@ -1,0 +1,70 @@
+<section class="page-header container">
+  <h1>Mon panier</h1>
+</section>
+
+<section class="container cart__body">
+  @if (checkedOut()) {
+    <p class="cart__success">
+      Commande validée ! Retrouvez vos permis dans <a routerLink="/mon-espace">Mon espace</a>.
+    </p>
+  } @else if (items().length === 0) {
+    <p class="empty-state">
+      Votre panier est vide. <a routerLink="/formations">Voir les formations</a>
+    </p>
+  } @else {
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Permis</th>
+          <th>Prix unitaire</th>
+          <th>Quantité</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.permitId) {
+          <tr>
+            <td>{{ item.permitName }}</td>
+            <td>{{ item.price | currency: 'EUR' }}</td>
+            <td>
+              <input
+                type="number"
+                min="1"
+                class="cart__quantity"
+                [value]="item.quantity"
+                (input)="updateQuantity(item, $event)"
+              />
+            </td>
+            <td>{{ item.price * item.quantity | currency: 'EUR' }}</td>
+            <td class="admin-table__actions">
+              <button type="button" class="link-button" (click)="remove(item)">Retirer</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <p class="cart__total">Total : {{ total() | currency: 'EUR' }}</p>
+
+    @if (errors().length) {
+      <ul class="form-errors">
+        @for (error of errors(); track error) {
+          <li>{{ error }}</li>
+        }
+      </ul>
+    }
+
+    @if (currentUser(); as user) {
+      @if (user.role === 'Student') {
+        <button type="button" class="submit-button cart__checkout" [disabled]="checkingOut()" (click)="checkout()">
+          {{ checkingOut() ? 'Validation…' : 'Valider la commande' }}
+        </button>
+      } @else {
+        <p class="empty-state">Seul un compte étudiant peut valider une commande.</p>
+      }
+    } @else {
+      <a class="submit-button cart__checkout" routerLink="/connexion">Se connecter pour valider la commande</a>
+    }
+  }
+</section>

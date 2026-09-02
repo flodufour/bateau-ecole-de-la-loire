@@ -36,6 +36,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/catalog/permit-detail/permit-detail').then((m) => m.PermitDetail),
   },
   {
+    path: 'panier',
+    loadComponent: () => import('./features/cart/cart').then((m) => m.Cart),
+  },
+  {
     path: 'reserver',
     canActivate: [authGuard],
     loadComponent: () => import('./features/booking/booking-page').then((m) => m.BookingPage),

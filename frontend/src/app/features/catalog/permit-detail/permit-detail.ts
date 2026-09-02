@@ -2,10 +2,8 @@ import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Permit } from '../../../core/models/permit.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
 import { PermitService } from '../../../core/services/permit.service';
-import { PurchaseService } from '../../../core/services/purchase.service';
-import { extractApiErrors } from '../../../core/utils/api-error.util';
 
 @Component({
   selector: 'app-permit-detail',
@@ -17,17 +15,13 @@ import { extractApiErrors } from '../../../core/utils/api-error.util';
 export class PermitDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly permitService = inject(PermitService);
-  private readonly purchaseService = inject(PurchaseService);
-  private readonly auth = inject(AuthService);
-
-  protected readonly currentUser = this.auth.currentUser;
+  private readonly cartService = inject(CartService);
 
   protected readonly permit = signal<Permit | null>(null);
   protected readonly notFound = signal(false);
 
-  protected readonly purchasing = signal(false);
-  protected readonly purchased = signal(false);
-  protected readonly purchaseErrors = signal<string[]>([]);
+  protected readonly quantity = signal(1);
+  protected readonly added = signal(false);
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -42,21 +36,13 @@ export class PermitDetail {
     });
   }
 
-  protected buy(permitId: string): void {
-    if (this.purchasing()) return;
+  protected setQuantity(event: Event): void {
+    const value = Number((event.target as HTMLInputElement).value);
+    this.quantity.set(Number.isFinite(value) && value > 0 ? Math.floor(value) : 1);
+  }
 
-    this.purchaseErrors.set([]);
-    this.purchasing.set(true);
-
-    this.purchaseService.purchase(permitId).subscribe({
-      next: () => {
-        this.purchasing.set(false);
-        this.purchased.set(true);
-      },
-      error: (error: unknown) => {
-        this.purchasing.set(false);
-        this.purchaseErrors.set(extractApiErrors(error));
-      },
-    });
+  protected addToCart(permit: Permit): void {
+    this.cartService.add(permit, this.quantity());
+    this.added.set(true);
   }
 }

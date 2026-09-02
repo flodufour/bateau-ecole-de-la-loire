@@ -27,16 +27,16 @@ describe('PurchaseService', () => {
 
   afterEach(() => httpMock.verify());
 
-  it('purchase posts the permit id', () => {
-    let result: PermitPurchase | undefined;
-    service.purchase(purchase.permitId).subscribe((p) => (result = p));
+  it('checkout posts the cart items and returns one purchase per unit', () => {
+    let result: PermitPurchase[] | undefined;
+    service.checkout([{ permitId: purchase.permitId, quantity: 2 }]).subscribe((p) => (result = p));
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/purchases`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/purchases/checkout`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ permitId: purchase.permitId });
-    req.flush(purchase);
+    expect(req.request.body).toEqual({ items: [{ permitId: purchase.permitId, quantity: 2 }] });
+    req.flush([purchase, purchase]);
 
-    expect(result).toEqual(purchase);
+    expect(result).toEqual([purchase, purchase]);
   });
 
   it('getMine fetches the current user\'s purchases', () => {

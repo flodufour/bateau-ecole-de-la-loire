@@ -41,6 +41,25 @@
   text-decoration: none;
 }
 
+.header__cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.header__cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.2em;
+  padding: 0 0.35em;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-paper);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
 .header__actions {
   display: flex;
   align-items: center;

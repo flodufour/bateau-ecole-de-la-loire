@@ -3,14 +3,13 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { environment } from '../../../../environments/environment';
+import { CartService } from '../../../core/services/cart.service';
 import { Permit } from '../../../core/models/permit.model';
-import { User } from '../../../core/models/user.model';
-import { AuthService } from '../../../core/services/auth.service';
 import { PermitDetail } from './permit-detail';
 
 describe('PermitDetail', () => {
   let httpMock: HttpTestingController;
-  let auth: AuthService;
+  let cart: CartService;
 
   const permit: Permit = {
     id: 'a1b2c3',
@@ -23,15 +22,8 @@ describe('PermitDetail', () => {
     isBundle: false,
   };
 
-  const student: User = {
-    id: 'u1',
-    email: 'jean.dupont@example.com',
-    firstName: 'Jean',
-    lastName: 'Dupont',
-    role: 'Student',
-  };
-
   function setup(id: string | null): void {
+    localStorage.clear();
     TestBed.configureTestingModule({
       imports: [PermitDetail],
       providers: [
@@ -45,15 +37,13 @@ describe('PermitDetail', () => {
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
-    auth = TestBed.inject(AuthService);
+    cart = TestBed.inject(CartService);
   }
 
-  function loginAs(user: User): void {
-    auth.login({ email: user.email, password: 'Password123!' }).subscribe();
-    httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush(user);
-  }
-
-  afterEach(() => httpMock.verify());
+  afterEach(() => {
+    httpMock.verify();
+    localStorage.clear();
+  });
 
   it('fetches and renders the permit matching the route id', () => {
     setup(permit.id);
@@ -86,7 +76,7 @@ describe('PermitDetail', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain("n'existe pas");
   });
 
-  it('shows a login link instead of a buy button when logged out', () => {
+  it('adds one unit to the cart by default', () => {
     setup(permit.id);
     const fixture = TestBed.createComponent(PermitDetail);
     fixture.detectChanges();
@@ -94,36 +84,36 @@ describe('PermitDetail', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement as HTMLElement;
-    expect(element.textContent).toContain('Se connecter pour acheter');
-    expect(element.querySelector('button')).toBeNull();
+    element.querySelector<HTMLButtonElement>('button')!.click();
+    fixture.detectChanges();
+
+    expect(cart.items()).toEqual([{ permitId: permit.id, permitName: permit.name, price: permit.price, quantity: 1 }]);
+    expect(element.textContent).toContain('Ajouté au panier');
   });
 
-  it('buys the permit and shows a confirmation with a link to the dashboard', () => {
+  it('adds the chosen quantity to the cart', () => {
     setup(permit.id);
-    loginAs(student);
     const fixture = TestBed.createComponent(PermitDetail);
     fixture.detectChanges();
     httpMock.expectOne(`${environment.apiUrl}/permits/${permit.id}`).flush(permit);
     fixture.detectChanges();
 
-    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button')!.click();
+    const element = fixture.nativeElement as HTMLElement;
+    const quantityInput = element.querySelector<HTMLInputElement>('input[type="number"]')!;
+    quantityInput.value = '3';
+    quantityInput.dispatchEvent(new Event('input'));
+    element.querySelector<HTMLButtonElement>('button')!.click();
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/purchases`);
-    expect(req.request.body).toEqual({ permitId: permit.id });
-    req.flush({ id: 'pp1', permitId: permit.id, permitName: permit.name, price: permit.price, purchasedAt: '2026-09-02T10:00:00Z' });
-    fixture.detectChanges();
-
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Vous avez acheté ce permis');
+    expect(cart.items()[0].quantity).toBe(3);
   });
 
-  it('does not show a buy button for a non-Student role', () => {
+  it('is available whether or not the visitor is logged in', () => {
     setup(permit.id);
-    loginAs({ ...student, role: 'Admin' });
     const fixture = TestBed.createComponent(PermitDetail);
     fixture.detectChanges();
     httpMock.expectOne(`${environment.apiUrl}/permits/${permit.id}`).flush(permit);
     fixture.detectChanges();
 
-    expect((fixture.nativeElement as HTMLElement).querySelector('button')).toBeNull();
+    expect((fixture.nativeElement as HTMLElement).querySelector('button')).toBeTruthy();
   });
 });

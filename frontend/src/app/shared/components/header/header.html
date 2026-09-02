@@ -5,6 +5,12 @@
     <nav class="header__nav" aria-label="Navigation principale">
       <a routerLink="/formations" routerLinkActive="header__nav-link--active">Formations</a>
       <a routerLink="/contact" routerLinkActive="header__nav-link--active">Contact</a>
+      <a routerLink="/panier" routerLinkActive="header__nav-link--active" class="header__cart-link">
+        Mon panier
+        @if (cartItemCount() > 0) {
+          <span class="header__cart-badge">{{ cartItemCount() }}</span>
+        }
+      </a>
       @if (currentUser(); as user) {
         <a routerLink="/reserver" routerLinkActive="header__nav-link--active">Réserver</a>
         <a routerLink="/mon-espace" routerLinkActive="header__nav-link--active">Mon espace</a>

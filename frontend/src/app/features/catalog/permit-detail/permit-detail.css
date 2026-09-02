@@ -17,19 +17,25 @@
 }
 
 .permit-detail__purchase {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-4);
   margin-top: var(--space-8);
 }
 
+.permit-detail__quantity {
+  width: 100px;
+}
+
 .permit-detail__success {
+  width: 100%;
   padding: var(--space-4) var(--space-6);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }
 
 .permit-detail__purchase .submit-button {
-  display: inline-block;
   width: auto;
-  text-align: center;
-  text-decoration: none;
   padding-inline: var(--space-8);
 }
