@@ -19,13 +19,33 @@
 .permit-detail__purchase {
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
+  align-items: center;
   gap: var(--space-4);
   margin-top: var(--space-8);
 }
 
+/* Label and input side by side (not stacked, unlike .field) so this lines
+   up on the same baseline as the button next to it. */
 .permit-detail__quantity {
-  width: 100px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+  color: var(--color-ink);
+}
+
+.permit-detail__quantity input {
+  width: 70px;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.permit-detail__quantity input:focus {
+  outline: none;
+  border-color: var(--color-accent);
 }
 
 .permit-detail__success {
