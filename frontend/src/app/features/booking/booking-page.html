@@ -45,6 +45,7 @@
           <app-session-card
             [session]="session"
             [disabled]="bookingSessionId() === session.id"
+            [bookingStatus]="myBookings().get(session.id) ?? null"
             (book)="book($event)"
           />
         }

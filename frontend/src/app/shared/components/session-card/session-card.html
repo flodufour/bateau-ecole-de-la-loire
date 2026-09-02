@@ -10,7 +10,13 @@
   <p class="session-card__meta">{{ session().instructorName }} · {{ session().location }}</p>
   <p class="session-card__meta">{{ session().durationMinutes }} min · {{ session().maxCapacity }} places</p>
 
-  <button type="button" class="submit-button" [disabled]="disabled()" (click)="book.emit(session().id)">
-    Réserver
-  </button>
+  @if (bookingStatus(); as status) {
+    <button type="button" class="submit-button" disabled>
+      {{ status === 'Confirmed' ? 'Confirmée' : 'En attente' }}
+    </button>
+  } @else {
+    <button type="button" class="submit-button" [disabled]="disabled()" (click)="book.emit(session().id)">
+      Réserver
+    </button>
+  }
 </article>

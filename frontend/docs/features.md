@@ -76,8 +76,9 @@ Book a theory or practical session. Requires login (`authGuard`) — not require
 
 - Filters (type, permit, date) re-fetch the session list on every change (`filters.valueChanges`) — no separate "apply" button.
 - `SessionCard` (dumb component) renders one session and emits `book` with the session id; the page owns the actual `BookingService.create()` call and the resulting success/error message.
+- The page also loads the caller's own bookings (`GET /bookings/me`) into a `Map<sessionId, BookingStatus>` (Cancelled excluded — that's not a reason to block re-booking) and passes the match, if any, to each `SessionCard` as `bookingStatus`. A session already booked shows a disabled, greyed-out button reading "En attente" or "Confirmée" instead of "Réserver" — same French wording as `BookingStatusBadge`, just as a button state here rather than a badge. A 403 from `GET /bookings/me` (a non-Student visiting, see below) is treated the same as "no bookings yet".
 - Capacity isn't shown as "N places restantes" — `GET /api/sessions` doesn't return a current booking count, only `maxCapacity`. A full session just fails on booking attempt with the backend's "Cette séance est complète." message. Showing remaining spots directly would need the sessions endpoint to also return a count.
-- A successful booking re-fetches the session list (in case it's now full) and shows a success banner.
+- A successful booking re-fetches both the session list (in case it's now full) and the caller's own bookings (so the new one shows as "En attente" right away), and shows a success banner.
 
 Not built yet: a confirmation *screen* (booking happens inline, feedback is a banner not a separate step) — matches what actually exists rather than the originally-planned "confirmation screen"; email confirmation (no email sending exists at all yet, see `backend/docs/security.md`).
 
@@ -155,7 +156,7 @@ Built:
 | `Footer` | Site name, location, and links to the legal pages (mentions légales, politique de confidentialité) |
 | `LoadingBar` | Slim animated bar at the top of the page while any HTTP request is in flight |
 | `PermitCard` | Displays a permit summary (name, price, type badges), links to its detail page |
-| `SessionCard` | Displays a single session (date, instructor, type, location, capacity — not spots *left*, see the Booking section above); emits `book` rather than calling `BookingService` itself |
+| `SessionCard` | Displays a single session (date, instructor, type, location, capacity — not spots *left*, see the Booking section above); emits `book` rather than calling `BookingService` itself. Its `bookingStatus` input (Pending/Confirmed/null), set by the caller, swaps the "Réserver" button for a disabled one reading the status instead |
 | `BookingStatusBadge` | Colour-coded badge: `Pending` (neutral) / `Confirmed` (green) / `Cancelled` (red), French labels |
 
 Planned, not built yet:

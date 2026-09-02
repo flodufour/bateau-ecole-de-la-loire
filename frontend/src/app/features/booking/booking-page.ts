@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { BookingStatus } from '../../core/models/booking.model';
 import { Permit } from '../../core/models/permit.model';
 import { Session, SessionType } from '../../core/models/session.model';
 import { BookingService } from '../../core/services/booking.service';
@@ -33,6 +34,12 @@ export class BookingPage {
   protected readonly bookingSessionId = signal<string | null>(null);
   protected readonly message = signal<FeedbackMessage | null>(null);
 
+  // Non-Cancelled bookings only — a cancelled one isn't a reason to block
+  // re-booking the same session. A non-Student visiting this page (it's
+  // only authGuard, not Student-only — see frontend/docs/security.md) gets
+  // a 403 from GET /bookings/me; that's treated the same as "none yet".
+  protected readonly myBookings = signal<Map<string, BookingStatus>>(new Map());
+
   protected readonly filters = this.fb.nonNullable.group({
     type: [''],
     permitId: [''],
@@ -42,6 +49,7 @@ export class BookingPage {
   constructor() {
     this.permitService.getAll().subscribe((permits) => this.permits.set(permits));
     this.loadSessions();
+    this.loadMyBookings();
     this.filters.valueChanges.subscribe(() => this.loadSessions());
   }
 
@@ -57,11 +65,25 @@ export class BookingPage {
           isError: false,
         });
         this.loadSessions();
+        this.loadMyBookings();
       },
       error: (error: unknown) => {
         this.bookingSessionId.set(null);
         this.message.set({ text: extractApiErrors(error).join(' '), isError: true });
       },
+    });
+  }
+
+  private loadMyBookings(): void {
+    this.bookingService.getMine().subscribe({
+      next: (bookings) => {
+        const bySession = new Map<string, BookingStatus>();
+        for (const booking of bookings) {
+          if (booking.status !== 'Cancelled') bySession.set(booking.sessionId, booking.status);
+        }
+        this.myBookings.set(bySession);
+      },
+      error: () => this.myBookings.set(new Map()),
     });
   }
 
