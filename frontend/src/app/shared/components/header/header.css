@@ -52,19 +52,6 @@
   color: var(--color-ink-muted);
 }
 
-.header__link-button {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--color-accent);
-  font-size: inherit;
-  cursor: pointer;
-}
-
-.header__link-button:hover {
-  text-decoration: underline;
-}
-
 .header__cta {
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);

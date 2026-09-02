@@ -1,0 +1,19 @@
+.booking-page__body {
+  padding-bottom: var(--space-16);
+}
+
+.booking-page__filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.booking-page__success {
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #1e7e42 8%, var(--color-paper));
+  color: #1e7e42;
+  font-size: 0.9rem;
+}

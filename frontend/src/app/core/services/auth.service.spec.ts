@@ -90,4 +90,26 @@ describe('AuthService', () => {
 
     expect(service.currentUser()).toBeNull();
   });
+
+  it('forgotPassword posts the email', () => {
+    let completed = false;
+    service.forgotPassword(user.email).subscribe(() => (completed = true));
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/forgot-password`);
+    expect(req.request.body).toEqual({ email: user.email });
+    req.flush(null);
+
+    expect(completed).toBeTrue();
+  });
+
+  it('resetPassword posts the email, token, and new password', () => {
+    let completed = false;
+    service.resetPassword(user.email, 'a-reset-token', 'NewPassword123!').subscribe(() => (completed = true));
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/reset-password`);
+    expect(req.request.body).toEqual({ email: user.email, token: 'a-reset-token', newPassword: 'NewPassword123!' });
+    req.flush(null);
+
+    expect(completed).toBeTrue();
+  });
 });

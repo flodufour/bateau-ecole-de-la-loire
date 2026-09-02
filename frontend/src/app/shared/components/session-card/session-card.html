@@ -1,0 +1,16 @@
+<article class="session-card">
+  <div class="session-card__badges">
+    <span class="badge" [class.badge--accent]="session().type === 'Practical'">
+      {{ session().type === 'Theory' ? 'Théorie' : 'Pratique' }}
+    </span>
+  </div>
+
+  <h3>{{ session().permitName }}</h3>
+  <p class="session-card__meta">{{ session().startsAt | date: 'EEEE d MMMM à HH:mm' }}</p>
+  <p class="session-card__meta">{{ session().instructorName }} · {{ session().location }}</p>
+  <p class="session-card__meta">{{ session().durationMinutes }} min · {{ session().maxCapacity }} places</p>
+
+  <button type="button" class="submit-button" [disabled]="disabled()" (click)="book.emit(session().id)">
+    Réserver
+  </button>
+</article>

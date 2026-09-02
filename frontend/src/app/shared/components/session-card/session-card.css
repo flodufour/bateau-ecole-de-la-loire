@@ -1,0 +1,26 @@
+.session-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.session-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.session-card__meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-ink-muted);
+}
+
+.session-card .submit-button {
+  margin-top: var(--space-3);
+  width: auto;
+  align-self: flex-start;
+  padding-inline: var(--space-6);
+}

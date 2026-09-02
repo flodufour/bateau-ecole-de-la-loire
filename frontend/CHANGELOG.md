@@ -13,3 +13,4 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-02 00:00 — [feat] Add core auth infrastructure: AuthService (signals-based session state), credentials/loading/auth-error interceptors, authGuard, session restore + CSRF bootstrap via provideAppInitializer
 2026-09-02 00:00 — [feat] Add login/register pages (reactive forms) and a minimal home page — with Jasmine/Karma tests for all of the above (28 specs)
 2026-09-02 00:00 — [feat] Add permits catalog (list + detail pages, PermitCard, PermitService) and register French locale for currency/date formatting — with tests (38 specs total)
+2026-09-02 00:00 — [feat] Add forgot/reset password pages, session browsing + booking (/reserver, filterable, SessionCard), and the student dashboard (/mon-espace, list/cancel bookings, BookingStatusBadge) — with tests (64 specs total). Admin back-office and instructor portal are blocked on missing backend write endpoints, not built yet.

@@ -1,0 +1,41 @@
+<section class="page-header container">
+  <h1>Mon espace</h1>
+  <p>Vos réservations de séances.</p>
+</section>
+
+<section class="container dashboard__body">
+  @if (loaded()) {
+    @if (bookings().length === 0) {
+      <p class="empty-state">
+        Vous n'avez aucune réservation. <a routerLink="/reserver">Réserver une séance</a>
+      </p>
+    } @else {
+      <ul class="dashboard__list">
+        @for (booking of bookings(); track booking.id) {
+          <li class="dashboard__item">
+            <div>
+              <h3>{{ booking.permitName }} — {{ booking.sessionType === 'Theory' ? 'Théorie' : 'Pratique' }}</h3>
+              <p class="dashboard__meta">
+                {{ booking.sessionStartsAt | date: 'EEEE d MMMM à HH:mm' }} · {{ booking.instructorName }}
+              </p>
+            </div>
+
+            <div class="dashboard__item-actions">
+              <app-booking-status-badge [status]="booking.status" />
+              @if (booking.status !== 'Cancelled') {
+                <button
+                  type="button"
+                  class="link-button"
+                  [disabled]="cancellingId() === booking.id"
+                  (click)="cancel(booking.id)"
+                >
+                  Annuler
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

@@ -69,4 +69,14 @@ export class AuthService {
   clearSession(): void {
     this.currentUserSignal.set(null);
   }
+
+  // Always resolves — the backend returns 204 whether or not the email is
+  // registered, specifically so this can't be used to enumerate accounts.
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(email: string, token: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/reset-password`, { email, token, newPassword });
+  }
 }

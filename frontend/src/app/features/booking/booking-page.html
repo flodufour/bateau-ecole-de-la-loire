@@ -1,0 +1,54 @@
+<section class="page-header container">
+  <h1>Réserver une séance</h1>
+  <p>Théorie ou pratique, selon vos disponibilités.</p>
+</section>
+
+<section class="container booking-page__body">
+  <form [formGroup]="filters" class="booking-page__filters">
+    <label class="field">
+      <span>Type</span>
+      <select formControlName="type">
+        <option value="">Tous</option>
+        <option value="Theory">Théorie</option>
+        <option value="Practical">Pratique</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Permis</span>
+      <select formControlName="permitId">
+        <option value="">Tous</option>
+        @for (permit of permits(); track permit.id) {
+          <option [value]="permit.id">{{ permit.name }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Date</span>
+      <input type="date" formControlName="date" />
+    </label>
+  </form>
+
+  @if (message(); as message) {
+    <p [class]="message.isError ? 'form-errors' : 'booking-page__success'">{{ message.text }}</p>
+  }
+
+  @if (loaded()) {
+    @if (failed()) {
+      <p class="empty-state">Impossible de charger les séances pour le moment. Merci de réessayer plus tard.</p>
+    } @else if (sessions().length === 0) {
+      <p class="empty-state">Aucune séance ne correspond à ces critères.</p>
+    } @else {
+      <div class="card-grid">
+        @for (session of sessions(); track session.id) {
+          <app-session-card
+            [session]="session"
+            [disabled]="bookingSessionId() === session.id"
+            (book)="book($event)"
+          />
+        }
+      </div>
+    }
+  }
+</section>
