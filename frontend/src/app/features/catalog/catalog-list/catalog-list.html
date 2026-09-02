@@ -1,6 +1,8 @@
-<section class="page-header container">
-  <h1>Nos formations</h1>
-  <p>Permis côtier, hauturier et fluvial — théorie et pratique.</p>
+<section class="catalog-hero">
+  <div class="container">
+    <h1>Nos formations</h1>
+    <p>Permis côtier, hauturier et fluvial — théorie et pratique.</p>
+  </div>
 </section>
 
 <section class="container permit-types">
@@ -29,28 +31,11 @@
     </p>
   </div>
 
-  <svg
-    class="permit-types__wheel"
-    viewBox="0 0 200 200"
-    aria-hidden="true"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    @for (angle of wheelHandleAngles; track angle) {
-      <line
-        [attr.transform]="'rotate(' + angle + ' 100 100)'"
-        x1="100"
-        y1="82"
-        x2="100"
-        y2="15"
-        stroke="var(--color-navy)"
-        stroke-width="7"
-        stroke-linecap="round"
-      />
-    }
-    <circle cx="100" cy="100" r="70" stroke="var(--color-navy)" stroke-width="9" />
-    <circle cx="100" cy="100" r="18" fill="var(--color-accent)" stroke="var(--color-navy)" stroke-width="4" />
-  </svg>
+  <img
+    class="permit-types__photo"
+    src="/images/voilier-hauturier.webp"
+    alt="Voilier hauturier au large des côtes"
+  />
 </section>
 
 <section class="container">

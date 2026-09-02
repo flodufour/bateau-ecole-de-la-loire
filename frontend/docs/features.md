@@ -47,7 +47,8 @@ API: `POST /api/contact`
 
 Browse all available permit types. Built: list page (card grid) and detail page.
 
-- List: a short static explainer ("Les 3 permis, en bref" — Côtier, Hauturier, Fluvial, what each requires and how the théorie/pratique process works) above the card grid, then one `PermitCard` per permit (name, truncated description, price, Théorie/Pratique/Pack badges). The explainer is static content, not derived from the API — it describes the 3 base permit *types*, while the grid below lists the school's actual sellable *offers* (base permits, code-seul variants, bundles). Empty and error states are handled explicitly, not just a blank page.
+- A full-bleed photo band (`public/images/erdre-nantes.jpg`, faded into the navy palette) replaces the plain white page header.
+- List: a short static explainer ("Les 3 permis, en bref" — Côtier, Hauturier, Fluvial, what each requires and how the théorie/pratique process works) next to a real sailboat photo (`public/images/voilier-hauturier.webp`), above the card grid, then one `PermitCard` per permit (name, truncated description, price, Théorie/Pratique/Pack badges). The explainer is static content, not derived from the API — it describes the 3 base permit *types*, while the grid below lists the school's actual sellable *offers* (base permits, code-seul variants, bundles). Empty and error states are handled explicitly, not just a blank page.
 - Detail (`/formations/:id`) — full description, price, badges. Route uses the permit's `id` (a GUID), not its `slug` — the backend only exposes `GET /api/permits/{id}` today, no slug-based lookup. Nicer URLs (`/formations/permis-cotier`) would need a `GET /api/permits/by-slug/{slug}`-style endpoint added first.
 - The detail page has a quantity input + "Ajouter au panier" — this only touches the client-side cart (`CartService`), so it's available to anyone, logged in or not; no backend call happens until checkout on `/panier`.
 
@@ -75,6 +76,8 @@ API: `POST /api/purchases/checkout`
 ## Booking (`/reserver`)
 
 Book a theory or practical session. Requires login (`authGuard`) — not requires-Student specifically, since no role guard exists yet; an instructor/admin visiting the page would hit the backend's `[Authorize(Roles = "Student")]` and get a `403` from `POST /bookings` if they tried to book.
+
+- A full-bleed photo band (`public/images/jetski.webp`) replaces the plain white page header, matching the pattern used on the home page and `/formations`.
 
 - Filters (type, permit, date) re-fetch the session list on every change (`filters.valueChanges`) — no separate "apply" button.
 - `SessionCard` (dumb component) renders one session and emits `book` with the session id; the page owns the actual `BookingService.create()` call and the resulting success/error message.

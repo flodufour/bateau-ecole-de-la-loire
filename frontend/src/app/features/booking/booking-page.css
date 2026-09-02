@@ -1,4 +1,22 @@
+.booking-hero {
+  padding-block: var(--space-16) var(--space-8);
+  text-align: center;
+  color: var(--color-on-navy-muted);
+  background:
+    linear-gradient(180deg, rgba(27, 37, 71, 0.8) 0%, rgba(45, 63, 118, 0.55) 100%),
+    url('/images/jetski.webp') center 35% / cover no-repeat;
+}
+
+.booking-hero h1 {
+  color: var(--color-on-navy);
+}
+
+.booking-hero p {
+  color: var(--color-on-navy-muted);
+}
+
 .booking-page__body {
+  padding-top: var(--space-12);
   padding-bottom: var(--space-16);
 }
 

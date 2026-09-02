@@ -17,10 +17,6 @@ export class CatalogList {
   protected readonly loaded = signal(false);
   protected readonly failed = signal(false);
 
-  // Decorative ship's-wheel illustration next to the intro text — 8 evenly
-  // spaced handles, drawn once and rotated per angle.
-  protected readonly wheelHandleAngles = [0, 45, 90, 135, 180, 225, 270, 315];
-
   constructor() {
     this.permitService.getAll().subscribe({
       next: (permits) => {
