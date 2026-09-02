@@ -13,38 +13,72 @@ namespace BateauEcole.Api.Tests;
 public class PurchaseTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixture>
 {
     [Fact]
-    public async Task Purchase_AsStudent_CreatesAnAlreadyPaidPurchase()
+    public async Task Checkout_WithAQuantityGreaterThanOne_CreatesOneRowPerUnit()
     {
         var client = fixture.CreateAuthClient();
-        await client.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("purchase"));
+        await client.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("checkout-qty"));
         var permit = await SeedPermitAsync();
 
-        var response = await client.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(permit.Id));
-        var dto = await response.Content.ReadFromJsonAsync<PermitPurchaseDto>(ApiJsonOptions.Default);
+        var response = await client.PostAsJsonAsync(
+            "/api/purchases/checkout", new CheckoutDto([new CheckoutItemDto(permit.Id, 3)]));
+        var purchases = await response.Content.ReadFromJsonAsync<List<PermitPurchaseDto>>(ApiJsonOptions.Default);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(permit.Id, dto!.PermitId);
-        Assert.Equal(permit.Name, dto.PermitName);
+        Assert.Equal(3, purchases!.Count);
+        Assert.All(purchases, p => Assert.Equal(permit.Id, p.PermitId));
+        Assert.Equal(3, purchases.Select(p => p.Id).Distinct().Count());
     }
 
     [Fact]
-    public async Task Purchase_WithUnknownPermit_ReturnsBadRequest()
+    public async Task Checkout_WithSeveralDifferentPermits_CreatesAllOfThem()
     {
         var client = fixture.CreateAuthClient();
-        await client.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("purchase-unknown"));
+        await client.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("checkout-multi"));
+        var cotier = await SeedPermitAsync("Permis Côtier");
+        var hauturier = await SeedPermitAsync("Permis Hauturier");
 
-        var response = await client.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(Guid.NewGuid()));
+        var response = await client.PostAsJsonAsync(
+            "/api/purchases/checkout",
+            new CheckoutDto([new CheckoutItemDto(cotier.Id, 1), new CheckoutItemDto(hauturier.Id, 2)]));
+        var purchases = await response.Content.ReadFromJsonAsync<List<PermitPurchaseDto>>(ApiJsonOptions.Default);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(3, purchases!.Count);
+        Assert.Single(purchases, p => p.PermitId == cotier.Id);
+        Assert.Equal(2, purchases.Count(p => p.PermitId == hauturier.Id));
+    }
+
+    [Fact]
+    public async Task Checkout_WithAnEmptyCart_ReturnsBadRequest()
+    {
+        var client = fixture.CreateAuthClient();
+        await client.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("checkout-empty"));
+
+        var response = await client.PostAsJsonAsync("/api/purchases/checkout", new CheckoutDto([]));
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]
-    public async Task Purchase_AsAdmin_ReturnsForbidden()
+    public async Task Checkout_WithUnknownPermit_ReturnsBadRequest()
     {
-        var admin = await fixture.CreateAdminClientAsync("purchase-admin");
+        var client = fixture.CreateAuthClient();
+        await client.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("checkout-unknown"));
+
+        var response = await client.PostAsJsonAsync(
+            "/api/purchases/checkout", new CheckoutDto([new CheckoutItemDto(Guid.NewGuid(), 1)]));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Checkout_AsAdmin_ReturnsForbidden()
+    {
+        var admin = await fixture.CreateAdminClientAsync("checkout-admin");
         var permit = await SeedPermitAsync();
 
-        var response = await admin.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(permit.Id));
+        var response = await admin.PostAsJsonAsync(
+            "/api/purchases/checkout", new CheckoutDto([new CheckoutItemDto(permit.Id, 1)]));
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -56,11 +90,11 @@ public class PurchaseTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
 
         var owner = fixture.CreateAuthClient();
         await owner.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("purchase-mine-owner"));
-        await owner.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(permit.Id));
+        await CheckoutOneAsync(owner, permit.Id);
 
         var other = fixture.CreateAuthClient();
         await other.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("purchase-mine-other"));
-        await other.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(permit.Id));
+        await CheckoutOneAsync(other, permit.Id);
 
         var response = await owner.GetAsync("/api/purchases/me");
         var purchases = await response.Content.ReadFromJsonAsync<List<PermitPurchaseDto>>(ApiJsonOptions.Default);
@@ -75,15 +109,14 @@ public class PurchaseTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
 
         var buyer = fixture.CreateAuthClient();
         await buyer.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("purchase-transfer-buyer"));
-        var created = await buyer.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(permit.Id));
-        var purchase = await created.Content.ReadFromJsonAsync<PermitPurchaseDto>(ApiJsonOptions.Default);
+        var purchase = await CheckoutOneAsync(buyer, permit.Id);
 
         var recipientEmail = ApiTestFixtureExtensions.UniqueEmail("purchase-transfer-recipient");
         var recipient = fixture.CreateAuthClient();
         await recipient.RegisterAsync(recipientEmail);
 
         var response = await buyer.PostAsJsonAsync(
-            $"/api/purchases/{purchase!.Id}/transfer", new TransferPurchaseDto(recipientEmail));
+            $"/api/purchases/{purchase.Id}/transfer", new TransferPurchaseDto(recipientEmail));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -100,11 +133,10 @@ public class PurchaseTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
         var permit = await SeedPermitAsync();
         var buyer = fixture.CreateAuthClient();
         await buyer.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("purchase-transfer-unknown"));
-        var created = await buyer.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(permit.Id));
-        var purchase = await created.Content.ReadFromJsonAsync<PermitPurchaseDto>(ApiJsonOptions.Default);
+        var purchase = await CheckoutOneAsync(buyer, permit.Id);
 
         var response = await buyer.PostAsJsonAsync(
-            $"/api/purchases/{purchase!.Id}/transfer", new TransferPurchaseDto("nobody@example.com"));
+            $"/api/purchases/{purchase.Id}/transfer", new TransferPurchaseDto("nobody@example.com"));
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -116,10 +148,9 @@ public class PurchaseTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
         var email = ApiTestFixtureExtensions.UniqueEmail("purchase-transfer-self");
         var buyer = fixture.CreateAuthClient();
         await buyer.RegisterAsync(email);
-        var created = await buyer.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(permit.Id));
-        var purchase = await created.Content.ReadFromJsonAsync<PermitPurchaseDto>(ApiJsonOptions.Default);
+        var purchase = await CheckoutOneAsync(buyer, permit.Id);
 
-        var response = await buyer.PostAsJsonAsync($"/api/purchases/{purchase!.Id}/transfer", new TransferPurchaseDto(email));
+        var response = await buyer.PostAsJsonAsync($"/api/purchases/{purchase.Id}/transfer", new TransferPurchaseDto(email));
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -130,19 +161,26 @@ public class PurchaseTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
         var permit = await SeedPermitAsync();
         var owner = fixture.CreateAuthClient();
         await owner.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("purchase-transfer-owner"));
-        var created = await owner.PostAsJsonAsync("/api/purchases", new CreatePurchaseDto(permit.Id));
-        var purchase = await created.Content.ReadFromJsonAsync<PermitPurchaseDto>(ApiJsonOptions.Default);
+        var purchase = await CheckoutOneAsync(owner, permit.Id);
 
         var stranger = fixture.CreateAuthClient();
         await stranger.RegisterAsync(ApiTestFixtureExtensions.UniqueEmail("purchase-transfer-stranger"));
 
         var response = await stranger.PostAsJsonAsync(
-            $"/api/purchases/{purchase!.Id}/transfer", new TransferPurchaseDto("nobody@example.com"));
+            $"/api/purchases/{purchase.Id}/transfer", new TransferPurchaseDto("nobody@example.com"));
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    private async Task<Permit> SeedPermitAsync()
+    private static async Task<PermitPurchaseDto> CheckoutOneAsync(HttpClient client, Guid permitId)
+    {
+        var response = await client.PostAsJsonAsync(
+            "/api/purchases/checkout", new CheckoutDto([new CheckoutItemDto(permitId, 1)]));
+        var purchases = await response.Content.ReadFromJsonAsync<List<PermitPurchaseDto>>(ApiJsonOptions.Default);
+        return purchases!.Single();
+    }
+
+    private async Task<Permit> SeedPermitAsync(string name = "Permis Côtier")
     {
         using var scope = fixture.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -150,8 +188,8 @@ public class PurchaseTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
         var permit = new Permit
         {
             Id = Guid.NewGuid(),
-            Name = "Permis Côtier",
-            Slug = $"cotier-{Guid.NewGuid():N}",
+            Name = name,
+            Slug = $"{name}-{Guid.NewGuid():N}",
             Description = "desc",
             Price = 450m,
             IncludesTheory = true,

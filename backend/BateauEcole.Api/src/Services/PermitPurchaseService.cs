@@ -10,25 +10,39 @@ public record TransferPurchaseResult(PermitPurchaseDto? Purchase, bool NotFound,
 
 public class PermitPurchaseService(AppDbContext db, UserManager<User> userManager)
 {
-    public async Task<(PermitPurchaseDto? Result, string[] Errors)> PurchaseAsync(Guid userId, CreatePurchaseDto dto)
+    // One row per unit (a quantity of 3 for the same permit creates 3 separate
+    // PermitPurchase rows) — each unit needs to be individually transferable
+    // to a different account afterward, so a single row with a Quantity
+    // column wouldn't work.
+    public async Task<(List<PermitPurchaseDto>? Result, string[] Errors)> CheckoutAsync(Guid userId, CheckoutDto dto)
     {
-        var permit = await db.Permits.FindAsync(dto.PermitId);
-        if (permit is null)
-            return (null, ["Permis introuvable."]);
+        var permitIds = dto.Items.Select(i => i.PermitId).Distinct().ToList();
+        var permits = await db.Permits.Where(p => permitIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id);
 
-        var purchase = new PermitPurchase
+        if (permitIds.Any(id => !permits.ContainsKey(id)))
+            return (null, ["Un ou plusieurs permis du panier sont introuvables."]);
+
+        var purchases = new List<PermitPurchase>();
+        foreach (var item in dto.Items)
         {
-            Id = Guid.NewGuid(),
-            PermitId = dto.PermitId,
-            Permit = permit,
-            UserId = userId,
-            PurchasedAt = DateTimeOffset.UtcNow,
-        };
+            var permit = permits[item.PermitId];
+            for (var i = 0; i < item.Quantity; i++)
+            {
+                purchases.Add(new PermitPurchase
+                {
+                    Id = Guid.NewGuid(),
+                    PermitId = permit.Id,
+                    Permit = permit,
+                    UserId = userId,
+                    PurchasedAt = DateTimeOffset.UtcNow,
+                });
+            }
+        }
 
-        db.PermitPurchases.Add(purchase);
+        db.PermitPurchases.AddRange(purchases);
         await db.SaveChangesAsync();
 
-        return (ToDto(purchase), []);
+        return (purchases.Select(ToDto).ToList(), []);
     }
 
     public async Task<List<PermitPurchaseDto>> GetForUserAsync(Guid userId)

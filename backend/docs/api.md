@@ -76,7 +76,7 @@ Buying a permit formula itself (not a session — see Bookings above). **No real
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/purchases` | Student | Buy a permit — immediately recorded as paid |
+| POST | `/purchases/checkout` | Student | Buy the permits in a cart (`{ items: [{ permitId, quantity }] }`, 1-20 per item) — immediately recorded as paid. One purchase row is created per unit (so a quantity of 3 returns 3 rows), each individually transferable afterward. `400` if the cart is empty or references an unknown permit |
 | GET | `/purchases/me` | Student | List the current user's purchases |
 | POST | `/purchases/{id}/transfer` | Student | Transfer one of the caller's own purchases to another registered account by email — lets one person buy for another (the school's real "carte cadeau" use case). `400` if the target email has no account or is the caller's own; `404` if the purchase isn't the caller's |
 

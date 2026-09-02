@@ -10,11 +10,11 @@ namespace BateauEcole.Api.Controllers;
 [Route("api/purchases")]
 public class PurchasesController(PermitPurchaseService purchaseService) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("checkout")]
     [Authorize(Roles = "Student")]
-    public async Task<IActionResult> Purchase(CreatePurchaseDto dto)
+    public async Task<IActionResult> Checkout(CheckoutDto dto)
     {
-        var (result, errors) = await purchaseService.PurchaseAsync(CurrentUserId, dto);
+        var (result, errors) = await purchaseService.CheckoutAsync(CurrentUserId, dto);
         return result is null ? BadRequest(new { errors }) : Ok(result);
     }
 
