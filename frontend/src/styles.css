@@ -315,10 +315,16 @@ button {
   letter-spacing: 0.03em;
 }
 
+/* Not display: flex — that overrides the <td>'s table-cell display, which
+   breaks it out of normal table layout (row border disappears, the cell's
+   width/position stop tracking the rest of the table). Plain inline content
+   with margin between buttons achieves the same look without that. */
 .admin-table__actions {
-  display: flex;
-  gap: var(--space-3);
   white-space: nowrap;
+}
+
+.admin-table__actions > * + * {
+  margin-left: var(--space-3);
 }
 
 /* Shared prose layout for static legal content (mentions légales, politique
