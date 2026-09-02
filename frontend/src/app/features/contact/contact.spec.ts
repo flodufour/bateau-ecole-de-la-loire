@@ -43,6 +43,11 @@ describe('Contact', () => {
     expect(element.textContent).toContain('bateauecoledelaloire@gmail.com');
   });
 
+  it('embeds the school\'s Facebook page', () => {
+    const iframe = element.querySelector('iframe')!;
+    expect(iframe.getAttribute('src')).toContain(encodeURIComponent('https://www.facebook.com/833683606680871'));
+  });
+
   it('submits the message and shows a confirmation', () => {
     fillAndSubmit();
 

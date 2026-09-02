@@ -20,6 +20,10 @@
   border-radius: var(--radius-lg);
 }
 
+.contact__facebook {
+  max-width: 100%;
+}
+
 @media (max-width: 720px) {
   .contact__body {
     grid-template-columns: 1fr;
