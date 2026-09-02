@@ -25,3 +25,4 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-02 20:00 — [feat] Add a "Mes informations" section (name, email, role) to the student dashboard, reusing the already-loaded AuthService profile — with tests (130 specs total)
 2026-09-02 20:30 — [feat] Add Mentions légales and Politique de confidentialité pages, linked from the footer (LCEN and RGPD require them) — legal form/SIRET are marked "à compléter", not invented — with tests (136 specs total)
 2026-09-02 21:00 — [feat] Embed the school's Facebook page (Meta Page Plugin) on the contact page — with tests (137 specs total)
+2026-09-02 21:15 — [fix] Correct the school's name in the header and footer — "École de bateau de la Loire" (wrong word order) to "Bateau École de la Loire", matching the real name used everywhere else
