@@ -11,7 +11,7 @@ public record UpdateSessionResult(SessionDto? Session, bool NotFound, string[] E
 
 public class SessionService(AppDbContext db)
 {
-    public async Task<List<SessionDto>> GetUpcomingAsync(SessionType? type, Guid? permitId, DateOnly? date)
+    public async Task<List<SessionDto>> GetUpcomingAsync(SessionType? type, Guid? permitId, DateOnly? date, Guid? instructorId = null)
     {
         var query = db.Sessions
             .Include(s => s.Permit)
@@ -24,6 +24,9 @@ public class SessionService(AppDbContext db)
 
         if (permitId is not null)
             query = query.Where(s => s.PermitId == permitId);
+
+        if (instructorId is not null)
+            query = query.Where(s => s.InstructorId == instructorId);
 
         if (date is not null)
         {

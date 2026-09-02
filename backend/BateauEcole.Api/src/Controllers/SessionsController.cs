@@ -15,9 +15,10 @@ public class SessionsController(SessionService sessionService) : ControllerBase
     public async Task<IActionResult> GetUpcoming(
         [FromQuery] SessionType? type,
         [FromQuery] Guid? permitId,
-        [FromQuery] DateOnly? date)
+        [FromQuery] DateOnly? date,
+        [FromQuery] Guid? instructorId)
     {
-        return Ok(await sessionService.GetUpcomingAsync(type, permitId, date));
+        return Ok(await sessionService.GetUpcomingAsync(type, permitId, date, instructorId));
     }
 
     [HttpGet("{id:guid}")]

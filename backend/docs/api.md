@@ -50,7 +50,7 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/sessions` | No | List upcoming sessions (filterable by type, permit, date) |
+| GET | `/sessions` | No | List upcoming sessions (filterable by type, permit, date, instructor) |
 | GET | `/sessions/{id}` | No | Get session details |
 | POST | `/sessions` | Admin | Create a session — `400` if `permitId`/`instructorId` don't match a real row |
 | PUT | `/sessions/{id}` | Admin | Update a session — same reference validation as create |
@@ -75,9 +75,12 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | GET | `/instructors` | No | List all instructors |
-| GET | `/instructors/{id}` | No | Get instructor profile (upcoming sessions to be added once `/sessions` exists) |
+| GET | `/instructors/me` | Instructor | Current instructor's own profile — used by the frontend portal to learn its own instructor id, since the JWT only carries the user id |
+| GET | `/instructors/{id}` | No | Get instructor profile. Upcoming sessions: use `GET /sessions?instructorId={id}` |
 | POST | `/instructors` | Admin | Create an instructor account **and** profile in one call (email/password/name + bio/specialties) — there was no other way to onboard one; not in the original plan for this file but needed for the admin back-office to be usable at all |
-| PUT | `/instructors/{id}/availability` | Instructor | Update availability calendar (not built — no availability concept in the DB yet) |
+| GET | `/instructors/{id}/availability` | No | List an instructor's upcoming availability slots (dated windows, not a recurring pattern) |
+| POST | `/instructors/{id}/availability` | Instructor | Add an availability slot — `403` unless `{id}` is the caller's own instructor id. Rejected with `400` on end-before-start, a slot in the past, or an overlap with an existing slot |
+| DELETE | `/instructors/{id}/availability/{slotId}` | Instructor | Remove one of the caller's own slots — same ownership check as above |
 
 ---
 

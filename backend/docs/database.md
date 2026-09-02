@@ -10,8 +10,8 @@ PostgreSQL via EF Core. All table and column names are `snake_case`.
 users ──────────── bookings ──────────── sessions
                                              │
 instructors ─────────────────────────────────┘
-                                             │
-permits ──────────────────────────────────── ┘
+     │                                      │
+     └────────── availability_slots   permits ──┘
 
 exam_dates  (standalone, no foreign keys)
 contact_messages  (standalone, no foreign keys)
@@ -113,6 +113,20 @@ Links a student to a session.
 | `booked_at` | timestamptz | |
 
 A student can hold at most one non-`Cancelled` booking per session, and a session accepts bookings up to its `max_capacity` — both enforced in `BookingService`, not by a DB constraint.
+
+---
+
+### `availability_slots`
+A window of time an instructor has declared themselves free — explicit dated slots (e.g. "Sept 12, 9h-12h"), not a recurring weekly pattern. Admins aren't required to only schedule sessions inside these; it's informational input for now, not an enforced constraint on `sessions`.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `instructor_id` | uuid | FK → `instructors.id`, cascade delete — a slot has no meaning once its instructor is gone |
+| `starts_at` | timestamptz | |
+| `ends_at` | timestamptz | |
+
+`InstructorService` rejects a new slot that ends before it starts, starts in the past, or overlaps an existing slot for the same instructor — enforced in the service, not a DB constraint (same approach as the booking capacity/duplicate checks on `bookings`).
 
 ---
 

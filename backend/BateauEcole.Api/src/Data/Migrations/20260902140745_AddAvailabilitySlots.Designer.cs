@@ -3,6 +3,7 @@ using System;
 using BateauEcole.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BateauEcole.Api.src.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260902140745_AddAvailabilitySlots")]
+    partial class AddAvailabilitySlots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,42 +87,6 @@ namespace BateauEcole.Api.src.Data.Migrations
                         .HasDatabaseName("ix_bookings_user_id");
 
                     b.ToTable("bookings", (string)null);
-                });
-
-            modelBuilder.Entity("BateauEcole.Api.Models.ContactMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("message");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("text")
-                        .HasColumnName("phone");
-
-                    b.HasKey("Id")
-                        .HasName("pk_contact_messages");
-
-                    b.ToTable("contact_messages", (string)null);
                 });
 
             modelBuilder.Entity("BateauEcole.Api.Models.ExamDate", b =>
@@ -234,96 +201,6 @@ namespace BateauEcole.Api.src.Data.Migrations
                         .HasDatabaseName("ix_permits_slug");
 
                     b.ToTable("permits", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("82275f75-b258-4ba6-a7e2-9d28dfb01a63"),
-                            Description = "Dès 16 ans. Navigation de jour comme de nuit, dans la limite de 6 milles d'un abri (11 km), sans limite de puissance ni de taille de bateau. Valable à vie, en France et à l'international. 5h de code en salle + 3h30 de pratique (dont 2h à la barre). Inclus : inscription (numéro OEDIPP), livre de code, livret du candidat, tests en ligne illimités, convocation à l'examen. Tarif : 250 € + 30 € d'examen + 78 € de droits fiscaux.",
-                            IncludesPractical = true,
-                            IncludesTheory = true,
-                            IsBundle = false,
-                            Name = "Permis Mer Côtier",
-                            Price = 358m,
-                            Slug = "permis-mer-cotier-complet"
-                        },
-                        new
-                        {
-                            Id = new Guid("3e1d77c2-305f-42d6-b58b-a48a8898bc6f"),
-                            Description = "Extension réservée aux titulaires du permis Mer option côtière. Navigation de jour comme de nuit, sans limite de distance, de puissance ni de taille de bateau. Valable à vie, en France et à l'international. Inclus : livre de code, cahier d'exercice, cours en vidéo, matériel de navigation (carte, rapporteur, compas). Tarif : 235 € + 38 € de droits fiscaux.",
-                            IncludesPractical = false,
-                            IncludesTheory = true,
-                            IsBundle = false,
-                            Name = "Permis Mer Hauturier",
-                            Price = 273m,
-                            Slug = "permis-mer-hauturier"
-                        },
-                        new
-                        {
-                            Id = new Guid("14d33286-b681-457d-b198-75141ded90cc"),
-                            Description = "Réservé aux titulaires d'un permis Mer. Permet de naviguer sur rivières, canaux et lacs avec un bateau de moins de 20 m, sans limite de puissance. Valable à vie, en France et à l'international. Inclus : livre de code, tests en ligne illimités. Tarif : 70 € + 30 € de droits fiscaux.",
-                            IncludesPractical = false,
-                            IncludesTheory = true,
-                            IsBundle = false,
-                            Name = "Permis Eaux Intérieures (Fluvial) — code seul",
-                            Price = 100m,
-                            Slug = "permis-eaux-interieures-code-seul"
-                        },
-                        new
-                        {
-                            Id = new Guid("b134c5b1-15c3-4243-820a-7eea7e851ad0"),
-                            Description = "Réservé aux titulaires du permis Eaux Intérieures (fluvial). Le code peut se préparer en autonomie ou avec les cours en salle. Inclus : livre de code, tests en ligne illimités. Tarif : à partir de 70 € en autonomie (100 € tout compris) ou 120 € avec cours en salle (150 € tout compris).",
-                            IncludesPractical = false,
-                            IncludesTheory = true,
-                            IsBundle = false,
-                            Name = "Permis Mer Côtier — code seul",
-                            Price = 150m,
-                            Slug = "permis-mer-cotier-code-seul"
-                        },
-                        new
-                        {
-                            Id = new Guid("8fca7261-0221-4437-99b0-314bcb87ab4b"),
-                            Description = "Permis Mer côtier (code + pratique) + code Eaux Intérieures (fluvial) en autonomie. Tarif : 305 € + 30 € d'examen + 78 € de droits fiscaux.",
-                            IncludesPractical = true,
-                            IncludesTheory = true,
-                            IsBundle = true,
-                            Name = "Permis Côtier complet + Eaux Intérieures",
-                            Price = 443m,
-                            Slug = "permis-cotier-complet-eaux-interieures"
-                        },
-                        new
-                        {
-                            Id = new Guid("995b4fbf-8702-4e33-8f72-383e3bc634a6"),
-                            Description = "Permis Mer côtier complet (code + pratique) + extension Hauturier en autonomie. Tarif : 455 € + 30 € d'examen + 78 € + 38 € de droits fiscaux.",
-                            IncludesPractical = true,
-                            IncludesTheory = true,
-                            IsBundle = true,
-                            Name = "Permis Côtier complet + Hauturier",
-                            Price = 601m,
-                            Slug = "permis-cotier-complet-hauturier"
-                        },
-                        new
-                        {
-                            Id = new Guid("463ae33b-1607-4bad-a539-0d4e872b8fbc"),
-                            Description = "Réservé aux titulaires du permis Mer côtier. Les deux codes en autonomie. Tarif : 285 € + 30 € d'examen + 38 € de droits fiscaux.",
-                            IncludesPractical = false,
-                            IncludesTheory = true,
-                            IsBundle = true,
-                            Name = "Permis Hauturier + Eaux Intérieures (code seul)",
-                            Price = 333m,
-                            Slug = "permis-hauturier-eaux-interieures-code"
-                        },
-                        new
-                        {
-                            Id = new Guid("6d792daa-b670-44a8-abec-ed45bd20bfdf"),
-                            Description = "Permis Côtier complet (code + pratique) + code Eaux Intérieures + code Hauturier, en autonomie pour les deux extensions. Tarif : 495 € + 30 € d'examen + 78 € + 38 € de droits fiscaux.",
-                            IncludesPractical = true,
-                            IncludesTheory = true,
-                            IsBundle = true,
-                            Name = "Les 3 permis bateau",
-                            Price = 671m,
-                            Slug = "les-3-permis-bateau"
-                        });
                 });
 
             modelBuilder.Entity("BateauEcole.Api.Models.RefreshToken", b =>

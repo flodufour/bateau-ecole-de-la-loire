@@ -44,6 +44,23 @@ public class SessionsTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixtur
     }
 
     [Fact]
+    public async Task GetUpcoming_FilteredByInstructor_OnlyReturnsTheirSessions()
+    {
+        var client = fixture.CreateClient();
+        var (permit, instructor) = await SeedPermitAndInstructorAsync();
+        var (_, otherInstructor) = await SeedPermitAndInstructorAsync();
+
+        var own = await SeedSessionAsync(permit, instructor, SessionType.Theory, DateTimeOffset.UtcNow.AddDays(1));
+        var other = await SeedSessionAsync(permit, otherInstructor, SessionType.Theory, DateTimeOffset.UtcNow.AddDays(1));
+
+        var response = await client.GetAsync($"/api/sessions?instructorId={instructor.Id}");
+        var sessions = await response.Content.ReadFromJsonAsync<List<SessionDto>>(ApiJsonOptions.Default);
+
+        Assert.Contains(sessions!, s => s.Id == own.Id);
+        Assert.DoesNotContain(sessions!, s => s.Id == other.Id);
+    }
+
+    [Fact]
     public async Task GetById_ReturnsPermitAndInstructorNames_FromTheJoin()
     {
         var client = fixture.CreateClient();

@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityUser
     public DbSet<ExamDate> ExamDates => Set<ExamDate>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
+    public DbSet<AvailabilitySlot> AvailabilitySlots => Set<AvailabilitySlot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -89,6 +90,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityUser
                 .HasForeignKey(b => b.SessionId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+
+        // Cascade here (unlike Session/Booking above): a slot has no meaning
+        // once its instructor is gone, whereas sessions/bookings are business
+        // records worth protecting from accidental loss.
+        modelBuilder.Entity<AvailabilitySlot>()
+            .HasOne(a => a.Instructor)
+            .WithMany()
+            .HasForeignKey(a => a.InstructorId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     private static Permit[] SeedPermits() =>

@@ -27,6 +27,67 @@ public class InstructorService(AppDbContext db, UserManager<User> userManager)
         return instructor is null ? null : ToDto(instructor);
     }
 
+    public async Task<InstructorDto?> GetByUserIdAsync(Guid userId)
+    {
+        var instructor = await db.Instructors
+            .Include(i => i.User)
+            .FirstOrDefaultAsync(i => i.UserId == userId);
+
+        return instructor is null ? null : ToDto(instructor);
+    }
+
+    public async Task<bool> IsOwnedByUserAsync(Guid instructorId, Guid userId) =>
+        await db.Instructors.AnyAsync(i => i.Id == instructorId && i.UserId == userId);
+
+    public async Task<List<AvailabilitySlotDto>> GetAvailabilityAsync(Guid instructorId)
+    {
+        var slots = await db.AvailabilitySlots
+            .Where(a => a.InstructorId == instructorId && a.EndsAt >= DateTimeOffset.UtcNow)
+            .OrderBy(a => a.StartsAt)
+            .ToListAsync();
+
+        return slots.Select(ToAvailabilityDto).ToList();
+    }
+
+    public async Task<(AvailabilitySlotDto? Result, string[] Errors)> AddAvailabilityAsync(
+        Guid instructorId, CreateAvailabilitySlotDto dto)
+    {
+        if (dto.EndsAt <= dto.StartsAt)
+            return (null, ["L'heure de fin doit être après l'heure de début."]);
+
+        if (dto.StartsAt <= DateTimeOffset.UtcNow)
+            return (null, ["Impossible d'ajouter un créneau dans le passé."]);
+
+        var overlaps = await db.AvailabilitySlots.AnyAsync(a =>
+            a.InstructorId == instructorId && a.StartsAt < dto.EndsAt && dto.StartsAt < a.EndsAt);
+        if (overlaps)
+            return (null, ["Ce créneau chevauche un créneau existant."]);
+
+        var slot = new AvailabilitySlot
+        {
+            Id = Guid.NewGuid(),
+            InstructorId = instructorId,
+            StartsAt = dto.StartsAt,
+            EndsAt = dto.EndsAt,
+        };
+
+        db.AvailabilitySlots.Add(slot);
+        await db.SaveChangesAsync();
+
+        return (ToAvailabilityDto(slot), []);
+    }
+
+    public async Task<bool> DeleteAvailabilityAsync(Guid instructorId, Guid slotId)
+    {
+        var slot = await db.AvailabilitySlots.FirstOrDefaultAsync(a => a.Id == slotId && a.InstructorId == instructorId);
+        if (slot is null)
+            return false;
+
+        db.AvailabilitySlots.Remove(slot);
+        await db.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<(InstructorDto? Result, string[] Errors)> CreateAsync(CreateInstructorDto dto)
     {
         var user = new User
@@ -60,4 +121,7 @@ public class InstructorService(AppDbContext db, UserManager<User> userManager)
 
     private static InstructorDto ToDto(Instructor i) =>
         new(i.Id, i.User.FirstName, i.User.LastName, i.Bio, i.PhotoUrl, i.Specialties);
+
+    private static AvailabilitySlotDto ToAvailabilityDto(AvailabilitySlot a) =>
+        new(a.Id, a.InstructorId, a.StartsAt, a.EndsAt);
 }

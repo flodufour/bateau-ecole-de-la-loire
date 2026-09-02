@@ -73,4 +73,39 @@ public static class ApiTestFixtureExtensions
 
         return fixture.CreateDefaultClient(BaseUri, new FixedCookieHandler($"access_token={accessToken}"));
     }
+
+    // Same idea as CreateAdminClientAsync, but for an Instructor — seeds both
+    // the User and its Instructor row directly (like InstructorsTests does),
+    // then builds a JWT for it. Returns the Instructor too, since callers
+    // need its id for the /instructors/{id}/availability routes.
+    public static async Task<(HttpClient Client, Instructor Instructor)> CreateInstructorClientAsync(
+        this ApiTestFixture fixture, string label = "instructor")
+    {
+        var email = UniqueEmail(label);
+
+        using var scope = fixture.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            UserName = email,
+            Email = email,
+            FirstName = "Jean",
+            LastName = "Dupont",
+            Role = UserRole.Instructor,
+            CreatedAt = DateTimeOffset.UtcNow,
+        };
+        var instructor = new Instructor { Id = Guid.NewGuid(), UserId = user.Id, Bio = "Moniteur", User = user };
+
+        db.Users.Add(user);
+        db.Instructors.Add(instructor);
+        await db.SaveChangesAsync();
+
+        var tokenService = scope.ServiceProvider.GetRequiredService<TokenService>();
+        var accessToken = tokenService.CreateAccessToken(user);
+
+        var client = fixture.CreateDefaultClient(BaseUri, new FixedCookieHandler($"access_token={accessToken}"));
+        return (client, instructor);
+    }
 }
