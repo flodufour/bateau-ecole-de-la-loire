@@ -22,7 +22,7 @@ contact_messages  (standalone, no foreign keys)
 ## Tables
 
 ### `users`
-Registered students, instructors, and admins. Backed by **ASP.NET Core Identity** (`IdentityUserContext<User, Guid>`), so it carries Identity's standard columns (`normalized_email`, `security_stamp`, `lockout_end`, etc.) alongside our own. We don't use Identity's role tables — a user has exactly one role, stored directly on this row.
+Registered students, instructors, and admins. Backed by **ASP.NET Core Identity** (`IdentityUserContext<User, Guid>`), so it carries Identity's standard columns (`normalized_email`, `security_stamp`, `lockout_end`, etc.) alongside our own. We don't use Identity's role tables — a user has exactly one role, stored directly on this row. The one confirmed exception (an Admin who also teaches) is handled without touching this — see `backend/docs/api.md`'s "Admin as instructor".
 
 | Column | Type | Notes |
 |---|---|---|

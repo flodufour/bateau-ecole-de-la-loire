@@ -17,12 +17,26 @@ public class InstructorsController(InstructorService instructorService) : Contro
         return Ok(await instructorService.GetAllAsync());
     }
 
+    // Instructor,Admin (not just Instructor): an Admin who also teaches has
+    // no other role to hold — see backend/docs/api.md for why this project
+    // doesn't do full multi-role support for what is, today, a single case.
     [HttpGet("me")]
-    [Authorize(Roles = "Instructor")]
+    [Authorize(Roles = "Instructor,Admin")]
     public async Task<IActionResult> GetMe()
     {
         var instructor = await instructorService.GetByUserIdAsync(CurrentUserId);
         return instructor is null ? NotFound() : Ok(instructor);
+    }
+
+    // Admin-only: an existing Instructor account already gets its profile
+    // created atomically by POST /instructors (see CreateAsync) — this is
+    // only for an Admin linking a profile to their own account.
+    [HttpPost("me")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateMyProfile(CreateOwnInstructorProfileDto dto)
+    {
+        var (result, errors) = await instructorService.CreateForOwnAccountAsync(CurrentUserId, dto);
+        return result is null ? BadRequest(new { errors }) : Ok(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -49,7 +63,7 @@ public class InstructorsController(InstructorService instructorService) : Contro
     }
 
     [HttpPost("{id:guid}/availability")]
-    [Authorize(Roles = "Instructor")]
+    [Authorize(Roles = "Instructor,Admin")]
     public async Task<IActionResult> AddAvailability(Guid id, CreateAvailabilitySlotDto dto)
     {
         if (!await instructorService.IsOwnedByUserAsync(id, CurrentUserId))
@@ -60,7 +74,7 @@ public class InstructorsController(InstructorService instructorService) : Contro
     }
 
     [HttpDelete("{id:guid}/availability/{slotId:guid}")]
-    [Authorize(Roles = "Instructor")]
+    [Authorize(Roles = "Instructor,Admin")]
     public async Task<IActionResult> DeleteAvailability(Guid id, Guid slotId)
     {
         if (!await instructorService.IsOwnedByUserAsync(id, CurrentUserId))

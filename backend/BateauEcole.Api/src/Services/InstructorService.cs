@@ -88,6 +88,31 @@ public class InstructorService(AppDbContext db, UserManager<User> userManager)
         return true;
     }
 
+    // Links a fresh instructor profile to an *existing* user (an Admin who
+    // will also teach) — unlike CreateAsync, which onboards a brand new
+    // Instructor-role account for someone else.
+    public async Task<(InstructorDto? Result, string[] Errors)> CreateForOwnAccountAsync(
+        Guid userId, CreateOwnInstructorProfileDto dto)
+    {
+        if (await db.Instructors.AnyAsync(i => i.UserId == userId))
+            return (null, ["Vous avez déjà un profil moniteur."]);
+
+        var user = await db.Users.FindAsync(userId);
+        var instructor = new Instructor
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            User = user!,
+            Bio = dto.Bio,
+            Specialties = dto.Specialties,
+        };
+
+        db.Instructors.Add(instructor);
+        await db.SaveChangesAsync();
+
+        return (ToDto(instructor), []);
+    }
+
     public async Task<(InstructorDto? Result, string[] Errors)> CreateAsync(CreateInstructorDto dto)
     {
         var user = new User

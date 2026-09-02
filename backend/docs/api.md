@@ -75,12 +75,17 @@ Sessions are bookable slots — either theory (classroom) or practical (on the w
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | GET | `/instructors` | No | List all instructors |
-| GET | `/instructors/me` | Instructor | Current instructor's own profile — used by the frontend portal to learn its own instructor id, since the JWT only carries the user id |
+| GET | `/instructors/me` | Instructor, Admin | Current instructor's own profile — used by the frontend portal to learn its own instructor id, since the JWT only carries the user id. `404` if the caller has no instructor profile (only possible for an Admin — see below) |
+| POST | `/instructors/me` | Admin | Link an instructor profile to the **caller's own** account (bio/specialties) — for an Admin who also teaches. `400` if they already have one. See "Admin as instructor" below |
 | GET | `/instructors/{id}` | No | Get instructor profile. Upcoming sessions: use `GET /sessions?instructorId={id}` |
-| POST | `/instructors` | Admin | Create an instructor account **and** profile in one call (email/password/name + bio/specialties) — there was no other way to onboard one; not in the original plan for this file but needed for the admin back-office to be usable at all |
+| POST | `/instructors` | Admin | Create a **new** instructor account **and** profile in one call (email/password/name + bio/specialties) — for onboarding someone else as an instructor. There was no other way to onboard one; not in the original plan for this file but needed for the admin back-office to be usable at all |
 | GET | `/instructors/{id}/availability` | No | List an instructor's upcoming availability slots (dated windows, not a recurring pattern) |
-| POST | `/instructors/{id}/availability` | Instructor | Add an availability slot — `403` unless `{id}` is the caller's own instructor id. Rejected with `400` on end-before-start, a slot in the past, or an overlap with an existing slot |
-| DELETE | `/instructors/{id}/availability/{slotId}` | Instructor | Remove one of the caller's own slots — same ownership check as above |
+| POST | `/instructors/{id}/availability` | Instructor, Admin | Add an availability slot — `403` unless `{id}` is the caller's own instructor id. Rejected with `400` on end-before-start, a slot in the past, or an overlap with an existing slot |
+| DELETE | `/instructors/{id}/availability/{slotId}` | Instructor, Admin | Remove one of the caller's own slots — same ownership check as above |
+
+### Admin as instructor
+
+Roles are single-valued (`users.role` is one value, not a set) — see `backend/docs/database.md`. That's fine for every case except one confirmed real one: the school's admin is also the one giving the courses. Rather than build general multi-role support for a single case, the specific endpoints an instructor needs (`/instructors/me`, availability add/delete) accept `Instructor` **or** `Admin`, and `POST /instructors/me` lets an Admin link a profile to their own account (`CreateForOwnAccountAsync`) instead of onboarding a separate user like `POST /instructors` does. Everywhere else, an Admin is just an Admin. If a second concurrent role ever shows up (e.g. a Student who's also an Instructor), revisit this and build real multi-role support instead of adding another one-off.
 
 ---
 
