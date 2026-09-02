@@ -43,7 +43,7 @@ API: `POST /api/contact`
 
 Browse all available permit types. Built: list page (card grid) and detail page.
 
-- List: card grid, one `PermitCard` per permit (name, truncated description, price, Théorie/Pratique/Pack badges). Empty and error states are handled explicitly, not just a blank page.
+- List: a short static explainer ("Les 3 permis, en bref" — Côtier, Hauturier, Fluvial, what each requires and how the théorie/pratique process works) above the card grid, then one `PermitCard` per permit (name, truncated description, price, Théorie/Pratique/Pack badges). The explainer is static content, not derived from the API — it describes the 3 base permit *types*, while the grid below lists the school's actual sellable *offers* (base permits, code-seul variants, bundles). Empty and error states are handled explicitly, not just a blank page.
 - Detail (`/formations/:id`) — full description, price, badges. Route uses the permit's `id` (a GUID), not its `slug` — the backend only exposes `GET /api/permits/{id}` today, no slug-based lookup. Nicer URLs (`/formations/permis-cotier`) would need a `GET /api/permits/by-slug/{slug}`-style endpoint added first.
 
 Not built yet: filtering by permit category.
