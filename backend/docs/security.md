@@ -82,6 +82,12 @@ Example checks:
 
 ---
 
+## CORS
+
+Only the frontend's own origin is allowed (`Cors:FrontendOrigins` in `appsettings.json` — `http://localhost:4200` in dev), with `AllowCredentials()` so the browser will attach our cookies to cross-origin requests. Never `AllowAnyOrigin()` combined with `AllowCredentials()` — that combination would let any website ride a logged-in user's cookies to call the API as them. The frontend origin must be an exact match (scheme + host + port); update `Cors:FrontendOrigins` when the production frontend domain is known.
+
+---
+
 ## HTTPS
 
 In production, Caddy acts as the reverse proxy and handles TLS automatically via Let's Encrypt. All HTTP traffic is redirected to HTTPS. The API itself runs on plain HTTP internally (inside Docker) — Caddy terminates TLS before passing the request through.

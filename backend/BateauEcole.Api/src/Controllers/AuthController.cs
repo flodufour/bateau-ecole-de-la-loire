@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,17 +10,28 @@ namespace BateauEcole.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-[AllowAnonymous]
 public class AuthController(AuthService authService, TokenService tokenService, IAntiforgery antiforgery) : ControllerBase
 {
+    // [AllowAnonymous] is per-action, not on the class — see PermitsController
+    // for why a class-level one would be the wrong call here too.
     [HttpGet("csrf")]
+    [AllowAnonymous]
     public IActionResult GetCsrfToken()
     {
         antiforgery.GetAndStoreTokens(HttpContext);
         return NoContent();
     }
 
+    [HttpGet("me")]
+    public async Task<IActionResult> Me()
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await authService.GetProfileAsync(userId);
+        return user is null ? Unauthorized() : Ok(user);
+    }
+
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
         var (result, errors) = await authService.RegisterAsync(dto);
@@ -31,6 +43,7 @@ public class AuthController(AuthService authService, TokenService tokenService, 
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     [EnableRateLimiting("auth")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
@@ -43,6 +56,7 @@ public class AuthController(AuthService authService, TokenService tokenService, 
     }
 
     [HttpPost("refresh")]
+    [AllowAnonymous]
     public async Task<IActionResult> Refresh()
     {
         var refreshToken = Request.Cookies["refresh_token"];
@@ -58,6 +72,7 @@ public class AuthController(AuthService authService, TokenService tokenService, 
     }
 
     [HttpPost("forgot-password")]
+    [AllowAnonymous]
     [EnableRateLimiting("auth")]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
     {
@@ -67,6 +82,7 @@ public class AuthController(AuthService authService, TokenService tokenService, 
     }
 
     [HttpPost("reset-password")]
+    [AllowAnonymous]
     public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
     {
         var errors = await authService.ResetPasswordAsync(dto);
@@ -74,6 +90,7 @@ public class AuthController(AuthService authService, TokenService tokenService, 
     }
 
     [HttpPost("logout")]
+    [AllowAnonymous]
     public async Task<IActionResult> Logout()
     {
         var refreshToken = Request.Cookies["refresh_token"];

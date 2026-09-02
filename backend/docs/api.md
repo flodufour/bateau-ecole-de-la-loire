@@ -14,6 +14,7 @@ Auth works via `httpOnly` cookies, not an `Authorization` header — the browser
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | GET | `/auth/csrf` | No | Issues the `XSRF-TOKEN` cookie; call once before any state-changing request |
+| GET | `/auth/me` | Yes | Current user's profile — used by the frontend to restore session state on page load |
 | POST | `/auth/register` | No | Register a new student account, sets auth cookies |
 | POST | `/auth/login` | No | Login, sets `access_token` + `refresh_token` cookies (rate-limited: 5/min/IP) |
 | POST | `/auth/refresh` | No | Rotates the refresh token, issues a new `access_token` |

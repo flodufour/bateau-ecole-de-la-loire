@@ -63,6 +63,17 @@ public class AuthService(
         return (result, []);
     }
 
+    // Re-checks IsActive against the DB rather than trusting the JWT's claims —
+    // an access token issued before a deactivation stays validly signed until
+    // it expires, so this is what actually locks a deactivated user out sooner.
+    public async Task<UserDto?> GetProfileAsync(Guid userId)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        return user is null || !user.IsActive
+            ? null
+            : new UserDto(user.Id, user.Email!, user.FirstName, user.LastName, user.Role);
+    }
+
     public async Task LogoutAsync(string refreshToken)
     {
         var tokenHash = tokenService.HashRefreshToken(refreshToken);
