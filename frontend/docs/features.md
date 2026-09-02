@@ -113,6 +113,19 @@ API: `POST/PUT/DELETE /api/permits`, `POST/PUT/DELETE /api/sessions`, `POST/DELE
 
 ---
 
+## Legal (`/mentions-legales`, `/politique-de-confidentialite`)
+
+Static content, linked from `Footer` (not the main nav). No API calls.
+
+- **Mentions légales** — required by French law (LCEN) for any site, regardless of size. States the site owner's identity, address, and contact, plus the hosting provider (Hetzner Online GmbH). Two fields — legal form and SIRET — are marked "à compléter": these are real facts about the school that weren't available when this page was written, not something to invent. Fill them in before this is actually compliant.
+- **Politique de confidentialité** — required because the app collects personal data (accounts, bookings, contact form). Describes exactly what this codebase does today: what's collected, that it's never sold or shared, that only functional/session cookies are used (no analytics, no tracking — verified against the actual codebase, not boilerplate), and RGPD rights with a CNIL link. Update this file (not just the page) if what the app collects or does with cookies ever changes.
+
+Not built yet: CGU/CGV (terms of use / terms of sale) — more relevant once the app actually takes payment online; today bookings don't involve a transaction on the site.
+
+API: none
+
+---
+
 ## Shared components
 
 Built:
@@ -120,7 +133,7 @@ Built:
 | Component | Description |
 |---|---|
 | `Header` | Sticky site header — brand, nav, and login/register links or the current user's name + logout, depending on auth state. Shows an "Admin" nav link only when `currentUser().role === 'Admin'` |
-| `Footer` | Minimal — site name and location |
+| `Footer` | Site name, location, and links to the legal pages (mentions légales, politique de confidentialité) |
 | `LoadingBar` | Slim animated bar at the top of the page while any HTTP request is in flight |
 | `PermitCard` | Displays a permit summary (name, price, type badges), links to its detail page |
 | `SessionCard` | Displays a single session (date, instructor, type, location, capacity — not spots *left*, see the Booking section above); emits `book` rather than calling `BookingService` itself |

@@ -23,3 +23,4 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-02 19:00 — [feat] Let an Admin also use the instructor portal (/instructeur now allows Instructor or Admin): a "Créer mon profil moniteur" form appears when the caller has no profile yet — with tests (127 specs total)
 2026-09-02 19:30 — [feat] Replace the flat "Mes séances à venir" list in the instructor portal with a Monday–Sunday week calendar, navigable by week — with tests (129 specs total)
 2026-09-02 20:00 — [feat] Add a "Mes informations" section (name, email, role) to the student dashboard, reusing the already-loaded AuthService profile — with tests (130 specs total)
+2026-09-02 20:30 — [feat] Add Mentions légales and Politique de confidentialité pages, linked from the footer (LCEN and RGPD require them) — legal form/SIRET are marked "à compléter", not invented — with tests (136 specs total)

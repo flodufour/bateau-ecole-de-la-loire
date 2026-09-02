@@ -85,5 +85,13 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'mentions-legales',
+    loadComponent: () => import('./features/legal/legal-notice/legal-notice').then((m) => m.LegalNotice),
+  },
+  {
+    path: 'politique-de-confidentialite',
+    loadComponent: () => import('./features/legal/privacy-policy/privacy-policy').then((m) => m.PrivacyPolicy),
+  },
   { path: '**', redirectTo: '' },
 ];

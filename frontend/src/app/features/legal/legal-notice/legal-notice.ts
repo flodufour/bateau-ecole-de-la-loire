@@ -2,12 +2,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-footer',
+  selector: 'app-legal-notice',
   imports: [RouterLink],
-  templateUrl: './footer.html',
-  styleUrl: './footer.css',
+  templateUrl: './legal-notice.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Footer {
-  protected readonly year = new Date().getFullYear();
-}
+export class LegalNotice {}
