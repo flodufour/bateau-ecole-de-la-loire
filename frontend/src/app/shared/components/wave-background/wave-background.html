@@ -1,0 +1,21 @@
+<div class="wave-background" aria-hidden="true">
+  @for (slot of slots(); track slot.id) {
+    <svg
+      class="wave"
+      [class.wave--visible]="slot.visible"
+      [style.top]="slot.top"
+      [style.left]="slot.left"
+      viewBox="0 0 240 40"
+      width="240"
+      height="40"
+    >
+      <path
+        d="M0,20 C20,0 40,0 60,20 C80,40 100,40 120,20 C140,0 160,0 180,20 C200,40 220,40 240,20"
+        pathLength="1"
+        fill="none"
+        stroke-width="3"
+        stroke-linecap="round"
+      />
+    </svg>
+  }
+</div>

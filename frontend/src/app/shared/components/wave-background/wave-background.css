@@ -1,0 +1,37 @@
+/* Sits behind the whole app (see app.html) at z-index: -1 — the opaque
+   navy sections (header, footer, hero bands) paint over it naturally,
+   so the waves only ever show through the plain white areas of a page. */
+.wave-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wave {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.wave--visible {
+  opacity: 0.4;
+}
+
+.wave path {
+  stroke: var(--color-accent);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1600ms ease-out;
+}
+
+.wave--visible path {
+  stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-background {
+    display: none;
+  }
+}
