@@ -6,10 +6,11 @@ import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { PurchaseService } from '../../core/services/purchase.service';
 import { extractApiErrors } from '../../core/utils/api-error.util';
+import { WaveBackground } from '../../shared/components/wave-background/wave-background';
 
 @Component({
   selector: 'app-cart',
-  imports: [CurrencyPipe, RouterLink],
+  imports: [CurrencyPipe, RouterLink, WaveBackground],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

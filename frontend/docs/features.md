@@ -70,6 +70,7 @@ The cart itself is entirely client-side — `CartService` holds `{ permitId, per
 - Checkout ("Valider la commande") is where auth is actually enforced: logged out sees "Se connecter pour valider la commande" instead of a button; logged in as non-`Student` sees a message instead ("Seul un compte étudiant peut valider une commande"), matching the backend's `[Authorize(Roles = "Student")]` on `POST /purchases/checkout`. Only a `Student` sees the real checkout button.
 - On success: `PurchaseService.checkout()` returns one `PermitPurchase` per unit (a quantity of 3 comes back as 3 rows) — the cart is cleared and a confirmation links to `/mon-espace`, where they show up via the dashboard's "Mes permis achetés" (see Dashboard below). See `backend/docs/security.md`'s "Payment": there's no real payment provider, checkout marks everything paid immediately.
 - `Header` shows a "Mon panier" link with an item-count badge whenever the cart isn't empty, visible regardless of auth state.
+- The only page with the ambient `WaveBackground` decoration (see `frontend/docs/architecture.md`'s Design system) — small orange wavy lines fading in and out over the page's white space.
 
 Not built yet: quick "add to cart" from the catalog grid (only from the detail page today).
 

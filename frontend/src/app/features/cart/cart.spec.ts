@@ -69,6 +69,12 @@ describe('Cart', () => {
     expect(element.textContent).toContain('Votre panier est vide');
   });
 
+  it('shows the ambient wave background', () => {
+    createComponent();
+
+    expect(element.querySelector('app-wave-background')).toBeTruthy();
+  });
+
   it('lists cart items with unit price, quantity, and line total', () => {
     cart.add(cotier, 2);
     createComponent();
