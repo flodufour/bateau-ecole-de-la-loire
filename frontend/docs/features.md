@@ -6,12 +6,14 @@ Each feature is a lazy-loaded route group. This file describes what each feature
 
 ## Home (`/`)
 
-Landing page for the school. Entirely static content (no API calls) — real info gathered from the school's live site, not placeholder text.
+Landing page for the school. Entirely static content (no API calls) — real info and photos gathered from the school's live site, not placeholder/stock content.
 
-- Hero with a tagline and two CTAs (`/formations`, `/reserver`).
+- A full-bleed hero (`public/images/quai-nantes.jpg`, a real photo of the Loire waterfront in Nantes) with a tagline and two CTAs (`/formations`, `/reserver`), faded into the navy palette via a gradient overlay.
 - A photo of the actual training boat (`public/images/ecole-conviviale.jpg`) with a short blurb — boat model, departure point.
 - A short "who we are" paragraph — the verified facts the school's own site states (monitor is a merchant navy captain, flexible evening/weekend scheduling), not an invented founding story: the source site has no history/founding-date content to draw from.
 - An embedded Google Map of the school's address, via the no-API-key `maps.google.com/maps?q=...&output=embed` iframe (no Maps API key exists in this project). The URL is a hardcoded constant, not user input, so `DomSanitizer.bypassSecurityTrustResourceUrl` is safe to use here — Angular sanitizes `iframe[src]` bindings by default.
+- A pre-footer CTA band reusing `ecole-conviviale.jpg` (same real photo as above, cropped tight on the moniteur instead of the whole boat) fading into the footer's navy.
+- Every section below the hero fades/slides into view the first time it scrolls into the viewport (`ScrollRevealDirective`, `shared/directives/scroll-reveal.directive.ts` — IntersectionObserver-backed, reveals once and stays visible). The hero itself is excluded since it's already visible on load.
 
 Not built yet: testimonials.
 

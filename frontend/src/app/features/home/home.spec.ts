@@ -31,4 +31,12 @@ describe('Home', () => {
     const links = Array.from(element.querySelectorAll('.hero__actions a')).map((a) => a.getAttribute('routerLink'));
     expect(links).toEqual(['/formations', '/reserver']);
   });
+
+  it('fades in the below-the-fold sections as they scroll into view', () => {
+    const revealed = element.querySelectorAll('.scroll-reveal');
+    // "Notre bateau", "Une école à taille humaine", "Nous trouver", and the
+    // pre-footer CTA band — everything except the hero, which is already
+    // visible on load and shouldn't start hidden.
+    expect(revealed.length).toBe(4);
+  });
 });

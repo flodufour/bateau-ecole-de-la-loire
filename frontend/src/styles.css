@@ -399,6 +399,29 @@ button {
   color: var(--color-accent);
 }
 
+/* Scroll-triggered reveal — see ScrollRevealDirective (appScrollReveal).
+   Fades and slides a section in the first time it scrolls into view. */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+}
+
+.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Full-bleed navy band — used for the hero and the pre-footer CTA on the
    home page. Photos fade into the navy via a gradient rather than sitting
    in a hard-edged box, so they read as part of the palette, not a stock-photo
