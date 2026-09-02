@@ -24,8 +24,11 @@ builder.Services.AddSwaggerGen();
 
 // Whitelist only the frontend's own origin — never AllowAnyOrigin, especially
 // with AllowCredentials (needed so the browser sends our auth cookies).
+// https, not http: our auth cookies are Secure, and Chrome treats a scheme
+// mismatch as cross-site even on localhost (see frontend/README.md) — the
+// frontend dev server must run on https too, or every cookie gets dropped.
 var frontendOrigins = builder.Configuration.GetSection("Cors:FrontendOrigins").Get<string[]>()
-    ?? ["http://localhost:4200"];
+    ?? ["https://localhost:4200"];
 
 builder.Services.AddCors(options =>
 {

@@ -84,7 +84,7 @@ Example checks:
 
 ## CORS
 
-Only the frontend's own origin is allowed (`Cors:FrontendOrigins` in `appsettings.json` — `http://localhost:4200` in dev), with `AllowCredentials()` so the browser will attach our cookies to cross-origin requests. Never `AllowAnyOrigin()` combined with `AllowCredentials()` — that combination would let any website ride a logged-in user's cookies to call the API as them. The frontend origin must be an exact match (scheme + host + port); update `Cors:FrontendOrigins` when the production frontend domain is known.
+Only the frontend's own origin is allowed (`Cors:FrontendOrigins` in `appsettings.json` — `https://localhost:4200` in dev, **not** `http://` — see `frontend/docs/security.md`'s "Dev server must run on HTTPS"), with `AllowCredentials()` so the browser will attach our cookies to cross-origin requests. Never `AllowAnyOrigin()` combined with `AllowCredentials()` — that combination would let any website ride a logged-in user's cookies to call the API as them. The frontend origin must be an exact match (scheme + host + port); update `Cors:FrontendOrigins` when the production frontend domain is known.
 
 ---
 

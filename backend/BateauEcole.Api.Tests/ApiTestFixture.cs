@@ -31,6 +31,10 @@ public class ApiTestFixture : WebApplicationFactory<Program>, IAsyncLifetime
                 ["Jwt:Audience"] = "BateauEcoleClient",
                 ["Jwt:AccessTokenMinutes"] = "30",
                 ["Jwt:RefreshTokenDays"] = "7",
+                // Explicit here rather than relying on appsettings.json's value,
+                // so CorsTests doesn't silently start passing/failing whenever
+                // that value changes for unrelated (deployment config) reasons.
+                ["Cors:FrontendOrigins:0"] = "https://localhost:4200",
             });
         });
     }

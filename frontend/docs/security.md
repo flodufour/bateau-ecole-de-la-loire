@@ -1,5 +1,11 @@
 # Frontend — Security
 
+## Dev server must run on HTTPS
+
+`ng serve` runs on HTTPS in this project (`angular.json`'s `serve.options`, reusing the same trusted .NET dev cert — see `README.md`), not the Angular CLI default of plain HTTP. This isn't cosmetic: Chrome's "same-site" determination is scheme-sensitive ("schemeful same-site"), so `http://localhost:4200` talking to `https://localhost:7215` counts as **cross-site** — identical hostname, different scheme — and `SameSite=Strict` cookies get silently dropped on every request. Found for real: every page that called a protected endpoint immediately looked "logged out" (a 401, correctly caught by `authErrorInterceptor`, which cleared the session) even right after a successful login. `curl` doesn't reproduce this — it doesn't implement the browser's same-site classification at all — so this specific class of bug only shows up in an actual browser. In production this isn't a concern: frontend and API will both be HTTPS behind Caddy.
+
+---
+
 ## Token storage
 
 The JWT access token is stored in an **`httpOnly` cookie** set by the backend — Angular never touches it directly. This is intentional: `httpOnly` cookies are invisible to JavaScript, so even if a malicious script runs on the page, it cannot steal the token.

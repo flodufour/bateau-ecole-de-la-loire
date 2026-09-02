@@ -28,6 +28,9 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
+# Dev HTTPS certificate (private key) — regenerate locally, see README.md
+/.certs
+
 # Miscellaneous
 /.angular/cache
 .sass-cache/

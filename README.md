@@ -55,7 +55,21 @@ dotnet run
 
 API runs at `http://localhost:5258`. Swagger at `http://localhost:5258/swagger`.
 
-### 5. Run the frontend
+### 5. Set up the frontend's dev HTTPS certificate (first time only)
+
+The API's auth cookies are `Secure`, and Chrome treats `http://` and `https://` as different "sites" even on `localhost` — so if the frontend serves over plain HTTP while the API is HTTPS, the browser silently drops every cookie (looks like "I keep getting logged out"). The frontend must also run over HTTPS, reusing the same trusted .NET dev cert so there's only one certificate to trust:
+
+```bash
+cd frontend
+mkdir .certs
+dotnet dev-certs https --export-path /tmp/localhost.pfx --password devcert123 --trust
+openssl pkcs12 -in /tmp/localhost.pfx -passin pass:devcert123 -nocerts -nodes -legacy | openssl pkcs8 -nocrypt -out .certs/localhost-key.pem
+openssl pkcs12 -in /tmp/localhost.pfx -passin pass:devcert123 -clcerts -nokeys -legacy > .certs/localhost.pem
+```
+
+`.certs/` is gitignored (it holds a private key) — every clone regenerates its own.
+
+### 6. Run the frontend
 
 ```bash
 cd frontend
@@ -63,7 +77,7 @@ npm install
 ng serve
 ```
 
-App runs at `http://localhost:4200`.
+App runs at `https://localhost:4200` (HTTPS — see above).
 
 ## Running backend tests
 

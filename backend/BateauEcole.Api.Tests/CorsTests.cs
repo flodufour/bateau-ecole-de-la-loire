@@ -6,7 +6,7 @@ namespace BateauEcole.Api.Tests;
 // prove CORS "works".
 public class CorsTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixture>
 {
-    private const string AllowedOrigin = "http://localhost:4200";
+    private const string AllowedOrigin = "https://localhost:4200";
     private const string DisallowedOrigin = "http://evil.example.com";
 
     [Fact]
@@ -22,6 +22,24 @@ public class CorsTests(ApiTestFixture fixture) : IClassFixture<ApiTestFixture>
 
         Assert.Equal(AllowedOrigin, response.Headers.GetValues("Access-Control-Allow-Origin").Single());
         Assert.Equal("true", response.Headers.GetValues("Access-Control-Allow-Credentials").Single());
+    }
+
+    [Fact]
+    public async Task Preflight_FromTheSameHostButWrongScheme_IsNotGrantedCorsHeaders()
+    {
+        // Regression test: found for real when the frontend dev server ran on
+        // http while the API ran on https — same host and port, different
+        // scheme. CORS origin matching (and the browser's own same-site
+        // check) is scheme-sensitive, so "same host" is not "same origin".
+        var client = fixture.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Options, "/api/auth/login");
+        request.Headers.Add("Origin", "http://localhost:4200");
+        request.Headers.Add("Access-Control-Request-Method", "POST");
+        request.Headers.Add("Access-Control-Request-Headers", "content-type");
+
+        var response = await client.SendAsync(request);
+
+        Assert.False(response.Headers.Contains("Access-Control-Allow-Origin"));
     }
 
     [Fact]
