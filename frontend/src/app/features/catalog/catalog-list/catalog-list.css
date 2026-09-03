@@ -28,10 +28,20 @@
   padding-bottom: var(--space-12);
 }
 
-.permit-types__wheel {
+.permit-types__wheel-wrap {
   width: 210px;
   height: 210px;
   flex-shrink: 0;
+  transition: transform 300ms ease;
+}
+
+.permit-types__wheel-wrap:hover {
+  transform: scale(1.2);
+}
+
+.permit-types__wheel {
+  width: 100%;
+  height: 100%;
   transform-box: fill-box;
   transform-origin: center;
   animation: wheel-spin 22s linear infinite;
@@ -47,6 +57,10 @@
   .permit-types__wheel {
     animation: none;
   }
+
+  .permit-types__wheel-wrap {
+    transition: none;
+  }
 }
 
 @media (max-width: 720px) {
@@ -54,7 +68,7 @@
     grid-template-columns: 1fr;
   }
 
-  .permit-types__wheel {
+  .permit-types__wheel-wrap {
     display: none;
   }
 }
