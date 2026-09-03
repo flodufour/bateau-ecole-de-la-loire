@@ -152,6 +152,15 @@ describe('InstructorPortal', () => {
     httpMock.expectOne(`${environment.apiUrl}/instructors/${instructor.id}/availability`).flush([slot]);
   });
 
+  it('shows a validation message instead of silently doing nothing when the availability form is incomplete', () => {
+    createAndFlushInitialLoad();
+
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Veuillez remplir tous les champs.');
+  });
+
   it('deletes an availability slot', () => {
     createAndFlushInitialLoad();
 
@@ -175,6 +184,22 @@ describe('InstructorPortal', () => {
     fixture.detectChanges();
 
     expect(element.textContent).toContain('Créer mon profil moniteur');
+  });
+
+  it('shows a validation message instead of silently doing nothing when the profile form is incomplete', () => {
+    fixture = TestBed.createComponent(InstructorPortal);
+    element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    httpMock
+      .expectOne(`${environment.apiUrl}/instructors/me`)
+      .flush(null, { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Veuillez remplir tous les champs.');
   });
 
   it('creates the profile and then loads sessions and availability', () => {

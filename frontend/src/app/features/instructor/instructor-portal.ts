@@ -60,8 +60,10 @@ export class InstructorPortal {
   }
 
   protected createProfile(): void {
-    if (this.profileForm.invalid || this.creatingProfile()) {
+    if (this.creatingProfile()) return;
+    if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
+      this.profileErrors.set(['Veuillez remplir tous les champs.']);
       return;
     }
 
@@ -86,8 +88,10 @@ export class InstructorPortal {
   }
 
   protected submit(): void {
-    if (this.form.invalid || this.submitting() || !this.instructorId) {
+    if (this.submitting() || !this.instructorId) return;
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.errors.set(['Veuillez remplir tous les champs.']);
       return;
     }
 

@@ -17,7 +17,9 @@
       <select formControlName="instructorId">
         <option value="" disabled>Choisir…</option>
         @for (instructor of instructors(); track instructor.id) {
-          <option [value]="instructor.id">{{ instructor.firstName }} {{ instructor.lastName }}</option>
+          <option [value]="instructor.id">
+            {{ instructor.firstName }} {{ instructor.lastName }}{{ instructor.id === myInstructorId() ? ' (moi)' : '' }}
+          </option>
         }
       </select>
     </label>

@@ -58,6 +58,15 @@ describe('ExamDatesAdmin', () => {
     httpMock.expectOne(`${environment.apiUrl}/exam-dates`).flush([examDate]);
   });
 
+  it('shows a validation message instead of silently doing nothing when the form is incomplete', () => {
+    createAndFlushInitialLoad();
+
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Veuillez remplir tous les champs.');
+  });
+
   it('deletes an exam date', () => {
     createAndFlushInitialLoad();
 

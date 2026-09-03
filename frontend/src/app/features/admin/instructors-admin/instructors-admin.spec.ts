@@ -71,6 +71,15 @@ describe('InstructorsAdmin', () => {
     httpMock.expectOne(`${environment.apiUrl}/instructors`).flush([instructor]);
   });
 
+  it('shows a validation message instead of silently doing nothing when the form is incomplete', () => {
+    createAndFlushInitialLoad();
+
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Veuillez remplir tous les champs.');
+  });
+
   it('shows the backend error when the email is already in use', () => {
     createAndFlushInitialLoad();
 

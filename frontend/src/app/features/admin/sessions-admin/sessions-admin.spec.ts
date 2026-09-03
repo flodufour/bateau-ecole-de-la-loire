@@ -43,13 +43,19 @@ describe('SessionsAdmin', () => {
     location: 'Nantes centre',
   };
 
-  function createAndFlushInitialLoad(): void {
+  function createAndFlushInitialLoad(myInstructor?: Instructor): void {
     fixture = TestBed.createComponent(SessionsAdmin);
     element = fixture.nativeElement;
     fixture.detectChanges();
 
     httpMock.expectOne(`${environment.apiUrl}/permits`).flush([permit]);
     httpMock.expectOne(`${environment.apiUrl}/instructors`).flush([instructor]);
+    const meRequest = httpMock.expectOne(`${environment.apiUrl}/instructors/me`);
+    if (myInstructor) {
+      meRequest.flush(myInstructor);
+    } else {
+      meRequest.flush(null, { status: 404, statusText: 'Not Found' });
+    }
     httpMock.expectOne((r) => r.url === `${environment.apiUrl}/sessions`).flush([session]);
     fixture.detectChanges();
   }
@@ -77,6 +83,30 @@ describe('SessionsAdmin', () => {
 
     expect(element.querySelectorAll('select[formcontrolname="permitId"] option').length).toBe(2); // placeholder + 1
     expect(element.querySelectorAll('select[formcontrolname="instructorId"] option').length).toBe(2);
+  });
+
+  it('shows a validation message instead of silently doing nothing when the form is incomplete', () => {
+    createAndFlushInitialLoad();
+
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('Veuillez remplir tous les champs.');
+  });
+
+  it('does not mark any instructor as "(moi)" when the Admin has no instructor profile', () => {
+    createAndFlushInitialLoad();
+
+    expect(element.textContent).not.toContain('(moi)');
+  });
+
+  it('marks the Admin\'s own instructor profile with "(moi)" in the dropdown', () => {
+    createAndFlushInitialLoad(instructor);
+
+    const option = element.querySelector<HTMLOptionElement>(
+      `select[formcontrolname="instructorId"] option[value="${instructor.id}"]`,
+    )!;
+    expect(option.textContent).toContain('(moi)');
   });
 
   it('shows the backend error when creating with an invalid reference', () => {

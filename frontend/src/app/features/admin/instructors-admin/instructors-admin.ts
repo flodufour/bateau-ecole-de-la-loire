@@ -34,8 +34,10 @@ export class InstructorsAdmin {
   }
 
   protected submit(): void {
-    if (this.form.invalid || this.submitting()) {
+    if (this.submitting()) return;
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.errors.set(['Veuillez remplir tous les champs.']);
       return;
     }
 

@@ -47,3 +47,5 @@ Format: `YYYY-MM-DD HH:MM — [feat|fix|chore|refactor] Description`
 2026-09-03 00:00 — [feat] Add `WaveBackground` to `/panier`: up to 4 small orange wavy SVG lines fade/draw in, hold ~2s, then fade out and reappear elsewhere ~10s later — `position: fixed` at `z-index: -1` so it only shows through the page's plain white space; skips the animation loop entirely under `prefers-reduced-motion` — with tests
 2026-09-03 00:15 — [fix] Enlarge the ship's-wheel illustration on `/formations` (170px → 210px) — it read as too small next to the intro text
 2026-09-03 09:15 — [feat] Grow the `/formations` ship's wheel further on hover (scale 1.2, 300ms) — wrapped it in a container so the hover transform doesn't fight the SVG's own spin-keyframe transform
+2026-09-03 09:45 — [feat] Mark the caller's own instructor profile with "(moi)" in the "Moniteur" dropdown on `/admin/seances` (via `GET /instructors/me`, silently ignored if the Admin has no profile)
+2026-09-03 09:45 — [fix] Every admin CRUD form and both instructor-portal forms now show "Veuillez remplir tous les champs." when submitted incomplete, instead of `markAllAsTouched()`'s silent no-op — with tests

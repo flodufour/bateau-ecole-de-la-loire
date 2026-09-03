@@ -30,6 +30,11 @@ export class SessionsAdmin {
   protected readonly errors = signal<string[]>([]);
   protected readonly submitting = signal(false);
 
+  // Lets the "Moniteur" dropdown mark the caller's own instructor profile
+  // with "(moi)" — silently stays null if the Admin has no profile
+  // (GET /instructors/me 404s), which is a normal, expected case.
+  protected readonly myInstructorId = signal<string | null>(null);
+
   protected readonly form = this.fb.nonNullable.group({
     permitId: ['', Validators.required],
     instructorId: ['', Validators.required],
@@ -43,6 +48,10 @@ export class SessionsAdmin {
   constructor() {
     this.permitService.getAll().subscribe((permits) => this.permits.set(permits));
     this.instructorService.getAll().subscribe((instructors) => this.instructors.set(instructors));
+    this.instructorService.getMe().subscribe({
+      next: (instructor) => this.myInstructorId.set(instructor.id),
+      error: () => this.myInstructorId.set(null),
+    });
     this.load();
   }
 
@@ -67,8 +76,10 @@ export class SessionsAdmin {
   }
 
   protected submit(): void {
-    if (this.form.invalid || this.submitting()) {
+    if (this.submitting()) return;
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.errors.set(['Veuillez remplir tous les champs.']);
       return;
     }
 
