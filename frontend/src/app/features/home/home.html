@@ -24,36 +24,38 @@
   </div>
 </section>
 
-<section class="container home-section home-section--split" appScrollReveal>
-  <div>
-    <h2>Une école à taille humaine</h2>
-    <p>
-      Une formation conviviale qui s'adapte à vos disponibilités (cours en salle le soir ou le week-end), assurée
-      par un moniteur agréé, capitaine de la marine marchande — disponible pour vous conseiller même après
-      l'obtention de votre permis.
-    </p>
+<section class="section-band section-band--alt" appScrollReveal>
+  <div class="container home-section home-section--split">
+    <div>
+      <h2>Une école à taille humaine</h2>
+      <p>
+        Une formation conviviale qui s'adapte à vos disponibilités (cours en salle le soir ou le week-end), assurée
+        par un moniteur agréé, capitaine de la marine marchande — disponible pour vous conseiller même après
+        l'obtention de votre permis.
+      </p>
 
-    <h2>Déjà un permis ? Passez une option en candidat libre</h2>
-    <p>
-      Titulaire du permis côtier, hauturier ou fluvial ? Passez une option supplémentaire en candidat libre, en
-      autonomie, en une quinzaine de jours — et pas seulement à Nantes : nos dossiers sont valables dans de
-      nombreuses villes partout en France.
-      <a routerLink="/contact">Contactez-nous</a> pour en savoir plus.
-    </p>
-  </div>
+      <h2>Déjà un permis ? Passez une option en candidat libre</h2>
+      <p>
+        Titulaire du permis côtier, hauturier ou fluvial ? Passez une option supplémentaire en candidat libre, en
+        autonomie, en une quinzaine de jours — et pas seulement à Nantes : nos dossiers sont valables dans de
+        nombreuses villes partout en France.
+        <a routerLink="/contact">Contactez-nous</a> pour en savoir plus.
+      </p>
+    </div>
 
-  <div class="testimonials">
-    <a class="testimonials__header" href="https://www.google.com/maps/search/?api=1&query=Bateau+Ecole+de+la+Loire+Nantes" target="_blank" rel="noopener">
-      <span class="testimonials__rating">{{ googleRating }} ★</span>
-      <span class="testimonials__count">{{ googleReviewCount }} avis Google</span>
-    </a>
+    <div class="testimonials">
+      <a class="testimonials__header" href="https://www.google.com/maps/search/?api=1&query=Bateau+Ecole+de+la+Loire+Nantes" target="_blank" rel="noopener">
+        <span class="testimonials__rating">{{ googleRating }} ★</span>
+        <span class="testimonials__count">{{ googleReviewCount }} avis Google</span>
+      </a>
 
-    @for (testimonial of testimonials; track testimonial.author) {
-      <blockquote class="testimonial">
-        <p>{{ testimonial.text }}</p>
-        <footer>{{ testimonial.author }}</footer>
-      </blockquote>
-    }
+      @for (testimonial of testimonials; track testimonial.author) {
+        <blockquote class="testimonial">
+          <p>{{ testimonial.text }}</p>
+          <footer>{{ testimonial.author }}</footer>
+        </blockquote>
+      }
+    </div>
   </div>
 </section>
 

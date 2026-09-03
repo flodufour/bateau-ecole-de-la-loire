@@ -1,34 +1,40 @@
-/* Design tokens — kept deliberately small: a neutral ink/paper palette, one
-   accent, one spacing scale. The system font stack (not a Google/Adobe
-   webfont) is intentional — it renders in San Francisco on a Mac, Segoe UI on
-   Windows, matching what a real Apple page does rather than importing "Inter"
-   like most generated sites do. */
-:root {
-  --color-ink: #1d1d1f;
-  --color-ink-muted: #6e6e73;
-  --color-paper: #ffffff;
-  --color-paper-tint: #f5f5f7;
-  --color-border: #d2d2d7;
-  --color-danger: #c0392b;
+/* Google Fonts — must be the first rule in the file (only @charset may
+   precede an @import). Archivo for display type, Barlow for body copy,
+   IBM Plex Mono for the small uppercase mono labels. */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-  /* Nautical palette: a deep, slightly muted "bleu roi" (softer than a pure
-     electric royal blue) paired with a softened "orange France" accent. */
+/* Design tokens — an editorial, nautical palette: warm off-white paper,
+   navy accent, one orange accent. Nothing outside this list. */
+:root {
+  --color-ink: #16203c;
+  --color-ink-muted: #5c5850;
+  --color-ink-tertiary: #8b857a;
+  --color-white: #ffffff;
+  --color-paper: #fbfaf7;
+  --color-paper-alt: #f2f0ea;
+  --color-border: #e5e1d8;
+  --color-border-soft: #eeebe3;
+  --color-field-border: #dcd8ce;
+  --color-danger: #c0392b;
+  --color-footer: #16203c;
+
   --color-navy: #2d3f76;
   --color-navy-deep: #1b2547;
   --color-navy-soft: #4a5da0;
   --color-on-navy: #ffffff;
   --color-on-navy-muted: rgba(255, 255, 255, 0.75);
 
-  /* Two shades of the same orange: --color-accent is the (softened) fill used
-     on buttons/badges (paired with dark ink text, not white — white-on-vivid-
-     orange fails contrast), --color-accent-text is a deeper shade for inline
-     text/links on the white/paper background, where the fill alone would be
-     too light to read. */
   --color-accent: #f48f34;
   --color-accent-hover: #e17a16;
-  --color-accent-text: #b85d0a;
 
-  --font-sans:
+  /* Kept as an alias to --color-paper: legacy name still referenced by a
+     couple of component stylesheets. */
+  --color-paper-tint: var(--color-paper-alt);
+
+  --font-display: 'Archivo', var(--font-sans-fallback);
+  --font-body: 'Barlow', var(--font-sans-fallback);
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans-fallback:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
   --space-1: 0.25rem;
@@ -41,14 +47,16 @@
   --space-16: 4rem;
   --space-24: 6rem;
 
-  /* Deliberately tight — square corners over the rounded-pill/big-radius look
-     most generated UIs default to. */
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
+  --container-padding: 32px;
+  --section-padding: 84px;
 
-  --transition-fast: 150ms ease;
-  --max-content-width: 1080px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --transition-fast: 200ms ease;
+  --max-content-width: 1240px;
 
   color-scheme: light;
 }
@@ -88,9 +96,10 @@ html {
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.5;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  text-wrap: pretty;
   color: var(--color-ink);
   background: var(--color-paper);
   -webkit-font-smoothing: antialiased;
@@ -101,9 +110,11 @@ h2,
 h3,
 h4 {
   margin: 0 0 var(--space-4);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-wrap: pretty;
 }
 
 h1,
@@ -112,21 +123,28 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2.25rem, 5vw, 4.25rem);
 }
 
 h2 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+h3 {
+  font-weight: 700;
+  font-size: clamp(1.2rem, 2vw, 1.5625rem);
 }
 
 p {
   margin: 0 0 var(--space-4);
   color: var(--color-ink-muted);
+  text-wrap: pretty;
 }
 
 a {
-  color: var(--color-accent-text);
+  color: var(--color-accent);
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 a:hover {
@@ -140,29 +158,46 @@ button {
 .container {
   max-width: var(--max-content-width);
   margin-inline: auto;
-  padding-inline: var(--space-6);
+  padding-inline: var(--container-padding);
 }
 
-/* Form primitives — shared across every form in the app (auth today,
-   booking/contact later), so they live here instead of being redefined
-   per-feature. */
+/* Small uppercase mono "eyebrow" label — available for any section that
+   wants one; see frontend/docs/architecture.md for why none of the
+   current section titles use it (numbering it would add visible text). */
+.eyebrow {
+  display: block;
+  margin-bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+}
+
+/* Form primitives — shared across every form in the app. */
 .field {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   margin-bottom: var(--space-4);
   font-size: 0.9rem;
+  font-weight: 600;
   color: var(--color-ink);
 }
 
 .field input,
 .field select,
-.field textarea {
-  font-family: inherit;
+.field textarea,
+.cart__quantity,
+.permit-detail__quantity input,
+.dashboard__transfer-form input {
+  font-family: var(--font-body);
   font-size: 1rem;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  font-weight: 400;
+  padding: 12px 14px;
+  border: 1px solid var(--color-field-border);
+  border-radius: var(--radius-sm);
   background: var(--color-paper);
   color: var(--color-ink);
   transition: border-color var(--transition-fast);
@@ -170,7 +205,10 @@ button {
 
 .field input:focus,
 .field select:focus,
-.field textarea:focus {
+.field textarea:focus,
+.cart__quantity:focus,
+.permit-detail__quantity input:focus,
+.dashboard__transfer-form input:focus {
   outline: none;
   border-color: var(--color-accent);
 }
@@ -182,28 +220,34 @@ button {
 .form-errors {
   margin: 0 0 var(--space-4);
   padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--color-danger) 8%, var(--color-paper));
   color: var(--color-danger);
   font-size: 0.9rem;
   list-style: none;
 }
 
+/* Buttons — fully rounded. Primary: orange fill, white text, hover navy.
+   Secondary (.link-button styled as a button, .hero__button--ghost):
+   translucent/beige border, hover orange border + orange text. */
 .submit-button {
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  padding: 14px var(--space-6);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   background: var(--color-accent);
-  color: var(--color-ink);
+  color: var(--color-white);
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .submit-button:hover:not(:disabled) {
-  background: var(--color-accent-hover);
+  background: var(--color-navy);
 }
 
 .submit-button:disabled {
@@ -215,10 +259,11 @@ button {
   background: none;
   border: none;
   padding: 0;
-  color: var(--color-accent-text);
+  color: var(--color-accent);
   font-size: inherit;
   font-family: inherit;
   cursor: pointer;
+  transition: color var(--transition-fast);
 }
 
 .link-button:hover:not(:disabled) {
@@ -239,7 +284,8 @@ button {
 .auth-card {
   width: 100%;
   max-width: 380px;
-  padding: var(--space-8);
+  padding: 28px;
+  background: var(--color-white);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }
@@ -255,15 +301,13 @@ button {
   text-align: center;
 }
 
-/* Badges — used on permit/session/booking cards. Square-cornered tags, not
-   pills — pills read as generic "SaaS starter kit"; a tight radius reads as
-   deliberate. */
+/* Badges — pill tags used on permit/session/booking cards. */
 .badge {
   display: inline-flex;
   align-items: center;
   padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
-  background: var(--color-paper-tint);
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-alt);
   color: var(--color-ink-muted);
   font-size: 0.75rem;
   font-weight: 500;
@@ -272,17 +316,17 @@ button {
 
 .badge--accent {
   background: var(--color-accent);
-  color: var(--color-ink);
+  color: var(--color-white);
   font-weight: 600;
 }
 
 .badge--success {
-  background: color-mix(in srgb, #1e7e42 12%, var(--color-paper));
+  background: color-mix(in srgb, #1e7e42 12%, var(--color-white));
   color: #1e7e42;
 }
 
 .badge--danger {
-  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-paper));
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-white));
   color: var(--color-danger);
 }
 
@@ -320,11 +364,11 @@ button {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-4);
   align-items: end;
-  padding: var(--space-6);
+  padding: 28px;
   margin-bottom: var(--space-8);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  background: var(--color-paper-tint);
+  background: var(--color-white);
 }
 
 .admin-form .field {
@@ -351,15 +395,16 @@ button {
 .admin-table td {
   padding: var(--space-3) var(--space-4);
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-soft);
 }
 
 .admin-table th {
-  color: var(--color-ink-muted);
+  color: var(--color-ink-tertiary);
+  font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.08em;
 }
 
 /* Not display: flex — that overrides the <td>'s table-cell display, which
@@ -422,10 +467,9 @@ button {
   }
 }
 
-/* Full-bleed navy band — used for the hero and the pre-footer CTA on the
-   home page. Photos fade into the navy via a gradient rather than sitting
-   in a hard-edged box, so they read as part of the palette, not a stock-photo
-   pasted on top of it. */
+/* Full-width navy accent band — used for the hero and other full-bleed
+   accent sections. Flat single-tone photo scrim (two identical gradient
+   stops) rather than a visible fade, per the "no gradients" brief. */
 .on-navy {
   color: var(--color-on-navy-muted);
   background: var(--color-navy);
@@ -439,4 +483,84 @@ button {
 
 .on-navy p {
   color: var(--color-on-navy-muted);
+}
+
+/* Alternate warm-beige section background, for rhythm between the plain
+   paper background and the full-width navy bands. */
+.on-paper-alt {
+  background: var(--color-paper-alt);
+}
+
+/* Cards — used for permit/session cards, testimonials, and list items
+   throughout the app. */
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition:
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-3px);
+}
+
+/* Info callout — a success/notice box with a left accent bar. */
+.info-box {
+  background: var(--color-white);
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-6);
+}
+
+/* Price/feature list — label left, bold navy value right, thin dividers.
+   Not currently used anywhere (no matching content), kept available for
+   a future pricing table. */
+.spec-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-list__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.spec-list__value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+/* Key figures — large orange number, small caption below, thin rule above.
+   Not currently used anywhere (no matching content), kept available for
+   a future stats section. */
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+.stat {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.stat__value {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.stat__label {
+  margin-top: var(--space-1);
+  font-size: 14px;
+  color: var(--color-ink-muted);
 }

@@ -13,8 +13,14 @@
 
 .instructor-portal__item {
   padding: var(--space-4) var(--space-6);
+  background: var(--color-white);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast);
+}
+
+.instructor-portal__item:hover {
+  border-color: var(--color-accent);
 }
 
 .instructor-portal__item h3 {
@@ -46,6 +52,7 @@
 
 .instructor-portal__day {
   padding: var(--space-3);
+  background: var(--color-white);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   min-height: 120px;

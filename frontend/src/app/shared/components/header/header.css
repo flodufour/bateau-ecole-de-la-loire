@@ -2,8 +2,10 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--color-navy);
-  border-bottom: 1px solid var(--color-navy-soft);
+  background: rgba(251, 250, 247, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .header__inner {
@@ -14,10 +16,11 @@
 }
 
 .header__brand {
-  color: var(--color-on-navy);
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: -0.01em;
+  color: var(--color-navy);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
 }
 
 .header__brand:hover {
@@ -27,16 +30,17 @@
 .header__nav {
   display: flex;
   gap: var(--space-6);
-  font-size: 0.9rem;
+  font-size: 15px;
 }
 
 .header__nav a {
-  color: var(--color-on-navy-muted);
+  color: var(--color-ink-muted);
+  transition: color var(--transition-fast);
 }
 
 .header__nav a:hover,
 .header__nav-link--active {
-  color: var(--color-on-navy);
+  color: var(--color-navy);
   text-decoration: none;
 }
 
@@ -51,10 +55,10 @@
   align-items: center;
   justify-content: center;
   min-width: 1.2em;
-  padding: 0 0.35em;
-  border-radius: var(--radius-sm);
+  padding: 0 0.4em;
+  border-radius: var(--radius-pill);
   background: var(--color-accent);
-  color: var(--color-ink);
+  color: var(--color-white);
   font-weight: 600;
   font-size: 0.75rem;
   line-height: 1.6;
@@ -64,32 +68,32 @@
   display: flex;
   align-items: center;
   gap: var(--space-6);
-  font-size: 0.9rem;
+  font-size: 15px;
 }
 
 .header__actions > a:not(.header__cta),
 .header__actions .link-button {
-  color: var(--color-on-navy-muted);
+  color: var(--color-ink-muted);
 }
 
 .header__actions .link-button:hover {
-  color: var(--color-on-navy);
+  color: var(--color-navy);
 }
 
 .header__user {
-  color: var(--color-on-navy-muted);
+  color: var(--color-ink-muted);
 }
 
 .header__cta {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-md);
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
   background: var(--color-accent);
-  color: var(--color-ink);
+  color: var(--color-white);
   font-weight: 600;
   transition: background var(--transition-fast);
 }
 
 .header__cta:hover {
-  background: var(--color-accent-hover);
+  background: var(--color-navy);
   text-decoration: none;
 }

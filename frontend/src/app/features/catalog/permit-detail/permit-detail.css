@@ -1,8 +1,9 @@
 .permit-detail__price {
   display: block;
   margin-top: var(--space-2);
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
   color: var(--color-accent);
 }
 
@@ -36,23 +37,15 @@
 
 .permit-detail__quantity input {
   width: 70px;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   font-family: inherit;
-  font-size: 1rem;
-}
-
-.permit-detail__quantity input:focus {
-  outline: none;
-  border-color: var(--color-accent);
 }
 
 .permit-detail__success {
   width: 100%;
   padding: var(--space-4) var(--space-6);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius-md);
 }
 
 .permit-detail__purchase .submit-button {

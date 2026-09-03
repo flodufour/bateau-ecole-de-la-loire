@@ -1,5 +1,5 @@
 .footer {
-  background: var(--color-navy);
+  background: var(--color-footer);
   color: var(--color-on-navy-muted);
 }
 
@@ -20,8 +20,10 @@
 
 .footer__legal a {
   color: inherit;
+  transition: color var(--transition-fast);
 }
 
 .footer__legal a:hover {
-  color: var(--color-on-navy);
+  color: var(--color-accent);
+  text-decoration: none;
 }

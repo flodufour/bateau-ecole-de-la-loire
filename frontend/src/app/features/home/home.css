@@ -1,24 +1,24 @@
-/* Full-bleed photo bands, faded into the navy palette via a gradient
-   overlay rather than sitting in a hard-edged image box. The hero fades
-   from the header's navy down to the photo; the pre-footer CTA fades the
-   other way, from the photo back to a solid navy that matches the footer
-   exactly, so the two bands merge with no visible seam. */
+/* Full-bleed photo bands. A flat single-tone scrim (two identical color
+   stops in the gradient function) rather than a visible fade, per the
+   "no gradients" brief — still lets the photo read through slightly. */
 .hero {
   padding-block: var(--space-24) var(--space-16);
   text-align: center;
   color: var(--color-on-navy-muted);
   background:
-    linear-gradient(180deg, rgba(27, 37, 71, 0.85) 0%, rgba(45, 63, 118, 0.55) 100%),
+    linear-gradient(rgba(27, 37, 71, 0.72), rgba(27, 37, 71, 0.72)),
     url('/images/quai-nantes.jpg') center 40% / cover no-repeat;
 }
 
-/* Same real photo as "Notre bateau" below, cropped tight on the moniteur
-   at the helm instead of the whole boat — a different moment of the same
-   authentic photo, not a second stock image. */
+/* The pre-footer band is deliberately light, not navy — a dark band here
+   would sit directly against the dark footer, and two dark sections should
+   never be back to back. Same real photo as "Notre bateau" above, cropped
+   tight on the moniteur at the helm instead of the whole boat. */
 .hero--cta {
   padding-block: var(--space-16) var(--space-24);
+  color: var(--color-ink-muted);
   background:
-    linear-gradient(180deg, rgba(45, 63, 118, 0.5) 0%, var(--color-navy) 100%),
+    linear-gradient(rgba(242, 240, 234, 0.85), rgba(242, 240, 234, 0.85)),
     url('/images/ecole-conviviale.jpg') 25% 65% / 140% auto no-repeat;
 }
 
@@ -27,11 +27,19 @@
   color: var(--color-on-navy);
 }
 
+.hero--cta h2 {
+  color: var(--color-navy);
+}
+
 .hero p {
   max-width: 560px;
   margin-inline: auto;
   font-size: 1.15rem;
   color: var(--color-on-navy-muted);
+}
+
+.hero--cta p {
+  color: var(--color-ink-muted);
 }
 
 .hero__actions {
@@ -46,34 +54,52 @@
 }
 
 .hero__button {
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-md);
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
   border: 1px solid rgba(255, 255, 255, 0.4);
   color: var(--color-on-navy);
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .hero__button--ghost:hover {
-  border-color: var(--color-on-navy);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
   text-decoration: none;
 }
 
 .hero__button--primary {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: var(--color-ink);
-  font-weight: 600;
+  color: var(--color-white);
 }
 
 .hero__button--primary:hover {
-  background: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
+  background: var(--color-navy);
+  border-color: var(--color-navy);
   text-decoration: none;
+}
+
+/* Full-width section band — a neutral layout wrapper so a section can carry
+   an edge-to-edge background while its content stays inside .container. */
+.section-band {
+  padding-block: var(--section-padding);
+}
+
+.section-band--alt {
+  background: var(--color-paper-alt);
 }
 
 .home-section {
   padding-block: var(--space-8);
+}
+
+.section-band .home-section {
+  padding-block: 0;
 }
 
 .home-section h2 {
@@ -89,12 +115,13 @@
 .home-section--split {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-8);
+  gap: var(--space-12);
   align-items: center;
 }
 
 .home-section__image {
   width: 100%;
+  aspect-ratio: 3 / 2;
   border-radius: var(--radius-lg);
   object-fit: cover;
 }
@@ -112,24 +139,21 @@
   }
 }
 
-/* Discreet by design — a quiet aside next to the main text, not a
-   feature in its own right: no card borders, small muted type, just a
-   thin divider between quotes. */
+/* Reviews aside — white quote cards with a large orange quotation mark,
+   next to the "taille humaine" / "candidat libre" text. */
 .testimonials {
   display: flex;
   flex-direction: column;
-  align-self: start;
-  padding-top: var(--space-1);
-  border-top: 1px solid var(--color-border);
+  gap: var(--space-3);
 }
 
 .testimonials__header {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
-  margin-bottom: var(--space-2);
-  color: var(--color-ink-muted);
-  font-size: 0.8rem;
+  margin-bottom: var(--space-1);
+  color: var(--color-ink);
+  font-size: 0.85rem;
 }
 
 .testimonials__header:hover {
@@ -141,8 +165,9 @@
 }
 
 .testimonials__rating {
-  font-weight: 600;
-  color: var(--color-accent-text);
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-accent);
 }
 
 .testimonials__count {
@@ -150,28 +175,46 @@
 }
 
 .testimonial {
+  position: relative;
   margin: 0;
-  padding-block: var(--space-2);
+  padding: 20px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition:
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
-.testimonial + .testimonial {
-  border-top: 1px solid var(--color-border);
+.testimonial:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-3px);
+}
+
+.testimonial::before {
+  content: '\201C';
+  display: block;
+  margin-bottom: var(--space-1);
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-accent);
 }
 
 .testimonial p {
-  margin: 0 0 var(--space-1);
-  font-size: 0.78rem;
-  font-style: italic;
+  margin: 0 0 var(--space-2);
+  font-size: 0.85rem;
   line-height: 1.4;
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .testimonial footer {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--color-ink-muted);
 }
 

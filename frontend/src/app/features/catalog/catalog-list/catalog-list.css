@@ -7,7 +7,7 @@
   text-align: center;
   color: var(--color-on-navy-muted);
   background:
-    linear-gradient(180deg, rgba(27, 37, 71, 0.82) 0%, rgba(45, 63, 118, 0.55) 100%),
+    linear-gradient(rgba(27, 37, 71, 0.72), rgba(27, 37, 71, 0.72)),
     url('/images/erdre-nantes.jpg') center 60% / cover no-repeat;
 }
 
